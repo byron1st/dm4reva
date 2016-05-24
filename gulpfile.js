@@ -1,6 +1,7 @@
 const gulp = require('gulp')
 const del = require('del')
 const babel = require('gulp-babel')
+const webpack = require('gulp-webpack')
 
 gulp.task('clean', () => {
   return del.sync(['dist/**/**/*', 'dist/*'])
@@ -18,7 +19,7 @@ gulp.task('copy:js', () => {
   return gulp.src([
       './src/*.js',
       './src/db/*',
-      './src/compiled/*',
+      // './src/compiled/*',
       './src/view/js/*'
     ])
     .pipe(babel())
@@ -33,4 +34,10 @@ gulp.task('copy:view', () => {
   .pipe(gulp.dest('./dist'))
 })
 
-gulp.task('default', ['clean', 'copy:lib', 'copy:js', 'copy:view'])
+gulp.task('build:react', () => {
+  return gulp.src('./src/components/exdef.view.jsx')
+  .pipe(webpack(require('./webpack.config.js')))
+  .pipe(gulp.dest('./dist'))
+})
+
+gulp.task('default', ['clean', 'copy:lib', 'copy:js', 'copy:view', 'build:react'])

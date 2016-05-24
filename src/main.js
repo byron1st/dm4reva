@@ -1,8 +1,8 @@
 'use strict'
 import {app, BrowserWindow, ipcMain} from 'electron'
-import * as path from 'path'
+import path from 'path'
 import * as exdefDB from './exdef.db.js'
-import * as fs from 'fs'
+import fs from 'fs'
 import config from './app.config.js'
 
 let exdefWindow = null
