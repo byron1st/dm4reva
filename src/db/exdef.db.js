@@ -11,7 +11,7 @@ import Datastore from 'nedb'
   idRules: string
 }
 **/
-const db = new Datastore({filename: path.join(__dirname, '../../db/exdef.db'), autoload: true})
+const db = new Datastore({filename: path.join(__dirname, '../db/exdef.db'), autoload: true})
 db.ensureIndex({fieldName: 'type', unique: true})
 
 function handleError(err) {

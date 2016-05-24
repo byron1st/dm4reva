@@ -1,3 +1,3 @@
-export default const config = {
+export default {
   mode: 'test' // test, production
 }

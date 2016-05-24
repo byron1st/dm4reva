@@ -1,6 +1,6 @@
 import {expect} from 'chai'
-import * as exdefDB from '../src/db/exdefDB.js'
-import * as exdefData from './resources/exdefDB.test.data.js'
+import * as exdefDB from '../dist/exdef.db.js'
+import * as exdefData from './resources/exdef.db.test.data.js'
 
 function createOneData () {
   return new Promise((resolve, reject) => {
