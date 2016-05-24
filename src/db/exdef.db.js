@@ -55,6 +55,5 @@ export function deleteAll(cb) {
   db.remove({}, { multi: true }, (err, num) => {
     if (err) return handleError(err)
     if (cb) return cb(num)
-    return num
   })
 }

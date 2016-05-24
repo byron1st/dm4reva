@@ -1,0 +1,28 @@
+[
+  {
+    "type": "Thread",
+    "kind": "EComponent",
+    "inf": [
+      "java/lang/Thread",
+      "java/util/concurrent/Executor"
+    ],
+    "rid": [
+      "java/lang/Thread.init(Ljava/lang/ThreadGroup;Ljava/lang/Runnable;Ljava/lang/String;JLjava/security/AccessControlContext;)V"
+    ],
+    "id_rules": "rid가 불리웠을 때, object의 hashCode 값이 identifier"
+  },
+  {
+    "type": "StreamI/O",
+    "kind": "EConnector",
+    "inf": [
+      "java/io/PipedInputStream",
+      "java/io/PipedOutputStream"
+    ],
+    "rid": [
+      "java/io/PipedInputStream.read()I",
+      "java/io/PipedOutputStream.write([B)V",
+      "java/io/PipedInputStream.receive([BII)V"
+    ],
+    "id_rules": "receive로 연결되는 두 PipedInputStream, PipedOutputStream의 Object들이 호출되는 Thread들이 있을 때, PipedOutputStream Object를 호출하는 Thread가 Source, PipedInputStream Object를 호출하는 Thread가 Sink로 한 EConnector"
+  }
+]
