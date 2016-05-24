@@ -2,7 +2,7 @@
   "name": "dm4reva",
   "version": "1.0.0",
   "description": "Datastore Manager for the Reconstruction of Execution View Architecture",
-  "main": "app/main.js",
+  "main": "src/main.js",
   "directories": {
     "test": "test"
   },
@@ -11,9 +11,7 @@
     "start": "./node_modules/.bin/electron ."
   },
   "babel": {
-    "presets": [
-      "es2015"
-    ]
+    "presets": [ "es2015" ]
   },
   "repository": {
     "type": "git",
