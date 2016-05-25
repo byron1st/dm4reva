@@ -28,7 +28,7 @@ gulp.task('compile:js', () => {
 gulp.task('copy:view', () => {
   return gulp.src([
     './src/view/*.html',
-    './src/view/exdef/css/*'
+    './src/view/css/*'
   ])
   .pipe(gulp.dest('./dist'))
 })

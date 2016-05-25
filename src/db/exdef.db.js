@@ -8,7 +8,7 @@ import Datastore from 'nedb'
   kind: string,
   inf: [string],
   rid: [string],
-  idRules: string
+  id_rules: string
 }
 **/
 const db = new Datastore({filename: path.join(__dirname, '../db/exdef.db'), autoload: true})

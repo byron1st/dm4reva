@@ -3,10 +3,10 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 
-export default class ExdefDetailsInfo extends Component {
+export default class ExdefDetailsEdit extends Component {
   render () {
     return (
-      <h1>Info View</h1>
+      <h1>Edit View</h1>
     )
   }
 }

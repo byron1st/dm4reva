@@ -1,6 +1,6 @@
 'use strict'
 
-import React, {Component} from 'react'
+import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 
 export default class ExdefList extends Component {
@@ -19,6 +19,11 @@ export default class ExdefList extends Component {
     )
   }
 }
+ExdefList.propTypes = {
+  exdefList: PropTypes.array,
+  selectedExdef: PropTypes.string,
+  select: PropTypes.func
+}
 
 class ExdefListItem extends Component {
   handleSelect () {
@@ -32,4 +37,9 @@ class ExdefListItem extends Component {
       </a>
     )
   }
+}
+ExdefListItem.propTypes = {
+  exdef: PropTypes.object,
+  isSelected: PropTypes.bool,
+  select: PropTypes.func
 }
