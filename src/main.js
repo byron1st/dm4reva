@@ -7,12 +7,12 @@ import config from './app.config.js'
 
 let exdefWindow = null
 
-function createExdefWindow () {
+function createExdefWindow (docs) {
   exdefWindow = new BrowserWindow({
     width: 1280,
     height: 720
   })
-
+  exdefWindow.exdefList = docs
   exdefWindow.loadURL(path.join('file://', __dirname, 'index.exdef.html'))
   exdefWindow.on('closed', () => exdefWindow = null)
   if (config.mode === 'test') exdefWindow.webContents.openDevTools()
@@ -20,8 +20,8 @@ function createExdefWindow () {
 
 app.on('ready', () => {
   if (config.mode === 'test') {
-    loadInitialTestData().then(createExdefWindow)
-  } else createExdefWindow()
+    loadInitialTestData().then(() => exdefDB.read({}, {kind:1, type:1}, (docs) => createExdefWindow(docs)))
+  } else exdefDB.read({}, {kind:1, type:1}, (docs) => createExdefWindow(docs))
 })
 
 app.on('activate', () => {

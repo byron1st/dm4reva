@@ -14,12 +14,12 @@ gulp.task('copy:lib', () => {
   .pipe(gulp.dest('./dist/lib/bootstrap'))
 })
 
-gulp.task('copy:js', () => {
+gulp.task('compile:js', () => {
   return gulp.src([
       './src/*.js',
-      './src/db/*',
-      './src/view/js/*',
-      './src/components/exdef.view.jsx'
+      './src/db/*.js',
+      './src/view/exdef/js/*.js',
+      './src/components/*.jsx'
     ])
     .pipe(babel())
     .pipe(gulp.dest('./dist'))
@@ -28,9 +28,9 @@ gulp.task('copy:js', () => {
 gulp.task('copy:view', () => {
   return gulp.src([
     './src/view/*.html',
-    './src/view/css/*'
+    './src/view/exdef/css/*'
   ])
   .pipe(gulp.dest('./dist'))
 })
 
-gulp.task('default', ['clean', 'copy:lib', 'copy:js', 'copy:view'])
+gulp.task('default', ['clean', 'compile:js', 'copy:lib', 'copy:view'])
