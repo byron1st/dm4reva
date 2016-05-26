@@ -18,6 +18,8 @@ export default class ExdefDetailsEdit extends Component {
     }
     this.updateType = this.updateType.bind(this)
     this.updateKind = this.updateKind.bind(this)
+    this.updateInf = this.updateInf.bind(this)
+    this.removeInf = this.removeInf.bind(this)
   }
   componentWillMount () {
     this.setState({exdef: this.props.exdef})
@@ -30,6 +32,20 @@ export default class ExdefDetailsEdit extends Component {
   updateKind (kind) {
     let updatedExdef = this.state.exdef
     updatedExdef.kind = kind
+    this.setState({exdef: updatedExdef})
+  }
+  updateInf(inf, index) {
+    let updatedExdef = this.state.exdef
+    let updatedInf = this.state.exdef.inf
+    updatedInf.splice(index, 1, inf)
+    updatedExdef.inf = updatedInf
+    this.setState({exdef: updatedExdef})
+  }
+  removeInf(index) {
+    let updatedExdef = this.state.exdef
+    let updatedInf = this.state.exdef.inf
+    updatedInf.splice(index, 1)
+    updatedExdef.inf = updatedInf
     this.setState({exdef: updatedExdef})
   }
   render () {
@@ -88,8 +104,8 @@ class ExdefDetailsEditInf extends Component {
     super()
     this.handleAdd = this.handleAdd.bind(this)
   }
-  handleAdd(value) {
-    console.log(value) // name === index!!
+  handleAdd(newInf) {
+    console.log(newInf)
   }
   render () {
     let infListView
@@ -137,10 +153,10 @@ class ExdefDetailsEditInfItem extends Component {
     this.handleRemove = this.handleRemove.bind(this)
   }
   handleUpdate (event) {
-    console.log(event.target.name)
+    this.props.update(event.target.value, event.target.name)
   }
   handleRemove (event) {
-    console.log(event.target.name)
+    this.props.remove(event.target.name)
   }
   render () {
     return (
