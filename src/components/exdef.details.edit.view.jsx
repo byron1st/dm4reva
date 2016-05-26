@@ -22,7 +22,7 @@ export default class ExdefDetailsEdit extends Component {
     this.removeInf = this.removeInf.bind(this)
   }
   componentWillMount () {
-    this.setState({exdef: this.props.exdef})
+    this.setState({exdef: this.props.exdef}) // link로 연결됨....
   }
   updateType (type) {
     let updatedExdef = this.state.exdef
