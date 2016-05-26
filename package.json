@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "bootstrap": "^3.3.6",
+    "immutable": "^3.8.1",
     "jquery": "^2.2.4",
     "nedb": "^1.8.0",
     "react": "^15.1.0",

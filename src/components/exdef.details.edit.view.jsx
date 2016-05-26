@@ -14,7 +14,11 @@ export default class ExdefDetailsEdit extends Component {
   constructor () {
     super()
     this.state = {
-      exdef: {}
+      type: '',
+      kind: '',
+      inf: [],
+      id_rules:'',
+      rid:[]
     }
     this.updateType = this.updateType.bind(this)
     this.updateKind = this.updateKind.bind(this)
@@ -22,38 +26,34 @@ export default class ExdefDetailsEdit extends Component {
     this.removeInf = this.removeInf.bind(this)
   }
   componentWillMount () {
-    this.setState({exdef: this.props.exdef}) // link로 연결됨....
+    this.setState({type: this.props.exdef.type})
+    this.setState({kind: this.props.exdef.kind})
+    this.setState({inf: this.props.exdef.inf.slice()})
+    this.setState({id_rules: this.props.exdef.id_rules})
+    this.setState({rid: this.props.exdef.rid.slice()})
   }
-  updateType (type) {
-    let updatedExdef = this.state.exdef
-    updatedExdef.type = type
-    this.setState({exdef: updatedExdef})
+  updateType (newType) {
+    this.setState({type: newType})
   }
-  updateKind (kind) {
-    let updatedExdef = this.state.exdef
-    updatedExdef.kind = kind
-    this.setState({exdef: updatedExdef})
+  updateKind (newKind) {
+    this.setState({kind: newKind})
   }
   updateInf(inf, index) {
-    let updatedExdef = this.state.exdef
-    let updatedInf = this.state.exdef.inf
+    let updatedInf = this.state.inf.slice()
     updatedInf.splice(index, 1, inf)
-    updatedExdef.inf = updatedInf
-    this.setState({exdef: updatedExdef})
+    this.setState({inf: updatedInf})
   }
   removeInf(index) {
-    let updatedExdef = this.state.exdef
-    let updatedInf = this.state.exdef.inf
+    let updatedInf = this.state.inf.slice()
     updatedInf.splice(index, 1)
-    updatedExdef.inf = updatedInf
-    this.setState({exdef: updatedExdef})
+    this.setState({inf: updatedInf})
   }
   render () {
     return (
       <div className='row'>
         <div className='col-md-12'>
-          <ExdefDetailsEditTypeAndKind type={this.state.exdef.type} kind={this.state.exdef.kind} updateType={this.updateType} updateKind={this.updateKind}/>
-          <ExdefDetailsEditInf inf={this.state.exdef.inf} update={this.updateInf} add={this.addInf} remove={this.removeInf}/>
+          <ExdefDetailsEditTypeAndKind type={this.state.type} kind={this.state.kind} updateType={this.updateType} updateKind={this.updateKind}/>
+          <ExdefDetailsEditInf inf={this.state.inf} update={this.updateInf} add={this.addInf} remove={this.removeInf}/>
         </div>
       </div>
     )
