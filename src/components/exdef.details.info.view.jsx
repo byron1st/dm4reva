@@ -12,7 +12,6 @@ function getOverflowYStyle(height) {
 
 export default class ExdefDetailsInfo extends Component {
   render () {
-    console.log(this.props.exdef)
     return (
       <div className='row'>
         <div className='col-md-12'>
