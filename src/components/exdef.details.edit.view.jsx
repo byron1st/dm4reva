@@ -22,9 +22,9 @@ export default class ExdefDetailsEdit extends Component {
     }
     this.updateType = this.updateType.bind(this)
     this.updateKind = this.updateKind.bind(this)
-    this.updateInf = this.updateInf.bind(this)
-    this.removeInf = this.removeInf.bind(this)
-    this.addInf = this.addInf.bind(this)
+    this.updateListItem = this.updateListItem.bind(this)
+    this.removeListItem = this.removeListItem.bind(this)
+    this.addListItem = this.addListItem.bind(this)
     this.updateIdRules = this.updateIdRules.bind(this)
   }
   componentWillMount () {
@@ -40,18 +40,44 @@ export default class ExdefDetailsEdit extends Component {
   updateKind (newKind) {
     this.setState({kind: newKind})
   }
-  updateInf (inf, index) {
-    let updatedInf = this.state.inf.slice()
-    updatedInf.splice(index, 1, inf)
-    this.setState({inf: updatedInf})
+  updateListItem (listKind, updatedItem, index) {
+    switch (listKind) {
+      case 'inf':
+        let updatedInf = this.state.inf.slice()
+        updatedInf.splice(index, 1, updatedItem)
+        this.setState({inf: updatedInf})
+        break
+      case 'rid':
+        let updatedRid = this.state.rid.slice()
+        updatedRid.splice(index, 1, updatedItem)
+        this.setState({rid: updatedRid})
+        break
+    }
   }
-  removeInf (index) {
-    let updatedInf = this.state.inf.slice()
-    updatedInf.splice(index, 1)
-    this.setState({inf: updatedInf})
+  removeListItem (listKind, index) {
+    switch (listKind) {
+      case 'inf':
+        let updatedInf = this.state.inf.slice()
+        updatedInf.splice(index, 1)
+        this.setState({inf: updatedInf})
+        break
+      case 'rid':
+        let updatedRid = this.state.rid.slice()
+        updatedRid.splice(index, 1)
+        this.setState({rid: updatedRid})
+    }
+
   }
-  addInf (newInf) {
-    this.setState({inf: this.state.inf.concat(newInf)})
+  addListItem (listKind, newItem) {
+    switch (listKind) {
+      case 'inf':
+        this.setState({inf: this.state.inf.concat(newItem)})
+        break
+      case 'rid':
+        this.setState({rid: this.state.rid.concat(newItem)})
+        break
+    }
+
   }
   updateIdRules (newValue) {
     this.setState({id_rules: newValue})
@@ -61,7 +87,7 @@ export default class ExdefDetailsEdit extends Component {
       <div className='row'>
         <div className='col-md-12'>
           <ExdefDetailsEditTypeAndKind type={this.state.type} kind={this.state.kind} updateType={this.updateType} updateKind={this.updateKind}/>
-          <ExdefDetailsEditInf inf={this.state.inf} update={this.updateInf} add={this.addInf} remove={this.removeInf}/>
+          <ExdefDetailsEditList listKind='inf' list={this.state.inf} update={this.updateListItem} add={this.addListItem} remove={this.removeListItem}/>
           <ExdefDetailsEditIdRules id_rules={this.state.id_rules} update={this.updateIdRules}/>
         </div>
       </div>
@@ -108,19 +134,19 @@ ExdefDetailsEditTypeAndKind.propTypes = {
   updateKind: PropTypes.func
 }
 
-class ExdefDetailsEditInf extends Component {
+class ExdefDetailsEditList extends Component {
   constructor () {
     super()
     this.handleAdd = this.handleAdd.bind(this)
   }
   handleAdd(newInf) {
-    this.props.add(newInf)
+    this.props.add(this.props.listKind, newInf)
   }
   render () {
     let infListView
     let infListItemView = []
-    this.props.inf.forEach((anItem, index) => infListItemView.push(<ExdefDetailsEditInfItem inf={anItem} key={index} index={index} update={this.props.update} remove={this.props.remove} />))
-    if (this.props.inf.lenght > 5) infListView = <div style={getOverflowYStyle('220px')}>{infListItemView}</div>
+    this.props.list.forEach((anItem, index) => infListItemView.push(<ExdefDetailsEditListItem listKind='inf' item={anItem} key={index} index={index} update={this.props.update} remove={this.props.remove} />))
+    if (this.props.list.lenght > 5) infListView = <div style={getOverflowYStyle('220px')}>{infListItemView}</div>
     else infListView = <div>{infListItemView}</div>
     return (
       <div className='row'>
@@ -153,29 +179,30 @@ class ExdefDetailsEditInf extends Component {
     )
   }
 }
-ExdefDetailsEditInf.propTypes = {
-  inf: PropTypes.array,
+ExdefDetailsEditList.propTypes = {
+  listKind: PropTypes.string,
+  list: PropTypes.array,
   update: PropTypes.func,
   add: PropTypes.func,
   remove: PropTypes.func
 }
 
-class ExdefDetailsEditInfItem extends Component {
+class ExdefDetailsEditListItem extends Component {
   constructor () {
     super()
     this.handleUpdate = this.handleUpdate.bind(this)
     this.handleRemove = this.handleRemove.bind(this)
   }
   handleUpdate (event) {
-    this.props.update(event.target.value, event.target.name)
+    this.props.update(this.props.listKind, event.target.value, event.target.name)
   }
   handleRemove (event) {
-    this.props.remove(event.target.name)
+    this.props.remove(this.props.listKind, event.target.name)
   }
   render () {
     return (
       <div className='input-group'>
-        <input type='text' className='form-control' value={this.props.inf} name={this.props.index} onChange={this.handleUpdate}/>
+        <input type='text' className='form-control' value={this.props.item} name={this.props.index} onChange={this.handleUpdate}/>
         <span className='input-group-btn'>
           <button className='btn btn-danger' type='button' name={this.props.index} onClick={this.handleRemove}>remove</button>
         </span>
@@ -183,8 +210,9 @@ class ExdefDetailsEditInfItem extends Component {
     )
   }
 }
-ExdefDetailsEditInfItem.propTypes = {
-  inf: PropTypes.string,
+ExdefDetailsEditListItem.propTypes = {
+  listKind: PropTypes.string,
+  item: PropTypes.string,
   index: PropTypes.number,
   update: PropTypes.func,
   remove: PropTypes.func
