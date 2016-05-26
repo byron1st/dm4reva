@@ -65,6 +65,7 @@ export default class ExdefDetailsEdit extends Component {
         let updatedRid = this.state.rid.slice()
         updatedRid.splice(index, 1)
         this.setState({rid: updatedRid})
+        break
     }
 
   }
@@ -89,6 +90,7 @@ export default class ExdefDetailsEdit extends Component {
           <ExdefDetailsEditTypeAndKind type={this.state.type} kind={this.state.kind} updateType={this.updateType} updateKind={this.updateKind}/>
           <ExdefDetailsEditList listKind='inf' list={this.state.inf} update={this.updateListItem} add={this.addListItem} remove={this.removeListItem}/>
           <ExdefDetailsEditIdRules id_rules={this.state.id_rules} update={this.updateIdRules}/>
+          <ExdefDetailsEditList listKind='rid' list={this.state.rid} update={this.updateListItem} add={this.addListItem} remove={this.removeListItem}/>
         </div>
       </div>
     )
@@ -145,7 +147,7 @@ class ExdefDetailsEditList extends Component {
   render () {
     let infListView
     let infListItemView = []
-    this.props.list.forEach((anItem, index) => infListItemView.push(<ExdefDetailsEditListItem listKind='inf' item={anItem} key={index} index={index} update={this.props.update} remove={this.props.remove} />))
+    this.props.list.forEach((anItem, index) => infListItemView.push(<ExdefDetailsEditListItem listKind={this.props.listKind} item={anItem} key={index} index={index} update={this.props.update} remove={this.props.remove} />))
     if (this.props.list.lenght > 5) infListView = <div style={getOverflowYStyle('220px')}>{infListItemView}</div>
     else infListView = <div>{infListItemView}</div>
     return (
@@ -157,12 +159,12 @@ class ExdefDetailsEditList extends Component {
             </div>
             <div className='col-md-8'>
               <div className='input-group' id='addInf'>
-                <input type='text' id='newInf' className='form-control' defaultValue='' />
+                <input type='text' id={this.props.listKind} className='form-control' defaultValue='' />
                 <span className='input-group-btn'>
                   <button className='btn btn-primary' type='button'
                     onClick={() => {
-                      this.handleAdd($('#newInf').val())
-                      $('#newInf').val('')
+                      this.handleAdd($('#' + this.props.listKind).val())
+                      $('#' + this.props.listKind).val('')
                     }}
                     >add</button>
                 </span>
