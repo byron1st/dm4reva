@@ -24,6 +24,8 @@ export default class ExdefDetailsEdit extends Component {
     this.updateKind = this.updateKind.bind(this)
     this.updateInf = this.updateInf.bind(this)
     this.removeInf = this.removeInf.bind(this)
+    this.addInf = this.addInf.bind(this)
+    this.updateIdRules = this.updateIdRules.bind(this)
   }
   componentWillMount () {
     this.setState({type: this.props.exdef.type})
@@ -38,15 +40,21 @@ export default class ExdefDetailsEdit extends Component {
   updateKind (newKind) {
     this.setState({kind: newKind})
   }
-  updateInf(inf, index) {
+  updateInf (inf, index) {
     let updatedInf = this.state.inf.slice()
     updatedInf.splice(index, 1, inf)
     this.setState({inf: updatedInf})
   }
-  removeInf(index) {
+  removeInf (index) {
     let updatedInf = this.state.inf.slice()
     updatedInf.splice(index, 1)
     this.setState({inf: updatedInf})
+  }
+  addInf (newInf) {
+    this.setState({inf: this.state.inf.concat(newInf)})
+  }
+  updateIdRules (newValue) {
+    this.setState({id_rules: newValue})
   }
   render () {
     return (
@@ -54,6 +62,7 @@ export default class ExdefDetailsEdit extends Component {
         <div className='col-md-12'>
           <ExdefDetailsEditTypeAndKind type={this.state.type} kind={this.state.kind} updateType={this.updateType} updateKind={this.updateKind}/>
           <ExdefDetailsEditInf inf={this.state.inf} update={this.updateInf} add={this.addInf} remove={this.removeInf}/>
+          <ExdefDetailsEditIdRules id_rules={this.state.id_rules} update={this.updateIdRules}/>
         </div>
       </div>
     )
@@ -105,7 +114,7 @@ class ExdefDetailsEditInf extends Component {
     this.handleAdd = this.handleAdd.bind(this)
   }
   handleAdd(newInf) {
-    console.log(newInf)
+    this.props.add(newInf)
   }
   render () {
     let infListView
@@ -124,7 +133,12 @@ class ExdefDetailsEditInf extends Component {
               <div className='input-group' id='addInf'>
                 <input type='text' id='newInf' className='form-control' defaultValue='' />
                 <span className='input-group-btn'>
-                  <button className='btn btn-primary' type='button' onClick={() => this.handleAdd($('#newInf').val())}>add</button>
+                  <button className='btn btn-primary' type='button'
+                    onClick={() => {
+                      this.handleAdd($('#newInf').val())
+                      $('#newInf').val('')
+                    }}
+                    >add</button>
                 </span>
               </div>
             </div>
@@ -174,4 +188,28 @@ ExdefDetailsEditInfItem.propTypes = {
   index: PropTypes.number,
   update: PropTypes.func,
   remove: PropTypes.func
+}
+
+class ExdefDetailsEditIdRules extends Component {
+  constructor () {
+    super()
+    this.handleChange = this.handleChange.bind(this)
+  }
+  handleChange (event) {
+    this.props.update(event.target.value)
+  }
+  render () {
+    return (
+      <div className='row'>
+        <div className='col-md-12'>
+          <h3>Identification Rules</h3>
+          <textarea id='idRulesValue' className='form-control' rows='5' value={this.props.id_rules} onChange={this.handleChange} />
+        </div>
+      </div>
+    )
+  }
+}
+ExdefDetailsEditIdRules.propTypes = {
+  id_rules: PropTypes.string,
+  update: PropTypes.func
 }
