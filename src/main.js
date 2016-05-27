@@ -1,11 +1,15 @@
 'use strict'
-import {app, BrowserWindow, ipcMain} from 'electron'
+import {app, BrowserWindow, ipcMain, dialog} from 'electron'
 import path from 'path'
 import * as exdefDB from './exdef.db.js'
 import fs from 'fs'
 import config from './app.config.js'
 
 let exdefWindow = null
+
+function handleErrors (err) {
+  dialog.showErrorBox('Error occurs', err)
+}
 
 function createExdefWindow (docs) {
   exdefWindow = new BrowserWindow({
@@ -34,6 +38,17 @@ app.on('window-all-closed', () => {
 
 app.on('will-quit', () => {
   if (config.mode === 'test') unloadInitialTestData()
+})
+
+ipcMain.on('handle-errors', (event, arg) => {
+  handleErrors(err)
+})
+
+ipcMain.on('save-exdefs', (event, arg) => {
+  exdefDB.create(JSON.parse(arg.toString()), (err, docs) => {
+    if (err) return handleErrors(err)
+    event.sender.send('save-exdefs-reply', docs)
+  })
 })
 
 /** Test Mode **/

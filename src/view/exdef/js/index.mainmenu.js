@@ -6,7 +6,7 @@ const app = remote.app
 const Menu = remote.Menu
 
 function handleErrors (err) {
-  dialog.showErrorBox('Error occurs', err)
+  ipcRenderer.send('handle-errors', err)
 }
 
 const template = [
@@ -24,10 +24,10 @@ const template = [
             ]
           }, (filenames) => {
             if (filenames) {
-              //TODO: progressBar show.
+              window.$('#progressBar').show()
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                //TODO: send ipc!
+                ipcRenderer.send('save-exdefs', data)
               })
             }
           })

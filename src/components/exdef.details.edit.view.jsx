@@ -14,6 +14,7 @@ export default class ExdefDetailsEdit extends Component {
   constructor () {
     super()
     this.state = {
+      _id: '',
       type: '',
       kind: '',
       inf: [],
@@ -26,8 +27,10 @@ export default class ExdefDetailsEdit extends Component {
     this.removeListItem = this.removeListItem.bind(this)
     this.addListItem = this.addListItem.bind(this)
     this.updateIdRules = this.updateIdRules.bind(this)
+    this.saveExdef = this.saveExdef.bind(this)
   }
   componentWillMount () {
+    this.setState({_id: this.props.exdef._id})
     this.setState({type: this.props.exdef.type})
     this.setState({kind: this.props.exdef.kind})
     this.setState({inf: this.props.exdef.inf.slice()})
@@ -83,10 +86,26 @@ export default class ExdefDetailsEdit extends Component {
   updateIdRules (newValue) {
     this.setState({id_rules: newValue})
   }
+  saveExdef () {
+    let udpatedExdef = {
+      _id: this.state._id,
+      type: this.state.type,
+      kind: this.state.kind,
+      inf: this.state.inf.slice(),
+      id_rules: this.state.id_rules,
+      rid: this.state.rid.slice()
+    }
+    this.props.save(udpatedExdef)
+  }
   render () {
     return (
       <div className='row'>
         <div className='col-md-12'>
+          <div className='row'>
+            <div className='col-md-12'>
+              <button className='btn btn-primary btn-lg pull-right' onClick={this.saveExdef}>Save</button>
+            </div>
+          </div>
           <ExdefDetailsEditTypeAndKind type={this.state.type} kind={this.state.kind} updateType={this.updateType} updateKind={this.updateKind}/>
           <ExdefDetailsEditList listKind='inf' list={this.state.inf} update={this.updateListItem} add={this.addListItem} remove={this.removeListItem}/>
           <ExdefDetailsEditIdRules id_rules={this.state.id_rules} update={this.updateIdRules}/>
@@ -97,7 +116,8 @@ export default class ExdefDetailsEdit extends Component {
   }
 }
 ExdefDetailsEdit.propTypes = {
-  exdef: PropTypes.object
+  exdef: PropTypes.object,
+  save: PropTypes.func
 }
 
 class ExdefDetailsEditTypeAndKind extends Component {
