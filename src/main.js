@@ -8,7 +8,8 @@ import config from './app.config.js'
 let exdefWindow = null
 
 function handleErrors (err) {
-  dialog.showErrorBox('Error occurs', err)
+  dialog.showErrorBox('An error occurs', err.toString())
+  console.log(err)
 }
 
 function createExdefWindow (docs) {
@@ -24,8 +25,14 @@ function createExdefWindow (docs) {
 
 app.on('ready', () => {
   if (config.mode === 'test') {
-    loadInitialTestData().then(() => exdefDB.read({}, {kind:1, type:1}, (docs) => createExdefWindow(docs)))
-  } else exdefDB.read({}, {kind:1, type:1}, (docs) => createExdefWindow(docs))
+    loadInitialTestData().then(() => exdefDB.read({}, {kind:1, type:1}, (err, docs) => {
+      if (err) return handleErrors (err)
+      createExdefWindow(docs)
+    }))
+  } else exdefDB.read({}, {kind:1, type:1}, (err, docs) => {
+    if (err) return handleErrors (err)
+    createExdefWindow(docs)
+  })
 })
 
 app.on('activate', () => {
@@ -61,12 +68,17 @@ ipcMain.on('add-new-exdef', (event, arg) => {
   exdefDB.create(arg, (err, doc) => {
     if (err) {
       handleErrors(err)
-      event.returnValue = undefined
+      event.returnValue = null
     } else {
       event.returnValue = doc
     }
 
   })
+})
+
+ipcMain.on('save-drs', (event, arg) => {
+  // exdefDB.create(JSON.parse(arg.toString()), (err, docs))
+  // event.sender.send('save-drs-reply', ...)
 })
 
 /** Test Mode **/

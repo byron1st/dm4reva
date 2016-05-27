@@ -59,7 +59,7 @@ class ExdefDetailsInfoInf extends Component {
               <h3>Interfaces</h3>
             </div>
             <div className='col-md-4'>
-              <button className='btn btn-info btn-xs pull-right' id='seeDRBtn'>See selected DRs</button>
+              <button className='btn btn-info btn-xs pull-right' id='seeDRBtn'>See selected dependency relationships</button>
             </div>
           </div>
           <div className='row'>
