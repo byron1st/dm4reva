@@ -142,7 +142,8 @@ class ExdefDetailsEditList extends Component {
     this.handleAdd = this.handleAdd.bind(this)
   }
   handleAdd(newInf) {
-    this.props.add(this.props.listKind, newInf)
+    this.props.add(this.props.listKind, $('#' + this.props.listKind).val())
+    $('#' + this.props.listKind).val('')
   }
   render () {
     let infListView
@@ -161,12 +162,7 @@ class ExdefDetailsEditList extends Component {
               <div className='input-group' id='addInf'>
                 <input type='text' id={this.props.listKind} className='form-control' defaultValue='' />
                 <span className='input-group-btn'>
-                  <button className='btn btn-primary' type='button'
-                    onClick={() => {
-                      this.handleAdd($('#' + this.props.listKind).val())
-                      $('#' + this.props.listKind).val('')
-                    }}
-                    >add</button>
+                  <button className='btn btn-primary' type='button' onClick={this.handleAdd}>add</button>
                 </span>
               </div>
             </div>
