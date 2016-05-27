@@ -35,9 +35,8 @@ class ExdefMain extends Component {
   saveAnExdefDetails (updatedExdef) {
     let updatedExdefList = this.state.exdefList.slice()
     let idx = this.state.exdefList.map((e) => e._id).indexOf(updatedExdef._id)
-    console.log(idx)
     updatedExdefList.splice(idx, 1, updatedExdef)
-    //TODO: Send IPC call to save changes to DB
+    ipcRenderer.send('update-anExdef', updatedExdef)
     this.setState({exdefList: updatedExdefList})
   }
   addExdefsToList (addedExdefList) {
