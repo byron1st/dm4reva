@@ -25,6 +25,7 @@ class ExdefMain extends Component {
     this.selectAnExdef = this.selectAnExdef.bind(this)
     this.saveAnExdefDetails = this.saveAnExdefDetails.bind(this)
     this.addExdefsToList = this.addExdefsToList.bind(this)
+    this.addNewExdef = this.addNewExdef.bind(this)
   }
   componentWillMount () {
     this.setState({exdefList: this.props.exdefList})
@@ -33,9 +34,11 @@ class ExdefMain extends Component {
     this.setState({selectedExdef:_id})
   }
   saveAnExdefDetails (updatedExdef) {
+    //TODO: DB에 잘 저장되었다는 메세지를 확인 후 object에 붙이기
     let updatedExdefList = this.state.exdefList.slice()
     let idx = this.state.exdefList.map((e) => e._id).indexOf(updatedExdef._id)
     updatedExdefList.splice(idx, 1, updatedExdef)
+    updatedExdefList.sort(sortKindAndType)
     ipcRenderer.send('update-anExdef', updatedExdef)
     this.setState({exdefList: updatedExdefList})
   }
@@ -44,6 +47,10 @@ class ExdefMain extends Component {
     updatedExdefList.sort(sortKindAndType)
     window.$('#progressBar').hide()
     this.setState({exdefList: updatedExdefList})
+  }
+  addNewExdef (newExdefData) {
+    let newExdef = ipcRenderer.sendSync('add-new-exdef', newExdefData)
+    if (newExdef) this.addExdefsToList(newExdef)
   }
   render () {
     ipcRenderer.on('save-exdefs-reply', (event, arg) => this.addExdefsToList(arg))
@@ -55,7 +62,7 @@ class ExdefMain extends Component {
     }
     return (
       <div id='main'>
-        <ExdefList exdefList={this.state.exdefList} selectedExdef={this.state.selectedExdef} select={this.selectAnExdef} />
+        <ExdefList exdefList={this.state.exdefList} selectedExdef={this.state.selectedExdef} select={this.selectAnExdef} add={this.addNewExdef} />
         {exdefDetailsView}
       </div>
     )

@@ -57,6 +57,18 @@ ipcMain.on('update-anExdef', (event, arg) => {
   })
 })
 
+ipcMain.on('add-new-exdef', (event, arg) => {
+  exdefDB.create(arg, (err, doc) => {
+    if (err) {
+      handleErrors(err)
+      event.returnValue = undefined
+    } else {
+      event.returnValue = doc
+    }
+
+  })
+})
+
 /** Test Mode **/
 function loadInitialTestData() {
   let exdefBDPS = JSON.parse(fs.readFileSync('./test/resources/exdef.bdps.json'))
