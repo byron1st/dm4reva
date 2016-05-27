@@ -14,6 +14,9 @@ export default class ExdefDetails extends Component {
     }
     this.changeTab = this.changeTab.bind(this)
   }
+  componentWillReceiveProps (nextProps) {
+    this.setState({tabName: 'Info'})
+  }
   changeTab (tabName) {
     this.setState({tabName: tabName})
   }
