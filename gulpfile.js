@@ -18,7 +18,7 @@ gulp.task('compile:js', () => {
   return gulp.src([
       './src/*.js',
       './src/db/*.js',
-      './src/view/exdef/js/*.js',
+      './src/view/js/*.js',
       './src/components/*.jsx'
     ])
     .pipe(babel())
