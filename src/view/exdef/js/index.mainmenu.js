@@ -1,8 +1,12 @@
 import {ipcRenderer, remote} from 'electron'
 import fs from 'fs'
 
+const dialog = remote.dialog
+const app = remote.app
+const Menu = remote.Menu
+
 function handleErrors (err) {
-  remote.dialog.showErrorBox('Error occurs', err)
+  dialog.showErrorBox('Error occurs', err)
 }
 
 const template = [
@@ -13,7 +17,7 @@ const template = [
         label: 'import Exdef.s',
         accelerator: 'CmdOrCtrl+E',
         click(item, focusedWindow) {
-          remote.dialog.showOpenDialog({
+          dialog.showOpenDialog({
             properties: ['openFile'],
             filters: [
               {name: 'json File', extensions: ['json']}
@@ -33,7 +37,7 @@ const template = [
         label: 'import DRs',
         accelerator: 'CmdOrCtrl+D',
         click(item, focusedWindow) {
-          remote.dialog.showOpenDialog({
+          dialog.showOpenDialog({
             properties: ['openFile']
           }, (filenames) => {
             if (filenames) {
@@ -50,7 +54,7 @@ const template = [
         label: 'import records',
         accelerator: 'CmdOrCtrl+R',
         click(item, focusedWindow) {
-          remote.dialog.showOpenDialog({
+          dialog.showOpenDialog({
             properties: ['openFile']
           }, (filenames) => {
             if (filenames) {
@@ -74,7 +78,7 @@ const template = [
 ]
 
 if (process.platform === 'darwin') {
-  const name = remote.app.getName();
+  const name = app.getName();
   template.unshift({
     label: name,
     submenu: [
@@ -113,11 +117,11 @@ if (process.platform === 'darwin') {
       {
         label: 'Quit',
         accelerator: 'Command+Q',
-        click() { remote.app.quit(); }
+        click() { app.quit(); }
       },
     ]
   })
 }
 
-const menu = remote.Menu.buildFromTemplate(template);
-remote.Menu.setApplicationMenu(menu);
+const menu = Menu.buildFromTemplate(template);
+Menu.setApplicationMenu(menu);
