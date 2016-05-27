@@ -34,13 +34,12 @@ class ExdefMain extends Component {
     this.setState({selectedExdef:_id})
   }
   saveAnExdefDetails (updatedExdef) {
-    //TODO: DB에 잘 저장되었다는 메세지를 확인 후 object에 붙이기
     let updatedExdefList = this.state.exdefList.slice()
     let idx = this.state.exdefList.map((e) => e._id).indexOf(updatedExdef._id)
     updatedExdefList.splice(idx, 1, updatedExdef)
     updatedExdefList.sort(sortKindAndType)
-    ipcRenderer.send('update-anExdef', updatedExdef)
-    this.setState({exdefList: updatedExdefList})
+    let success = ipcRenderer.sendSync('update-anExdef', updatedExdef)
+    if (success) this.setState({exdefList: updatedExdefList})
   }
   addExdefsToList (addedExdefList) {
     let updatedExdefList = this.state.exdefList.concat(addedExdefList)
