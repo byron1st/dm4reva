@@ -6,12 +6,25 @@ gulp.task('clean', () => {
   return del.sync(['dist/**/**/*', 'dist/*', 'db/exdef.db'])
 })
 
-gulp.task('copy:lib', () => {
+gulp.task('copy:bootstrap:js', () => {
   return gulp.src([
-    './node_modules/bootstrap/dist/js/bootstrap.min.js',
+    './node_modules/bootstrap/dist/js/bootstrap.min.js'
+  ])
+  .pipe(gulp.dest('./dist/lib/bootstrap/js'))
+})
+
+gulp.task('copy:bootstrap:css', () => {
+  return gulp.src([
     './node_modules/bootstrap/dist/css/bootstrap.min.css'
   ])
-  .pipe(gulp.dest('./dist/lib/bootstrap'))
+  .pipe(gulp.dest('./dist/lib/bootstrap/css'))
+})
+
+gulp.task('copy:bootstrap:fonts', () => {
+  return gulp.src([
+    './node_modules/bootstrap/dist/fonts/*.{eot,svg,ttf,woff,woff2}'
+  ])
+  .pipe(gulp.dest('./dist/lib/bootstrap/fonts'))
 })
 
 gulp.task('compile:js', () => {
@@ -33,4 +46,4 @@ gulp.task('copy:view', () => {
   .pipe(gulp.dest('./dist'))
 })
 
-gulp.task('default', ['clean', 'compile:js', 'copy:lib', 'copy:view'])
+gulp.task('default', ['clean', 'compile:js', 'copy:bootstrap:js', 'copy:bootstrap:css', 'copy:bootstrap:fonts', 'copy:view'])

@@ -6,7 +6,11 @@ import ReactDOM from 'react-dom'
 export default class ExdefList extends Component {
   constructor () {
     super()
+    this.state = {
+      editMode: false
+    }
     this.addType = this.addType.bind(this)
+    this.toggleEdit = this.toggleEdit.bind(this)
   }
   addType (newType, newKind) {
     let newExdefData = {
@@ -18,14 +22,22 @@ export default class ExdefList extends Component {
     }
     this.props.add(newExdefData)
   }
+  toggleEdit () {
+    this.setState({editMode: !this.state.editMode})
+  }
   render () {
     let exdefListView = []
     this.props.exdefList.forEach((exdef) => {
       let isSelected = exdef._id === this.props.selectedExdef
-      exdefListView.push(<ExdefListItem key={exdef._id} exdef={exdef} isSelected={isSelected} select={this.props.select}/>)
+      exdefListView.push(<ExdefListItem key={exdef._id} exdef={exdef} isSelected={isSelected} select={this.props.select} remove={this.props.remove} mode={this.state.editMode} />)
     })
     return (
       <div id='exdefList' className='col-md-4'>
+        <div className='row'>
+          <div className='col-md-12'>
+            <button className='btn btn-xs pull-right' onClick={this.toggleEdit}>edit</button>
+          </div>
+        </div>
         <div className='row'>
           <div className='col-md-12'>
             <button className='btn btn-primary btn-xs btn-block' data-toggle='modal' data-target='#addModal'>+ add type</button>
@@ -47,17 +59,29 @@ ExdefList.propTypes = {
   exdefList: PropTypes.array,
   selectedExdef: PropTypes.string,
   select: PropTypes.func,
+  remove: PropTypes.func,
   add: PropTypes.func
 }
 
 class ExdefListItem extends Component {
+  constructor () {
+    super()
+    this.handleSelect = this.handleSelect.bind(this)
+    this.handleRemove = this.handleRemove.bind(this)
+  }
   handleSelect () {
     this.props.select(this.props.exdef._id)
   }
+  handleRemove () {
+    this.props.remove(this.props.exdef._id)
+  }
   render () {
     return (
-      <a href='#' className={this.props.isSelected ? 'list-group-item active' : 'list-group-item'} onClick={ this.handleSelect.bind(this) }>
+      <a href='#' className={this.props.isSelected ? 'list-group-item active' : 'list-group-item'} onClick={this.handleSelect}>
         {this.props.exdef.type}: {this.props.exdef.kind}
+        <button style={this.props.mode ? {display:'block'} : {display:'none'}} className='btn btn-xs pull-right' onClick={this.handleRemove}>
+          [<span className='glyphicon glyphicon-remove'></span>]
+        </button>
       </a>
     )
   }
@@ -65,7 +89,9 @@ class ExdefListItem extends Component {
 ExdefListItem.propTypes = {
   exdef: PropTypes.object,
   isSelected: PropTypes.bool,
-  select: PropTypes.func
+  select: PropTypes.func,
+  remove: PropTypes.func,
+  mode: PropTypes.bool
 }
 
 class ExdefListAddModal extends Component {

@@ -23,6 +23,7 @@ class ExdefMain extends Component {
       exdefList: []
     }
     this.selectAnExdef = this.selectAnExdef.bind(this)
+    this.removeAnExdef = this.removeAnExdef.bind(this)
     this.saveAnExdefDetails = this.saveAnExdefDetails.bind(this)
     this.addExdefsToList = this.addExdefsToList.bind(this)
     this.addNewExdef = this.addNewExdef.bind(this)
@@ -32,6 +33,13 @@ class ExdefMain extends Component {
   }
   selectAnExdef (_id) {
     this.setState({selectedExdef:_id})
+  }
+  removeAnExdef (_id) {
+    let updatedExdefList = this.state.exdefList.slice()
+    let idx = this.state.exdefList.map((e) => e._id).indexOf(_id)
+    updatedExdefList.splice(idx, 1)
+    let success = ipcRenderer.sendSync('remove-anExdef', _id)
+    if (success) this.setState({exdefList: updatedExdefList})
   }
   saveAnExdefDetails (updatedExdef) {
     let updatedExdefList = this.state.exdefList.slice()
@@ -61,7 +69,7 @@ class ExdefMain extends Component {
     }
     return (
       <div id='main'>
-        <ExdefList exdefList={this.state.exdefList} selectedExdef={this.state.selectedExdef} select={this.selectAnExdef} add={this.addNewExdef} />
+        <ExdefList exdefList={this.state.exdefList} selectedExdef={this.state.selectedExdef} select={this.selectAnExdef} remove={this.removeAnExdef} add={this.addNewExdef} />
         {exdefDetailsView}
       </div>
     )

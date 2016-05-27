@@ -60,7 +60,23 @@ ipcMain.on('save-exdefs', (event, arg) => {
 
 ipcMain.on('update-anExdef', (event, arg) => {
   exdefDB.update(arg, (err) => {
-    if (err) return handleErrors(err)
+    if (err) {
+      handleErrors(err)
+      event.returnValue = false
+    } else {
+      event.returnValue = true
+    }
+  })
+})
+
+ipcMain.on('remove-anExdef', (event, arg) => {
+  exdefDB.deleteOne(arg, (err) => {
+    if (err) {
+      handleErrors(err)
+      event.returnValue = false
+    } else {
+      event.returnValue = true
+    }
   })
 })
 
