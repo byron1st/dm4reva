@@ -104,6 +104,17 @@ ipcMain.on('save-drs', (event, arg) => {
   })
 })
 
+ipcMain.on('read-drs', (event, arg) => {
+  drDB.readDRsOfInfs(arg, (err, docs) => {
+    if (err) {
+      handleErrors(err)
+      event.returnValue = null
+    } else {
+      event.returnValue = docs
+    }
+  })
+})
+
 /** Test Mode **/
 function loadInitialTestData() {
   let exdefBDPS = JSON.parse(fs.readFileSync('./test/resources/exdef.bdps.json'))

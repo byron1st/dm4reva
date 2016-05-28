@@ -1,4 +1,5 @@
 node_modules
 db/exdef.db
+db/dr.db
 dist
 npm-debug.log

@@ -2,6 +2,7 @@
 
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
+import {ipcRenderer} from 'electron'
 
 function getOverflowYStyle(height) {
   return {
@@ -11,15 +12,32 @@ function getOverflowYStyle(height) {
 }
 
 export default class ExdefDetailsInfo extends Component {
+  constructor () {
+    super()
+    this.state = {
+      drs:[]
+    }
+    this.getDRs = this.getDRs.bind(this)
+  }
+  componentWillReceiveProps (nextProps) {
+    this.setState({drs: []})
+  }
+  getDRs () {
+    let obtainedDRs = ipcRenderer.sendSync('read-drs', this.props.exdef.inf)
+    console.log(obtainedDRs)
+    this.setState({drs: obtainedDRs})
+    window.$('#drModal').modal('show')
+  }
   render () {
     return (
       <div className='row'>
         <div className='col-md-12'>
           <ExdefDetailsInfoHeader type={this.props.exdef.type} kind={this.props.exdef.kind} />
-          <ExdefDetailsInfoInf inf={this.props.exdef.inf} />
+          <ExdefDetailsInfoInf inf={this.props.exdef.inf} getDRs={this.getDRs} />
           <ExdefDetailsInfoIDRules idRules={this.props.exdef.id_rules} />
           <ExdefDetailsInfoRid rid={this.props.exdef.rid} />
         </div>
+        <ExdefDetailsInfoDRModal drs={this.state.drs}/>
       </div>
     )
   }
@@ -59,7 +77,7 @@ class ExdefDetailsInfoInf extends Component {
               <h3>Interfaces</h3>
             </div>
             <div className='col-md-4'>
-              <button className='btn btn-info btn-xs pull-right' id='seeDRBtn'>See selected dependency relationships</button>
+              <button className='btn btn-info btn-xs pull-right' id='seeDRBtn' onClick={this.props.getDRs.bind(this)}>See selected dependency relationships</button>
             </div>
           </div>
           <div className='row'>
@@ -73,7 +91,8 @@ class ExdefDetailsInfoInf extends Component {
   }
 }
 ExdefDetailsInfoInf.propTypes = {
-  inf: PropTypes.array
+  inf: PropTypes.array,
+  getDRs: PropTypes.func
 }
 
 class ExdefDetailsInfoIDRules extends Component {
@@ -112,4 +131,38 @@ class ExdefDetailsInfoRid extends Component {
 }
 ExdefDetailsInfoRid.propTypes = {
   rid: PropTypes.array
+}
+
+class ExdefDetailsInfoDRModal extends Component {
+  render () {
+    let drsView = []
+    this.props.drs.forEach((dr) => drsView.push(
+      <li className='list-group-item'>
+        <h5 className='list-group-item-heading'>{dr.inf} <small>{dr.values.sink}</small></h5>
+        <p className='list-group-item-text'>Source: {dr.values.source}</p>
+      </li>
+    ))
+    return (
+      <div className='modal fade' id='drModal' role='dialog' aria-labelledby='drModalLabel'>
+        <div className='modal-dialog' role='document'>
+          <div className='modal-content'>
+            <div className='modal-header'>
+              <h4 className='modal-title' id='drModalLabel'>Selected dependency relationships</h4>
+            </div>
+            <div className='modal-body' style={getOverflowYStyle('500px')}>
+              <ul className='list-group'>
+                {drsView}
+              </ul>
+            </div>
+            <div className='modal-footer'>
+              <button className='btn btn-default' data-dismiss='modal' aria-label='Close'>Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+ExdefDetailsInfoDRModal.propTypes = {
+  drs: PropTypes.array
 }

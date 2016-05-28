@@ -5,7 +5,10 @@ import Datastore from 'nedb'
 /**
 {
   inf: string,
-  values: {}
+  values: {
+    source: string,
+    sink: string
+  }
 }
 **/
 const db = new Datastore({filename: path.join(__dirname, '../db/dr.db'), autoload: true})
