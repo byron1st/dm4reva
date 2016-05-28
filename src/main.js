@@ -2,6 +2,7 @@
 import {app, BrowserWindow, ipcMain, dialog} from 'electron'
 import path from 'path'
 import * as exdefDB from './exdef.db.js'
+import * as drDB from './dr.db.js'
 import fs from 'fs'
 import config from './app.config.js'
 
@@ -93,8 +94,14 @@ ipcMain.on('add-new-exdef', (event, arg) => {
 })
 
 ipcMain.on('save-drs', (event, arg) => {
-  // exdefDB.create(JSON.parse(arg.toString()), (err, docs))
-  // event.sender.send('save-drs-reply', ...)
+  drDB.create(JSON.parse(arg.toString()), (err, docs) => {
+    if (err) return handleErrors(err)
+    event.sender.send('save-drs-reply')
+    dialog.showMessageBox({type: 'info',
+                          title: 'Dependency relationships are added',
+                          message: docs.length + ' DRs are added.',
+                          buttons: ['OK']})
+  })
 })
 
 /** Test Mode **/
@@ -110,4 +117,5 @@ function loadInitialTestData() {
 
 function unloadInitialTestData() {
   exdefDB.deleteAll()
+  drDB.deleteAll()
 }

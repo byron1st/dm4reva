@@ -3,7 +3,7 @@ const del = require('del')
 const babel = require('gulp-babel')
 
 gulp.task('clean', () => {
-  return del.sync(['dist/**/**/*', 'dist/*', 'db/exdef.db'])
+  return del.sync(['dist/**/**/*', 'dist/*', 'db/*'])
 })
 
 gulp.task('copy:bootstrap:js', () => {

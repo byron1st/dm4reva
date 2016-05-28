@@ -9,6 +9,7 @@ import Datastore from 'nedb'
 }
 **/
 const db = new Datastore({filename: path.join(__dirname, '../db/dr.db'), autoload: true})
+db.ensureIndex({fieldname: 'inf'})
 
 export function create(items, cb) {
   db.insert(items, (err, docs) => {
@@ -20,12 +21,19 @@ export function create(items, cb) {
   })
 }
 
+export function readDRsOfInfs(infList, cb) {
+  db.find({inf: {$in: infList}}).sort({inf: 1}).exec((err, docs) => {
+    if (err) return cb(err, null)
+    if (!docs) return cb(Error('No items'), null)
+    if (cb) return cb(null, docs)
+  })
+}
+
 export function read(queryObj, sortCondition, cb) {
   db.find(queryObj).sort(sortCondition).exec((err, docs) => {
     if (err) return cb(err, null)
     if (!docs) return cb(Error('No items'), null)
     if (cb) return cb(null, docs)
-    return docs
   })
 }
 
