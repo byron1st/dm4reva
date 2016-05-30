@@ -3,6 +3,7 @@ import {app, BrowserWindow, ipcMain, dialog} from 'electron'
 import path from 'path'
 import * as exdefDB from './exdef.db.js'
 import * as drDB from './dr.db.js'
+import * as recordsDB from './records.db.js'
 import fs from 'fs'
 import config from './app.config.js'
 
@@ -113,6 +114,10 @@ ipcMain.on('read-drs', (event, arg) => {
       event.returnValue = docs
     }
   })
+})
+
+ipcMain.on('save-records', (event, arg) => {
+  //
 })
 
 /** Test Mode **/
