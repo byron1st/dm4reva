@@ -118,7 +118,13 @@ ExdefDetailsInfoIDRules.propTypes = {
 class ExdefDetailsInfoMU extends Component {
   render () {
     let muListItemView = []
-    this.props.mu.forEach((anItem) => muListItemView.push(<li className='list-group-item' key={anItem}>{anItem}</li>))
+    this.props.mu.forEach((anItem) => muListItemView.push(
+      <li className='list-group-item' key={anItem.muID}>
+        <h5 className='list-group-item-heading'>[{anItem.muID}]</h5>
+        <p className='list-group-item-text'>
+          {anItem.desc}
+        </p>
+      </li>))
     return (
       <div className='row'>
         <div className='col-md-12'>

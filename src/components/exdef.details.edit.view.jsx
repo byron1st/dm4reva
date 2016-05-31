@@ -51,9 +51,9 @@ export default class ExdefDetailsEdit extends Component {
         this.setState({inf: updatedInf})
         break
       case 'mu':
-        let updatedRid = this.state.mu.slice()
-        updatedRid.splice(index, 1, updatedItem)
-        this.setState({mu: updatedRid})
+        let updatedMU = this.state.mu.slice()
+        updatedMU.splice(index, 1, updatedItem)
+        this.setState({mu: updatedMU})
         break
     }
   }
@@ -65,9 +65,9 @@ export default class ExdefDetailsEdit extends Component {
         this.setState({inf: updatedInf})
         break
       case 'mu':
-        let updatedRid = this.state.mu.slice()
-        updatedRid.splice(index, 1)
-        this.setState({mu: updatedRid})
+        let updatedMU = this.state.mu.slice()
+        updatedMU.splice(index, 1)
+        this.setState({mu: updatedMU})
         break
     }
 

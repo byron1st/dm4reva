@@ -6,7 +6,10 @@
       "java/lang/Thread",
       "java/util/concurrent/Executor"
     ],
-    "mu": ["mu01"],
+    "mu": [{
+        "muID":"mu01",
+        "desc":"java/lang/Thread.init(Ljava/lang/ThreadGroup;Ljava/lang/Runnable;Ljava/lang/String;JLjava/security/AccessControlContext;)V"
+      }],
     "id_rules": "rid가 불리웠을 때, object의 hashCode 값이 identifier"
   },
   {
@@ -16,7 +19,20 @@
       "java/io/PipedInputStream",
       "java/io/PipedOutputStream"
     ],
-    "mu": ["mu02","mu03","mu04"],
+    "mu": [
+      {
+        "muID":"mu02",
+        "desc":"java/io/PipedInputStream.read()I"
+      },
+      {
+        "muID":"mu03",
+        "desc":"java/io/PipedOutputStream.write([B)V"
+      },
+      {
+        "muID":"mu04",
+        "desc":"java/io/PipedInputStream.receive([BII)V"
+      }
+    ],
     "id_rules": "receive로 연결되는 두 PipedInputStream, PipedOutputStream의 Object들이 호출되는 Thread들이 있을 때, PipedOutputStream Object를 호출하는 Thread가 Source, PipedInputStream Object를 호출하는 Thread가 Sink로 한 EConnector"
   }
 ]
