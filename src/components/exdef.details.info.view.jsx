@@ -138,8 +138,13 @@ class ExdefDetailsInfoDRModal extends Component {
     let drsView = []
     this.props.drs.forEach((dr) => drsView.push(
       <li className='list-group-item'>
-        <h5 className='list-group-item-heading'>{dr.inf} <small>{dr.values.sink}</small></h5>
-        <p className='list-group-item-text'>Source: {dr.values.source}</p>
+        <h5 className='list-group-item-heading'>{dr.inf} <small>{dr.sink}</small></h5>
+        <p className='list-group-item-text'>
+          <ul>
+            <li>Source: {dr.source}</li>
+            <li>Kind: {dr.rkind}</li>
+          </ul>
+        </p>
       </li>
     ))
     return (
