@@ -35,7 +35,7 @@ export default class ExdefDetailsInfo extends Component {
           <ExdefDetailsInfoHeader type={this.props.exdef.type} kind={this.props.exdef.kind} />
           <ExdefDetailsInfoInf inf={this.props.exdef.inf} getDRs={this.getDRs} />
           <ExdefDetailsInfoIDRules idRules={this.props.exdef.id_rules} />
-          <ExdefDetailsInfoRid rid={this.props.exdef.rid} />
+          <ExdefDetailsInfoMU mu={this.props.exdef.mu} />
         </div>
         <ExdefDetailsInfoDRModal drs={this.state.drs}/>
       </div>
@@ -115,22 +115,22 @@ ExdefDetailsInfoIDRules.propTypes = {
   idRules: PropTypes.string
 }
 
-class ExdefDetailsInfoRid extends Component {
+class ExdefDetailsInfoMU extends Component {
   render () {
-    let ridListItemView = []
-    this.props.rid.forEach((anItem) => ridListItemView.push(<li className='list-group-item' key={anItem}>{anItem}</li>))
+    let muListItemView = []
+    this.props.mu.forEach((anItem) => muListItemView.push(<li className='list-group-item' key={anItem}>{anItem}</li>))
     return (
       <div className='row'>
         <div className='col-md-12'>
-          <h3>Records Identifiers</h3>
-          <ul className='list-group' style={getOverflowYStyle('220px')}>{ridListItemView}</ul>
+          <h3>Monitoring Units</h3>
+          <ul className='list-group' style={getOverflowYStyle('220px')}>{muListItemView}</ul>
         </div>
       </div>
     )
   }
 }
-ExdefDetailsInfoRid.propTypes = {
-  rid: PropTypes.array
+ExdefDetailsInfoMU.propTypes = {
+  mu: PropTypes.array
 }
 
 class ExdefDetailsInfoDRModal extends Component {

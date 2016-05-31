@@ -19,7 +19,7 @@ export default class ExdefDetailsEdit extends Component {
       kind: '',
       inf: [],
       id_rules:'',
-      rid:[]
+      mu:[]
     }
     this.updateType = this.updateType.bind(this)
     this.updateKind = this.updateKind.bind(this)
@@ -35,7 +35,7 @@ export default class ExdefDetailsEdit extends Component {
     this.setState({kind: this.props.exdef.kind})
     this.setState({inf: this.props.exdef.inf.slice()})
     this.setState({id_rules: this.props.exdef.id_rules})
-    this.setState({rid: this.props.exdef.rid.slice()})
+    this.setState({mu: this.props.exdef.mu.slice()})
   }
   updateType (newType) {
     this.setState({type: newType})
@@ -50,10 +50,10 @@ export default class ExdefDetailsEdit extends Component {
         updatedInf.splice(index, 1, updatedItem)
         this.setState({inf: updatedInf})
         break
-      case 'rid':
-        let updatedRid = this.state.rid.slice()
+      case 'mu':
+        let updatedRid = this.state.mu.slice()
         updatedRid.splice(index, 1, updatedItem)
-        this.setState({rid: updatedRid})
+        this.setState({mu: updatedRid})
         break
     }
   }
@@ -64,10 +64,10 @@ export default class ExdefDetailsEdit extends Component {
         updatedInf.splice(index, 1)
         this.setState({inf: updatedInf})
         break
-      case 'rid':
-        let updatedRid = this.state.rid.slice()
+      case 'mu':
+        let updatedRid = this.state.mu.slice()
         updatedRid.splice(index, 1)
-        this.setState({rid: updatedRid})
+        this.setState({mu: updatedRid})
         break
     }
 
@@ -77,8 +77,8 @@ export default class ExdefDetailsEdit extends Component {
       case 'inf':
         this.setState({inf: this.state.inf.concat(newItem)})
         break
-      case 'rid':
-        this.setState({rid: this.state.rid.concat(newItem)})
+      case 'mu':
+        this.setState({mu: this.state.mu.concat(newItem)})
         break
     }
 
@@ -93,7 +93,7 @@ export default class ExdefDetailsEdit extends Component {
       kind: this.state.kind,
       inf: this.state.inf.slice(),
       id_rules: this.state.id_rules,
-      rid: this.state.rid.slice()
+      mu: this.state.mu.slice()
     }
     this.props.save(udpatedExdef)
   }
@@ -109,7 +109,7 @@ export default class ExdefDetailsEdit extends Component {
           <ExdefDetailsEditTypeAndKind type={this.state.type} kind={this.state.kind} updateType={this.updateType} updateKind={this.updateKind}/>
           <ExdefDetailsEditList listKind='inf' list={this.state.inf} update={this.updateListItem} add={this.addListItem} remove={this.removeListItem}/>
           <ExdefDetailsEditIdRules id_rules={this.state.id_rules} update={this.updateIdRules}/>
-          <ExdefDetailsEditList listKind='rid' list={this.state.rid} update={this.updateListItem} add={this.addListItem} remove={this.removeListItem}/>
+          <ExdefDetailsEditList listKind='mu' list={this.state.mu} update={this.updateListItem} add={this.addListItem} remove={this.removeListItem}/>
         </div>
       </div>
     )
