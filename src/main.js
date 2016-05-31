@@ -116,7 +116,7 @@ ipcMain.on('read-drs', (event, arg) => {
   })
 })
 
-ipcMain.on('save-records', (event, arg) => {
+ipcMain.on('save-ers', (event, arg) => {
   //
 })
 

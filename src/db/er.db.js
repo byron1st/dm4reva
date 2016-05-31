@@ -4,14 +4,12 @@ import Datastore from 'nedb'
 
 /**
 {
-  rid: string,
-  ..., // meta information
-  values: {
-    ...
-  }
+  mu: string,
+  meta: {},
+  values: {}
 }
 **/
-const db = new Datastore({filename: path.join(__dirname, '../db/records.db'), autoload: true})
+const db = new Datastore({filename: path.join(__dirname, '../db/er.db'), autoload: true})
 
 export function create(items, cb) {
   db.insert(items, (err, docs) => {
