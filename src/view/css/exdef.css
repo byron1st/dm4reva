@@ -32,3 +32,12 @@ body {
 #mu-new-add-btn {
   padding-top: 20px;
 }
+
+#ers-view {
+  height: 250px;
+}
+
+.ers-view {
+  overflow-y: scroll;
+  height: 100%;
+}

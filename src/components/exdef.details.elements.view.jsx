@@ -2,11 +2,19 @@
 
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
+import ExdefDetailsElementsERs from './exdef.details.elements.ers.view.js'
 
 export default class ExdefDetailsElements extends Component {
   render () {
     return (
-      <h1>Elements View</h1>
+      <div>
+        <div className='row' id='ers-view'>
+          <ExdefDetailsElementsERs />
+        </div>
+        <div className='row'>
+          <h1>Identify an element</h1>
+        </div>
+      </div>
     )
   }
 }
