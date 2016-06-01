@@ -38,8 +38,11 @@ export class ExdefDetailsElementsERs extends Component {
             {ersListView}
           </div>
         </div>
-        <div className='col-md-6 ers-view'>
-          {erDetailsView}
+        <div className='col-md-6' style={{height: '100%'}}>
+          <h3>Record ID: {this.state.selectedER_id}</h3>
+          <div className='ers-view'>
+            {erDetailsView}
+          </div>
         </div>
       </div>
     )
@@ -51,8 +54,33 @@ ExdefDetailsElementsERs.propTypes = {
 
 export class ExdefDetailsElementsERDetail extends Component {
   render () {
+    let metaKeys = Object.keys(this.props.er.meta)
+    let valuesKeys = Object.keys(this.props.er.values)
+    metaKeys.sort()
+    valuesKeys.sort()
+    let metaView = []
+    let valuesView = []
+    metaKeys.forEach((key) => metaView.push(<li>{key}: {this.props.er.meta[key]}</li>))
+    valuesKeys.forEach((key) => valuesView.push(<li>{key}: {this.props.er.values[key]}</li>))
     return (
-      <h3>Details: {this.props.er._id}</h3>
+      <div>
+        <div className='row'>
+          <div className='col-md-12'>
+            <h4>Meta Information</h4>
+            <ul>
+              {metaView}
+            </ul>
+          </div>
+        </div>
+        <div className='row'>
+          <div className='col-md-12'>
+            <h4>Values Information</h4>
+            <ul>
+              {valuesView}
+            </ul>
+          </div>
+        </div>
+      </div>
     )
   }
 }
