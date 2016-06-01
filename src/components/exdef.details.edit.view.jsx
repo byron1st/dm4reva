@@ -26,6 +26,9 @@ export default class ExdefDetailsEdit extends Component {
     this.updateInfItem = this.updateInfItem.bind(this)
     this.removeInfItem = this.removeInfItem.bind(this)
     this.addInfItem = this.addInfItem.bind(this)
+    this.updateMUItem = this.updateMUItem.bind(this)
+    this.removeMUItem = this.removeMUItem.bind(this)
+    this.addMUItem = this.addMUItem.bind(this)
     this.updateIdRules = this.updateIdRules.bind(this)
     this.saveExdef = this.saveExdef.bind(this)
   }
@@ -43,45 +46,31 @@ export default class ExdefDetailsEdit extends Component {
   updateKind (newKind) {
     this.setState({kind: newKind})
   }
-  updateInfItem (listKind, updatedItem, index) {
-    switch (listKind) {
-      case 'inf':
-        let updatedInf = this.state.inf.slice()
-        updatedInf.splice(index, 1, updatedItem)
-        this.setState({inf: updatedInf})
-        break
-      case 'mu':
-        let updatedMU = this.state.mu.slice()
-        updatedMU.splice(index, 1, updatedItem)
-        this.setState({mu: updatedMU})
-        break
-    }
+  updateInfItem (updatedItem, index) {
+    let updatedInf = this.state.inf.slice()
+    updatedInf.splice(index, 1, updatedItem)
+    this.setState({inf: updatedInf})
   }
-  removeInfItem (listKind, index) {
-    switch (listKind) {
-      case 'inf':
-        let updatedInf = this.state.inf.slice()
-        updatedInf.splice(index, 1)
-        this.setState({inf: updatedInf})
-        break
-      case 'mu':
-        let updatedMU = this.state.mu.slice()
-        updatedMU.splice(index, 1)
-        this.setState({mu: updatedMU})
-        break
-    }
-
+  removeInfItem (index) {
+    let updatedInf = this.state.inf.slice()
+    updatedInf.splice(index, 1)
+    this.setState({inf: updatedInf})
   }
-  addInfItem (listKind, newItem) {
-    switch (listKind) {
-      case 'inf':
-        this.setState({inf: this.state.inf.concat(newItem)})
-        break
-      case 'mu':
-        this.setState({mu: this.state.mu.concat(newItem)})
-        break
-    }
-
+  addInfItem (newItem) {
+    this.setState({inf: this.state.inf.concat(newItem)})
+  }
+  updateMUItem (updatedItem, index) {
+    let updatedMU = this.state.mu.slice()
+    updatedMU.splice(index, 1, updatedItem)
+    this.setState({mu: updatedMU})
+  }
+  removeMUItem (index) {
+    let updatedMU = this.state.mu.slice()
+    updatedMU.splice(index, 1)
+    this.setState({mu: updatedMU})
+  }
+  addMUItem (newItem) {
+    this.setState({mu: this.state.mu.concat(newItem)})
   }
   updateIdRules (newValue) {
     this.setState({id_rules: newValue})
@@ -107,8 +96,9 @@ export default class ExdefDetailsEdit extends Component {
             </div>
           </div>
           <ExdefDetailsEditTypeAndKind type={this.state.type} kind={this.state.kind} updateType={this.updateType} updateKind={this.updateKind}/>
-          <ExdefDetailsEditInf listKind='inf' list={this.state.inf} update={this.updateInfItem} add={this.addInfItem} remove={this.removeInfItem}/>
+          <ExdefDetailsEditInf list={this.state.inf} update={this.updateInfItem} add={this.addInfItem} remove={this.removeInfItem}/>
           <ExdefDetailsEditIdRules id_rules={this.state.id_rules} update={this.updateIdRules}/>
+          <ExdefDetailsEditMU muList={this.state.mu} update={this.updateMUItem} add={this.addMUItem} remove={this.removeMUItem}/>
         </div>
       </div>
     )
@@ -161,13 +151,13 @@ class ExdefDetailsEditInf extends Component {
     this.handleAdd = this.handleAdd.bind(this)
   }
   handleAdd(newInf) {
-    this.props.add(this.props.listKind, $('#' + this.props.listKind).val())
-    $('#' + this.props.listKind).val('')
+    this.props.add($('#new-inf').val())
+    $('#new-inf').val('')
   }
   render () {
     let infListView
     let infListItemView = []
-    this.props.list.forEach((anItem, index) => infListItemView.push(<ExdefDetailsEditInfItem listKind={this.props.listKind} item={anItem} key={index} index={index} update={this.props.update} remove={this.props.remove} />))
+    this.props.list.forEach((anItem, index) => infListItemView.push(<ExdefDetailsEditInfItem item={anItem} key={index} index={index} update={this.props.update} remove={this.props.remove} />))
     if (this.props.list.lenght > 5) infListView = <div style={getOverflowYStyle('220px')}>{infListItemView}</div>
     else infListView = <div>{infListItemView}</div>
     return (
@@ -179,7 +169,7 @@ class ExdefDetailsEditInf extends Component {
             </div>
             <div className='col-md-8'>
               <div className='input-group' id='addInf'>
-                <input type='text' id={this.props.listKind} className='form-control' defaultValue='' />
+                <input type='text' id='new-inf' className='form-control' defaultValue='' />
                 <span className='input-group-btn'>
                   <button className='btn btn-primary' type='button' onClick={this.handleAdd}>add</button>
                 </span>
@@ -197,7 +187,6 @@ class ExdefDetailsEditInf extends Component {
   }
 }
 ExdefDetailsEditInf.propTypes = {
-  listKind: PropTypes.string,
   list: PropTypes.array,
   update: PropTypes.func,
   add: PropTypes.func,
@@ -211,10 +200,10 @@ class ExdefDetailsEditInfItem extends Component {
     this.handleRemove = this.handleRemove.bind(this)
   }
   handleUpdate (event) {
-    this.props.update(this.props.listKind, event.target.value, event.target.name)
+    this.props.update(event.target.value, event.target.name)
   }
   handleRemove (event) {
-    this.props.remove(this.props.listKind, event.target.name)
+    this.props.remove(event.target.name)
   }
   render () {
     return (
@@ -228,7 +217,6 @@ class ExdefDetailsEditInfItem extends Component {
   }
 }
 ExdefDetailsEditInfItem.propTypes = {
-  listKind: PropTypes.string,
   item: PropTypes.string,
   index: PropTypes.number,
   update: PropTypes.func,
@@ -236,11 +224,104 @@ ExdefDetailsEditInfItem.propTypes = {
 }
 
 class ExdefDetailsEditMU extends Component {
+  constructor () {
+    super()
+    this.validateID = this.validateID.bind(this)
+    this.handleAdd = this.handleAdd.bind(this)
+  }
+  validateID (event) {
+    console.log(event.target.value)
+  }
+  handleAdd () {
+    let newMu = {
+      muID: $('#mu-new-id').val(),
+      desc: $('#mu-new-desc').val()
+    }
+    $('#mu-new-id').val('')
+    $('#mu-new-desc').val('')
+    this.props.add(newMu)
+  }
   render () {
+    let muListView
+    let muListItemView = []
+    this.props.muList.forEach((mu, index) => muListItemView.push(<ExdefDetailsEditMUItem key={index} mu={mu} index={index} update={this.props.update} remove={this.props.remove}/>))
+    if (this.props.muList.length > 5) muListView = <div style={getOverflowYStyle('220px')}>{muListItemView}</div>
+    else muListView = <div>{muListItemView}</div>
     return (
-      
+      <div>
+        <div className='row'>
+          <div className='col-md-12'>
+            <h3>Monitoring Units</h3>
+          </div>
+        </div>
+        <div className='row' id='mu-new'>
+          <form className='form-horizontal col-md-10'>
+            <div className='form-group'>
+              <label for='mu-new-id' className='col-md-2 control-label'>ID</label>
+              <div className='col-md-10'>
+                <input type='text' className='form-control' id='mu-new-id' onChange={this.validateID} />
+              </div>
+            </div>
+            <div className='form-group'>
+              <label for='mu-new-desc' className='col-md-2 control-label'>Description</label>
+              <div className='col-md-10'>
+                <input type='text' className='form-control' id='mu-new-desc' defaultValue='' />
+              </div>
+            </div>
+          </form>
+          <div className='col-md-2' id='mu-new-add-btn'>
+            <button type='button' className='btn btn-primary btn-lg btn-block' onClick={this.handleAdd}>add</button>
+          </div>
+        </div>
+        <div className='row'>
+          <div className='col-md-12'>
+            {muListView}
+          </div>
+        </div>
+      </div>
     )
   }
+}
+ExdefDetailsEditMU.propTypes = {
+  muList: PropTypes.array,
+  add: PropTypes.func,
+  update: PropTypes.func,
+  remove: PropTypes.func
+}
+
+class ExdefDetailsEditMUItem extends Component {
+  constructor () {
+    super()
+    this.handleUpdate = this.handleUpdate.bind(this)
+    this.handleRemove = this.handleRemove.bind(this)
+  }
+  handleUpdate (event) {
+    let updatedMU = {
+      muID: this.props.mu.muID,
+      desc: event.target.value
+    }
+    this.props.update(updatedMU, event.target.name)
+  }
+  handleRemove (event) {
+    this.props.remove(event.target.name)
+  }
+  render () {
+    return (
+      <div className='input-group'>
+        <span className='input-group-addon'>{this.props.mu.muID}</span>
+        <input type='text' className='form-control' value={this.props.mu.desc} name={this.props.index} onChange={this.handleUpdate}/>
+        <span className='input-group-btn'>
+          <button className='btn btn-danger' type='button' name={this.props.index} onClick={this.handleRemove}>remove</button>
+        </span>
+      </div>
+    )
+  }
+}
+ExdefDetailsEditMUItem.propTypes = {
+  mu: PropTypes.object,
+  index: PropTypes.number,
+  update: PropTypes.func,
+  remove: PropTypes.func
 }
 
 class ExdefDetailsEditIdRules extends Component {
