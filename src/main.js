@@ -116,8 +116,11 @@ ipcMain.on('read-drs', (event, arg) => {
   })
 })
 
-ipcMain.on('save-ers', (event, arg) => {
-  //
+ipcMain.on('validate-muID', (event, arg) => {
+  exdefDB.validateMUID(arg, (err, num) => {
+    if (num === 0) event.returnValue = true
+    else event.returnValue = false
+  })
 })
 
 /** Test Mode **/

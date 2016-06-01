@@ -14,6 +14,7 @@ import Datastore from 'nedb'
 **/
 const db = new Datastore({filename: path.join(__dirname, '../db/exdef.db'), autoload: true})
 db.ensureIndex({fieldName: 'type', unique: true})
+db.ensureIndex({fieldName: 'mu.muID'})
 
 export function create(items, cb) {
   db.insert(items, (err, docs) => {
@@ -50,6 +51,13 @@ export function deleteOne(id, cb) {
 
 export function deleteAll(cb) {
   db.remove({}, { multi: true }, (err, num) => {
+    if (err) return cb(err, null)
+    if (cb) return cb(null, num)
+  })
+}
+
+export function validateMUID(muID, cb) {
+  db.count({'mu.muID': muID}, (err, num) => {
     if (err) return cb(err, null)
     if (cb) return cb(null, num)
   })

@@ -5,8 +5,11 @@
     "inf": [
       "java/lang/Process"
     ],
-    "rid": [
-      "java/lang/Thread.init(Ljava/lang/ThreadGroup;Ljava/lang/Runnable;Ljava/lang/String;JLjava/security/AccessControlContext;)V"
+    "mu": [
+      {
+        "muID": "mu09",
+        "desc": "java/lang/Thread.init(Ljava/lang/ThreadGroup;Ljava/lang/Runnable;Ljava/lang/String;JLjava/security/AccessControlContext;)V"
+      }
     ],
     "id_rules": "그냥 테스트용."
   }

@@ -2,6 +2,7 @@
 
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
+import {ipcRenderer} from 'electron'
 
 function getOverflowYStyle(height) {
   return {
@@ -230,7 +231,16 @@ class ExdefDetailsEditMU extends Component {
     this.handleAdd = this.handleAdd.bind(this)
   }
   validateID (event) {
-    console.log(event.target.value)
+    let isValid = ipcRenderer.sendSync('validate-muID', event.target.value)
+    if (isValid) {
+      document.getElementById('mu-new-id').style['border-color'] = '#66afe9'
+      document.getElementById('mu-new-id').style['box-shadow'] = 'inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)'
+      document.getElementById('add-mu-btn').disabled = false
+    } else {
+      document.getElementById('mu-new-id').style['border-color'] = '#FF7D7D'
+      document.getElementById('mu-new-id').style['box-shadow'] = 'inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233,102,102,0.6)'
+      document.getElementById('add-mu-btn').disabled = true
+    }
   }
   handleAdd () {
     let newMu = {
@@ -259,7 +269,8 @@ class ExdefDetailsEditMU extends Component {
             <div className='form-group'>
               <label for='mu-new-id' className='col-md-2 control-label'>ID</label>
               <div className='col-md-10'>
-                <input type='text' className='form-control' id='mu-new-id' onChange={this.validateID} />
+                <input type='text' className='form-control' id='mu-new-id' onChange={this.validateID}
+                  data-toggle='tooltip' data-placement='top' title='Duplicated ID'/>
               </div>
             </div>
             <div className='form-group'>
@@ -270,7 +281,7 @@ class ExdefDetailsEditMU extends Component {
             </div>
           </form>
           <div className='col-md-2' id='mu-new-add-btn'>
-            <button type='button' className='btn btn-primary btn-lg btn-block' onClick={this.handleAdd}>add</button>
+            <button type='button' className='btn btn-primary btn-lg btn-block' id='add-mu-btn' onClick={this.handleAdd}>add</button>
           </div>
         </div>
         <div className='row'>

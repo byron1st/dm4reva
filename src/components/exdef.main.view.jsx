@@ -30,6 +30,7 @@ class ExdefMain extends Component {
   }
   componentWillMount () {
     this.setState({exdefList: this.props.exdefList})
+    ipcRenderer.on('save-exdefs-reply', (event, arg) => this.addExdefsToList(arg))
   }
   selectAnExdef (_id) {
     this.setState({selectedExdef:_id})
@@ -60,8 +61,6 @@ class ExdefMain extends Component {
     if (newExdef) this.addExdefsToList(newExdef)
   }
   render () {
-    ipcRenderer.on('save-exdefs-reply', (event, arg) => this.addExdefsToList(arg))
-
     let selectedExdefDetails = this.state.exdefList.find((exdef) => exdef._id === this.state.selectedExdef)
     let exdefDetailsView
     if (selectedExdefDetails) {
