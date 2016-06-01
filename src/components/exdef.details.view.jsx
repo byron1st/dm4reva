@@ -36,7 +36,7 @@ export default class ExdefDetails extends Component {
         tabContent = <ExdefDetailsEdit exdef={this.props.exdef} save={this.props.save}/>
         break;
       case 'Elements':
-        tabContent = <ExdefDetailsElements />
+        tabContent = <ExdefDetailsElements exdef={this.props.exdef} />
         break;
     }
     return (

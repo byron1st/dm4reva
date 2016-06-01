@@ -8,7 +8,7 @@ import Datastore from 'nedb'
   kind: string,
   inf: [string],
   id_rules: string,
-  mu: [string],
+  mu: [{muID, desc}],
   elems: [string]
 }
 **/

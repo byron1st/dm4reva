@@ -22,7 +22,7 @@ export function create(items, cb) {
 }
 
 export function readRecordsOfMUs(muList, cb) {
-  db.find({mu: {$in: muList}}).sort({mu: 1}).exec((err, docs) => {
+  db.find({muID: {$in: muList}}).sort({mu: 1}).exec((err, docs) => {
     if (err) return cb(err, null)
     if (!docs) return cb(Error('No items'), null)
     if (cb) return cb(null, docs)

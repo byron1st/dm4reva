@@ -127,6 +127,17 @@ ipcMain.on('save-ers', (event, arg) => {
   })
 })
 
+ipcMain.on('read-ers', (event, arg) => {
+  erDB.readRecordsOfMUs(arg, (err, docs) => {
+    if (err) {
+      handleErrors(err)
+      event.returnValue = null
+    } else {
+      event.returnValue = docs
+    }
+  })
+})
+
 ipcMain.on('validate-muID', (event, arg) => {
   exdefDB.validateMUID(arg, (err, num) => {
     if (num === 0) event.returnValue = true
