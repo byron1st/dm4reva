@@ -1,0 +1,83 @@
+'use strict'
+
+import React, {Component, PropTypes} from 'react'
+import ReactDOM from 'react-dom'
+
+export default class ExdefDetailsElementsElems extends Component {
+  constructor () {
+    super()
+    this.state = {
+      elemsID: '',
+      source: '',
+      sink: '',
+      parents: ''
+    }
+  }
+  render () {
+    return (
+      <div className='col-md-12'>
+        <div className='row'>
+          <div className='col-md-6'>
+            <div className='well'>
+              <ExdefDetailsElementsElemsInput />
+            </div>
+          </div>
+          <div className='col-md-6'>
+            <ExdefDetailsElementsElemsRecords />
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
+class ExdefDetailsElementsElemsInput extends Component {
+  constructor () {
+    super()
+    this.handleIDChange = this.handleIDChange.bind(this)
+  }
+  handleIDChange (event) {
+    console.log(event.target.value)
+  }
+  render () {
+    return (
+      <div>
+        <form className='form-horizontal'>
+          <DisabledFormControl id='elemsType' label='Type' />
+          <DisabledFormControl id='elemsKind' label='Kind' />
+          <div className='form-group'>
+            <label for='elemsID' className='col-md-2 control-label'>ID</label>
+            <div className='col-md-10'>
+              <input type='text' className='form-control' id='elemsID' value='' onChange={this.handleIDChange} />
+            </div>
+          </div>
+        </form>
+      </div>
+    )
+  }
+}
+
+class DisabledFormControl extends Component {
+  render () {
+    return (
+      <div className='form-group'>
+        <label for={this.props.id} className='col-md-2 control-label'>{this.props.label}</label>
+        <div className='col-md-10'>
+          <input type='text' className='form-control' id={this.props.id} defaultValue='' disabled />
+        </div>
+      </div>
+    )
+  }
+}
+DisabledFormControl.propTypes = {
+  id: PropTypes.string,
+  label: PropTypes.string
+}
+
+class ExdefDetailsElementsElemsRecords extends Component {
+  render () {
+    return (
+      <h3>Related Records</h3>
+    )
+  }
+}

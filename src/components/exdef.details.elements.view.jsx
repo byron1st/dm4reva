@@ -3,7 +3,8 @@
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 import {ipcRenderer} from 'electron'
-import {ExdefDetailsElementsERs, ExdefDetailsElementsERDetail} from './exdef.details.elements.ers.view.js'
+import ExdefDetailsElementsERs from './exdef.details.elements.ers.view.js'
+import ExdefDetailsElementsElems from './exdef.details.elements.elems.view.js'
 
 export default class ExdefDetailsElements extends Component {
   constructor () {
@@ -38,9 +39,7 @@ export default class ExdefDetailsElements extends Component {
         </div>
         <hr />
         <div className='row'>
-          <div className='col-md-12'>
-            <h3>Identify an element</h3>
-          </div>
+          <ExdefDetailsElementsElems />
         </div>
       </div>
     )

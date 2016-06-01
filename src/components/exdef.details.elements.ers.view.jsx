@@ -3,7 +3,7 @@
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 
-export class ExdefDetailsElementsERs extends Component {
+export default class ExdefDetailsElementsERs extends Component {
   constructor () {
     super()
     this.state = {
@@ -52,7 +52,7 @@ ExdefDetailsElementsERs.propTypes = {
   ers: PropTypes.array
 }
 
-export class ExdefDetailsElementsERDetail extends Component {
+class ExdefDetailsElementsERDetail extends Component {
   render () {
     let metaKeys = Object.keys(this.props.er.meta)
     let valuesKeys = Object.keys(this.props.er.values)
