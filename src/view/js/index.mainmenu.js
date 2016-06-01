@@ -58,10 +58,10 @@ const template = [
             properties: ['openFile']
           }, (filenames) => {
             if (filenames) {
-              //TODO: show progressBar
+              window.$('#progressBar').show()
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                //TODO: send ipc!
+                ipcRenderer.send('save-ers', data)
               })
             }
           })
@@ -124,6 +124,10 @@ if (process.platform === 'darwin') {
 }
 
 ipcRenderer.on('save-drs-reply', (event, arg) => {
+  window.$('#progressBar').hide()
+})
+
+ipcRenderer.on('save-ers-reply', (event, arg) => {
   window.$('#progressBar').hide()
 })
 

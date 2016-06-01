@@ -116,6 +116,17 @@ ipcMain.on('read-drs', (event, arg) => {
   })
 })
 
+ipcMain.on('save-ers', (event, arg) => {
+  erDB.create(JSON.parse(arg.toString()), (err, docs) => {
+    if (err) return handleErrors(err)
+    event.sender.send('save-ers-reply')
+    dialog.showMessageBox({type: 'info',
+                          title: 'Execution records are added',
+                          message: docs.length + ' ERs are added.',
+                          buttons: ['OK']})
+  })
+})
+
 ipcMain.on('validate-muID', (event, arg) => {
   exdefDB.validateMUID(arg, (err, num) => {
     if (num === 0) event.returnValue = true
