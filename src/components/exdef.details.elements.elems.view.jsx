@@ -34,7 +34,6 @@ export default class ExdefDetailsElementsElems extends Component {
     }
   }
   makeAnElem () {
-    console.log(this.state.elemsID)
     let newElem = {}
     Object.keys(this.state).forEach((key) => newElem[key] = this.state[key])
     newElem.ers = []

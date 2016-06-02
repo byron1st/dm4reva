@@ -24,7 +24,6 @@ export default class ExdefDetailsInfo extends Component {
   }
   getDRs () {
     let obtainedDRs = ipcRenderer.sendSync('read-drs', this.props.exdef.inf)
-    console.log(obtainedDRs)
     this.setState({drs: obtainedDRs})
     window.$('#drModal').modal('show')
   }

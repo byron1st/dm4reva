@@ -11,7 +11,6 @@ let exdefWindow = null
 
 function handleErrors (err) {
   dialog.showErrorBox('An error occurs', err.toString())
-  console.log(err)
 }
 
 function createExdefWindow (docs) {

@@ -60,6 +60,7 @@ export default class ExdefDetailsElements extends Component {
   }
   makeAnElem (newElem) {
     console.log(newElem)
+    //TODO ipcRenderer
   }
   render () {
     return (
