@@ -34,7 +34,7 @@ export default class ExdefDetailsElementsElems extends Component {
             </div>
           </div>
           <div className='col-md-6'>
-            <ExdefDetailsElementsElemsRecords />
+            <ExdefDetailsElementsElemsRecords ersList={this.props.checkedERsList}/>
           </div>
         </div>
       </div>
@@ -43,7 +43,8 @@ export default class ExdefDetailsElementsElems extends Component {
 }
 ExdefDetailsElementsElems.propTypes = {
   type: PropTypes.string,
-  kind: PropTypes.string
+  kind: PropTypes.string,
+  checkedERsList: PropTypes.array
 }
 
 class ExdefDetailsElementsElemsInput extends Component {
@@ -146,8 +147,22 @@ FormContrlWithElemsIDValidataion.propTypes = {
 
 class ExdefDetailsElementsElemsRecords extends Component {
   render () {
+    let style = {
+      'overflowY': 'scroll',
+      'height': '400px'
+    }
+    let ersListView = []
+    this.props.ersList.forEach((er) => ersListView.push(<button type='button' className='list-group-item' key={er._id}>{er._id}</button>))
     return (
-      <h3>Related Records</h3>
+      <div>
+        <h3>Related Records</h3>
+        <div className='list-group' style={style}>
+          {ersListView}
+        </div>
+      </div>
     )
   }
+}
+ExdefDetailsElementsElemsRecords.propTypes = {
+  ersList: PropTypes.array
 }

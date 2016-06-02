@@ -16,7 +16,7 @@ export default class ExdefDetailsElementsERs extends Component {
   render () {
     let selectedERDetails = this.props.ers.find((er) => er._id === this.state.selectedER_id)
     let erDetailsView
-    if (selectedERDetails) erDetailsView = <ExdefDetailsElementsERDetail er={selectedERDetails} />
+    if (selectedERDetails) erDetailsView = <ExdefDetailsElementsERDetail er={selectedERDetails} checkAnER={this.props.checkAnER} />
 
     let ersListView = []
     this.props.ers.forEach((er) => {
@@ -49,10 +49,18 @@ export default class ExdefDetailsElementsERs extends Component {
   }
 }
 ExdefDetailsElementsERs.propTypes = {
-  ers: PropTypes.array
+  ers: PropTypes.array,
+  checkAnER: PropTypes.func
 }
 
 class ExdefDetailsElementsERDetail extends Component {
+  constructor () {
+    super()
+    this.handleCheck = this.handleCheck.bind(this)
+  }
+  handleCheck () {
+    this.props.checkAnER(this.props.er._id)
+  }
   render () {
     let metaKeys = Object.keys(this.props.er.meta)
     let valuesKeys = Object.keys(this.props.er.values)
@@ -66,6 +74,7 @@ class ExdefDetailsElementsERDetail extends Component {
       <div>
         <div className='row'>
           <div className='col-md-12'>
+            <button type='button' className='btn btn-default btn-block' onClick={this.handleCheck}>Check</button>
             <h4>Meta Information</h4>
             <ul>
               {metaView}
@@ -85,5 +94,6 @@ class ExdefDetailsElementsERDetail extends Component {
   }
 }
 ExdefDetailsElementsERDetail.propTypes = {
-  er: PropTypes.object
+  er: PropTypes.object,
+  checkAnER: PropTypes.func
 }
