@@ -39,7 +39,7 @@ export default class ExdefDetailsElements extends Component {
         </div>
         <hr />
         <div className='row'>
-          <ExdefDetailsElementsElems />
+          <ExdefDetailsElementsElems type={this.props.exdef.type} kind={this.props.exdef.kind} />
         </div>
       </div>
     )
