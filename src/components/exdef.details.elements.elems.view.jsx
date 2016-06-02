@@ -2,6 +2,7 @@
 
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
+import {ipcRenderer} from 'electron'
 
 export default class ExdefDetailsElementsElems extends Component {
   constructor () {
@@ -13,14 +14,32 @@ export default class ExdefDetailsElementsElems extends Component {
       parents: ''
     }
     this.updateElemsID = this.updateElemsID.bind(this)
+    this.updateInfo = this.updateInfo.bind(this)
     this.makeAnElem = this.makeAnElem.bind(this)
   }
   updateElemsID (updatedID) {
     this.setState({elemsID: updatedID})
   }
+  updateInfo (info, newValue) {
+    switch (info) {
+      case 'source':
+        this.setState({source: newValue})
+        break
+      case 'sink':
+        this.setState({sink: newValue})
+        break
+      case 'parents':
+        this.setState({parents: newValue})
+        break
+    }
+  }
   makeAnElem () {
     console.log(this.state.elemsID)
-    //TODO: IPC 전송
+    let newElem = {}
+    Object.keys(this.state).forEach((key) => newElem[key] = this.state[key])
+    newElem.ers = []
+    this.props.checkedERsList.forEach((checkedER) => newElem.ers.push(checkedER._id))
+    this.props.make(newElem)
     this.setState({elemsID: ''})
   }
   render () {
@@ -29,7 +48,7 @@ export default class ExdefDetailsElementsElems extends Component {
         <div className='row'>
           <div className='col-md-6'>
             <div className='well'>
-              <ExdefDetailsElementsElemsInput type={this.props.type} kind={this.props.kind} elemsID={this.state.elemsID} updateID={this.updateElemsID} make={this.makeAnElem}/>
+              <ExdefDetailsElementsElemsInput type={this.props.type} kind={this.props.kind} elemsID={this.state.elemsID} updateID={this.updateElemsID} make={this.makeAnElem} updateInfo={this.updateInfo}/>
               <button type='button' className='btn btn-primary btn-block' onClick={this.makeAnElem} id='make-btn'>Make an element</button>
             </div>
           </div>
@@ -45,7 +64,8 @@ ExdefDetailsElementsElems.propTypes = {
   type: PropTypes.string,
   kind: PropTypes.string,
   checkedERsList: PropTypes.array,
-  removeCheckedER: PropTypes.func
+  removeCheckedER: PropTypes.func,
+  make: PropTypes.func
 }
 
 class ExdefDetailsElementsElemsInput extends Component {
@@ -60,12 +80,12 @@ class ExdefDetailsElementsElemsInput extends Component {
     let addedViews = []
     switch (this.props.kind) {
       case 'EConnector':
-        addedViews.push(<FormContrlWithElemsIDValidataion key='source' id='source' label='Source' />)
-        addedViews.push(<FormContrlWithElemsIDValidataion key='sink' id='sink' label='Sink' />)
+        addedViews.push(<FormContrlWithElemsIDValidataion key='source' id='source' label='Source' update={this.props.updateInfo}/>)
+        addedViews.push(<FormContrlWithElemsIDValidataion key='sink' id='sink' label='Sink' update={this.props.updateInfo} />)
         break
       case 'EComponent':
       case 'EPort':
-        addedViews.push(<FormContrlWithElemsIDValidataion key='parents' id='parents' label='Parents' />)
+        addedViews.push(<FormContrlWithElemsIDValidataion key='parents' id='parents' label='Parents' update={this.props.updateInfo} />)
         break
     }
 
@@ -90,7 +110,8 @@ ExdefDetailsElementsElemsInput.propTypes = {
   type: PropTypes.string,
   kind: PropTypes.string,
   updateID: PropTypes.func,
-  elemsID: PropTypes.string
+  elemsID: PropTypes.string,
+  updateInfo: PropTypes.func
 }
 
 class DisabledFormControl extends Component {
@@ -117,11 +138,13 @@ class FormContrlWithElemsIDValidataion extends Component {
     this.validateID = this.validateID.bind(this)
   }
   validateID (event) {
-    let isValid = ipcRenderer.sendSync('validate-elemsID', event.target.value)
+    //TODO let isValid = ipcRenderer.sendSync('validate-elemsID', event.target.value)
+    let isValid = true
     if (isValid) {
       document.getElementById(this.props.id).style['border-color'] = '#66afe9'
       document.getElementById(this.props.id).style['box-shadow'] = 'inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)'
       document.getElementById('make-btn').disabled = false
+      this.props.update(this.props.id, event.target.value)
     } else {
       document.getElementById(this.props.id).style['border-color'] = '#FF7D7D'
       document.getElementById(this.props.id).style['box-shadow'] = 'inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233,102,102,0.6)'
@@ -143,7 +166,8 @@ class FormContrlWithElemsIDValidataion extends Component {
 }
 FormContrlWithElemsIDValidataion.propTypes = {
   id: PropTypes.string,
-  label: PropTypes.string
+  label: PropTypes.string,
+  update: PropTypes.func
 }
 
 class ExdefDetailsElementsElemsRecords extends Component {

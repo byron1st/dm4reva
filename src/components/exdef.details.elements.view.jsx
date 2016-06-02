@@ -22,6 +22,7 @@ export default class ExdefDetailsElements extends Component {
     this.getMUsList = this.getMUsList.bind(this)
     this.checkAnER = this.checkAnER.bind(this)
     this.removeCheckedER = this.removeCheckedER.bind(this)
+    this.makeAnElem = this.makeAnElem.bind(this)
   }
   componentWillMount () {
     let initERsList = ipcRenderer.sendSync('read-ers', this.getMUsList(this.props.exdef.mu))
@@ -50,13 +51,15 @@ export default class ExdefDetailsElements extends Component {
     }
   }
   removeCheckedER (_id) {
-    console.log(_id)
     let index = this.state.checkedERsList.map((e) => e._id).indexOf(_id)
     if (index !== -1) {
       let updatedCheckedERsList = this.state.checkedERsList.slice()
       updatedCheckedERsList.splice(index, 1)
       this.setState({checkedERsList: updatedCheckedERsList})
     }
+  }
+  makeAnElem (newElem) {
+    console.log(newElem)
   }
   render () {
     return (
@@ -66,7 +69,7 @@ export default class ExdefDetailsElements extends Component {
         </div>
         <hr />
         <div className='row'>
-          <ExdefDetailsElementsElems type={this.props.exdef.type} kind={this.props.exdef.kind} checkedERsList={this.state.checkedERsList} removeCheckedER={this.removeCheckedER}/>
+          <ExdefDetailsElementsElems type={this.props.exdef.type} kind={this.props.exdef.kind} checkedERsList={this.state.checkedERsList} removeCheckedER={this.removeCheckedER} make={this.makeAnElem}/>
         </div>
       </div>
     )
