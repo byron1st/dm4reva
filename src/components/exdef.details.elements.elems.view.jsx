@@ -8,7 +8,7 @@ export default class ExdefDetailsElementsElems extends Component {
   constructor () {
     super()
     this.state = {
-      elemsID: '',
+      elemID: '',
       source: '',
       sink: '',
       parents: ''
@@ -18,7 +18,7 @@ export default class ExdefDetailsElementsElems extends Component {
     this.makeAnElem = this.makeAnElem.bind(this)
   }
   updateElemsID (updatedID) {
-    this.setState({elemsID: updatedID})
+    this.setState({elemID: updatedID})
   }
   updateInfo (info, newValue) {
     switch (info) {
@@ -42,7 +42,7 @@ export default class ExdefDetailsElementsElems extends Component {
     this.props.checkedERsList.forEach((checkedER) => newElem.ers.push(checkedER._id))
     this.props.make(newElem)
     this.setState({
-      elemsID: '',
+      elemID: '',
       source: '',
       sink: '',
       parents: ''
@@ -54,7 +54,7 @@ export default class ExdefDetailsElementsElems extends Component {
         <div className='row'>
           <div className='col-md-6'>
             <div className='well'>
-              <ExdefDetailsElementsElemsInput type={this.props.type} kind={this.props.kind} elemsID={this.state.elemsID} updateID={this.updateElemsID} make={this.makeAnElem} updateInfo={this.updateInfo}/>
+              <ExdefDetailsElementsElemsInput type={this.props.type} kind={this.props.kind} elemID={this.state.elemID} updateID={this.updateElemsID} make={this.makeAnElem} updateInfo={this.updateInfo}/>
               <button type='button' className='btn btn-primary btn-block' onClick={this.makeAnElem} id='make-btn'>Make an element</button>
             </div>
           </div>
@@ -101,9 +101,9 @@ class ExdefDetailsElementsElemsInput extends Component {
           <DisabledFormControl id='elemsType' label='Type' value={this.props.type}/>
           <DisabledFormControl id='elemsKind' label='Kind' value={this.props.kind}/>
           <div className='form-group'>
-            <label for='elemsID' className='col-md-3 control-label'>ID</label>
+            <label for='elemID' className='col-md-3 control-label'>ID</label>
             <div className='col-md-9'>
-              <input type='text' className='form-control' id='elemsID' value={this.props.elemsID} onChange={this.handleIDChange} />
+              <input type='text' className='form-control' id='elemID' value={this.props.elemID} onChange={this.handleIDChange} />
             </div>
           </div>
           {addedViews}
@@ -116,7 +116,7 @@ ExdefDetailsElementsElemsInput.propTypes = {
   type: PropTypes.string,
   kind: PropTypes.string,
   updateID: PropTypes.func,
-  elemsID: PropTypes.string,
+  elemID: PropTypes.string,
   updateInfo: PropTypes.func
 }
 
@@ -144,8 +144,7 @@ class FormContrlWithElemsIDValidataion extends Component {
     this.validateID = this.validateID.bind(this)
   }
   validateID (event) {
-    //TODO let isValid = ipcRenderer.sendSync('validate-elemsID', event.target.value)
-    let isValid = true
+    let isValid = ipcRenderer.sendSync('validate-elemID', event.target.value)
     if (isValid) {
       document.getElementById(this.props.id).style['border-color'] = '#66afe9'
       document.getElementById(this.props.id).style['box-shadow'] = 'inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)'

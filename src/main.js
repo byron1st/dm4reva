@@ -145,7 +145,13 @@ ipcMain.on('validate-muID', (event, arg) => {
   })
 })
 
-//TODO 'validate-elemsID' ipc channel 만들기
+ipcMain.on('validate-elemID', (event, arg) => {
+  if (arg === '') event.returnValue = true
+  elemsDB.validateID(arg, (err, num) => {
+    if (num === 0) event.returnValue = false
+    else event.returnValue = true
+  })
+})
 
 ipcMain.on('save-elem', (event, arg) => {
   elemsDB.create(arg, (err, doc) => {

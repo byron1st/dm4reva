@@ -60,3 +60,10 @@ export function deleteAll(cb) {
     if (cb) return cb(null, num)
   })
 }
+
+export function validateID(id, cb) {
+  db.count({elemID: id}, (err, num) => {
+    if (err) return cb(err, null)
+    if (cb) return cb(null, num)
+  })
+}
