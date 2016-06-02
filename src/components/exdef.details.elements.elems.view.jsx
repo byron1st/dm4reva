@@ -73,8 +73,8 @@ class ExdefDetailsElementsElemsInput extends Component {
           <DisabledFormControl id='elemsType' label='Type' value={this.props.type}/>
           <DisabledFormControl id='elemsKind' label='Kind' value={this.props.kind}/>
           <div className='form-group'>
-            <label for='elemsID' className='col-md-2 control-label'>ID</label>
-            <div className='col-md-10'>
+            <label for='elemsID' className='col-md-3 control-label'>ID</label>
+            <div className='col-md-9'>
               <input type='text' className='form-control' id='elemsID' value={this.props.elemsID} onChange={this.handleIDChange} />
             </div>
           </div>
@@ -95,8 +95,8 @@ class DisabledFormControl extends Component {
   render () {
     return (
       <div className='form-group'>
-        <label for={this.props.id} className='col-md-2 control-label'>{this.props.label}</label>
-        <div className='col-md-10'>
+        <label for={this.props.id} className='col-md-3 control-label'>{this.props.label}</label>
+        <div className='col-md-9'>
           <input type='text' className='form-control' id={this.props.id} defaultValue={this.props.value} disabled />
         </div>
       </div>
@@ -130,8 +130,8 @@ class FormContrlWithElemsIDValidataion extends Component {
     return (
       <div>
         <div className='form-group'>
-          <label for={this.props.id} className='col-md-2 control-label'>{this.props.label}</label>
-          <div className='col-md-10'>
+          <label for={this.props.id} className='col-md-3 control-label'>{this.props.label}</label>
+          <div className='col-md-9'>
             <input type='text' className='form-control' id={this.props.id} onChange={this.validateID} />
           </div>
         </div>
