@@ -19,7 +19,7 @@ export default class ExdefDetailsElementsElems extends Component {
         <div className='row'>
           <div className='col-md-6'>
             <div className='well'>
-              <ExdefDetailsElementsElemsInput />
+              <ExdefDetailsElementsElemsInput type={this.props.type} kind={this.props.kind} />
             </div>
           </div>
           <div className='col-md-6'>
@@ -29,6 +29,10 @@ export default class ExdefDetailsElementsElems extends Component {
       </div>
     )
   }
+}
+ExdefDetailsElementsElems.propTypes = {
+  type: PropTypes.string,
+  kind: PropTypes.string
 }
 
 class ExdefDetailsElementsElemsInput extends Component {
@@ -43,8 +47,8 @@ class ExdefDetailsElementsElemsInput extends Component {
     return (
       <div>
         <form className='form-horizontal'>
-          <DisabledFormControl id='elemsType' label='Type' />
-          <DisabledFormControl id='elemsKind' label='Kind' />
+          <DisabledFormControl id='elemsType' label='Type' value={this.props.type}/>
+          <DisabledFormControl id='elemsKind' label='Kind' value={this.props.kind}/>
           <div className='form-group'>
             <label for='elemsID' className='col-md-2 control-label'>ID</label>
             <div className='col-md-10'>
@@ -56,6 +60,10 @@ class ExdefDetailsElementsElemsInput extends Component {
     )
   }
 }
+ExdefDetailsElementsElemsInput.propTypes = {
+  type: PropTypes.string,
+  kind: PropTypes.string
+}
 
 class DisabledFormControl extends Component {
   render () {
@@ -63,7 +71,7 @@ class DisabledFormControl extends Component {
       <div className='form-group'>
         <label for={this.props.id} className='col-md-2 control-label'>{this.props.label}</label>
         <div className='col-md-10'>
-          <input type='text' className='form-control' id={this.props.id} defaultValue='' disabled />
+          <input type='text' className='form-control' id={this.props.id} defaultValue={this.props.value} disabled />
         </div>
       </div>
     )
@@ -71,7 +79,8 @@ class DisabledFormControl extends Component {
 }
 DisabledFormControl.propTypes = {
   id: PropTypes.string,
-  label: PropTypes.string
+  label: PropTypes.string,
+  value: PropTypes.string
 }
 
 class ExdefDetailsElementsElemsRecords extends Component {
