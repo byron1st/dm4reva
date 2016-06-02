@@ -34,7 +34,7 @@ export default class ExdefDetailsElementsElems extends Component {
             </div>
           </div>
           <div className='col-md-6'>
-            <ExdefDetailsElementsElemsRecords ersList={this.props.checkedERsList}/>
+            <ExdefDetailsElementsElemsRecords ersList={this.props.checkedERsList} remove={this.props.removeCheckedER}/>
           </div>
         </div>
       </div>
@@ -44,7 +44,8 @@ export default class ExdefDetailsElementsElems extends Component {
 ExdefDetailsElementsElems.propTypes = {
   type: PropTypes.string,
   kind: PropTypes.string,
-  checkedERsList: PropTypes.array
+  checkedERsList: PropTypes.array,
+  removeCheckedER: PropTypes.func
 }
 
 class ExdefDetailsElementsElemsInput extends Component {
@@ -146,13 +147,24 @@ FormContrlWithElemsIDValidataion.propTypes = {
 }
 
 class ExdefDetailsElementsElemsRecords extends Component {
+  constructor () {
+    super()
+  }
+  handleRemove (_id) {
+    this.props.remove(_id)
+  }
   render () {
     let style = {
       'overflowY': 'scroll',
-      'height': '400px'
+      'height': '250px'
     }
     let ersListView = []
-    this.props.ersList.forEach((er) => ersListView.push(<button type='button' className='list-group-item' key={er._id}>{er._id}</button>))
+    this.props.ersList.forEach((er) => ersListView.push(
+      <button type='button' className='list-group-item' key={er._id}>
+        {er._id}
+        <span className='glyphicon glyphicon-remove pull-right' onClick={() => this.handleRemove(er._id)}></span>
+      </button>
+    ))
     return (
       <div>
         <h3>Related Records</h3>
@@ -164,5 +176,6 @@ class ExdefDetailsElementsElemsRecords extends Component {
   }
 }
 ExdefDetailsElementsElemsRecords.propTypes = {
-  ersList: PropTypes.array
+  ersList: PropTypes.array,
+  remove: PropTypes.func
 }
