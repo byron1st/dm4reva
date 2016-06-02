@@ -269,8 +269,7 @@ class ExdefDetailsEditMU extends Component {
             <div className='form-group'>
               <label for='mu-new-id' className='col-md-2 control-label'>ID</label>
               <div className='col-md-10'>
-                <input type='text' className='form-control' id='mu-new-id' onChange={this.validateID}
-                  data-toggle='tooltip' data-placement='top' title='Duplicated ID'/>
+                <input type='text' className='form-control' id='mu-new-id' onChange={this.validateID} />
               </div>
             </div>
             <div className='form-group'>

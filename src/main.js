@@ -145,6 +145,8 @@ ipcMain.on('validate-muID', (event, arg) => {
   })
 })
 
+//TODO 'validate-elemsID' ipc channel 만들기
+
 /** Test Mode **/
 function loadInitialTestData() {
   let exdefBDPS = JSON.parse(fs.readFileSync('./test/resources/exdef.bdps.json'))
