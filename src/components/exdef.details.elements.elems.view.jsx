@@ -55,7 +55,7 @@ export default class ExdefDetailsElementsElems extends Component {
           <div className='col-md-6'>
             <div className='well'>
               <ExdefDetailsElementsElemsInput type={this.props.type} kind={this.props.kind} elemID={this.state.elemID} updateID={this.updateElemsID} make={this.makeAnElem} updateInfo={this.updateInfo}/>
-              <button type='button' className='btn btn-primary btn-block' onClick={this.makeAnElem} id='make-btn'>Make an element</button>
+              <button type='button' className='btn btn-primary btn-block' onClick={this.makeAnElem} id='make-btn' disabled={this.state.elemID === '' ? true : false}>Make an element</button>
             </div>
           </div>
           <div className='col-md-6'>
@@ -80,7 +80,18 @@ class ExdefDetailsElementsElemsInput extends Component {
     this.handleIDChange = this.handleIDChange.bind(this)
   }
   handleIDChange (event) {
-    this.props.updateID(event.target.value)
+    let isValid = !ipcRenderer.sendSync('validate-elemID', event.target.value)
+    if (isValid) {
+      document.getElementById('elemID').style['border-color'] = '#66afe9'
+      document.getElementById('elemID').style['box-shadow'] = 'inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)'
+      document.getElementById('make-btn').disabled = false
+      this.props.updateID(event.target.value)
+    } else {
+      document.getElementById('elemID').style['border-color'] = '#FF7D7D'
+      document.getElementById('elemID').style['box-shadow'] = 'inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233,102,102,0.6)'
+      document.getElementById('make-btn').disabled = true
+      this.props.updateID(event.target.value)
+    }
   }
   render () {
     let addedViews = []
