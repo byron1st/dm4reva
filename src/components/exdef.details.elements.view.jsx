@@ -59,8 +59,8 @@ export default class ExdefDetailsElements extends Component {
     }
   }
   makeAnElem (newElem) {
-    console.log(newElem)
-    //TODO ipcRenderer
+    this.setState({checkedERsList: []})
+    ipcRenderer.send('save-elem', newElem)
   }
   render () {
     return (

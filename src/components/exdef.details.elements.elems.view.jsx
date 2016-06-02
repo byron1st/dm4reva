@@ -36,10 +36,17 @@ export default class ExdefDetailsElementsElems extends Component {
   makeAnElem () {
     let newElem = {}
     Object.keys(this.state).forEach((key) => newElem[key] = this.state[key])
+    newElem.type = this.props.type
+    newElem.kind = this.props.kind
     newElem.ers = []
     this.props.checkedERsList.forEach((checkedER) => newElem.ers.push(checkedER._id))
     this.props.make(newElem)
-    this.setState({elemsID: ''})
+    this.setState({
+      elemsID: '',
+      source: '',
+      sink: '',
+      parents: ''
+    })
   }
   render () {
     return (

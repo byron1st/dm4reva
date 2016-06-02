@@ -4,6 +4,7 @@ import path from 'path'
 import * as exdefDB from './exdef.db.js'
 import * as drDB from './dr.db.js'
 import * as erDB from './er.db.js'
+import * as elemsDB from './elems.db.js'
 import fs from 'fs'
 import config from './app.config.js'
 
@@ -145,6 +146,12 @@ ipcMain.on('validate-muID', (event, arg) => {
 })
 
 //TODO 'validate-elemsID' ipc channel 만들기
+
+ipcMain.on('save-elem', (event, arg) => {
+  elemsDB.create(arg, (err, doc) => {
+    if (err) return handleErrors(err)
+  })
+})
 
 /** Test Mode **/
 function loadInitialTestData() {
