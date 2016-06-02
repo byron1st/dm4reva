@@ -12,6 +12,10 @@ export default class ExdefDetailsElementsElems extends Component {
       sink: '',
       parents: ''
     }
+    this.updateElemsID = this.updateElemsID.bind(this)
+  }
+  updateElemsID (updatedID) {
+    this.setState({elemsID: updatedID})
   }
   render () {
     return (
@@ -19,7 +23,7 @@ export default class ExdefDetailsElementsElems extends Component {
         <div className='row'>
           <div className='col-md-6'>
             <div className='well'>
-              <ExdefDetailsElementsElemsInput type={this.props.type} kind={this.props.kind} />
+              <ExdefDetailsElementsElemsInput type={this.props.type} kind={this.props.kind} elemsID={this.state.elemsID} updateID={this.updateElemsID}/>
             </div>
           </div>
           <div className='col-md-6'>
@@ -41,7 +45,7 @@ class ExdefDetailsElementsElemsInput extends Component {
     this.handleIDChange = this.handleIDChange.bind(this)
   }
   handleIDChange (event) {
-    console.log(event.target.value)
+    this.props.updateID(event.target.value)
   }
   render () {
     return (
@@ -52,7 +56,7 @@ class ExdefDetailsElementsElemsInput extends Component {
           <div className='form-group'>
             <label for='elemsID' className='col-md-2 control-label'>ID</label>
             <div className='col-md-10'>
-              <input type='text' className='form-control' id='elemsID' value='' onChange={this.handleIDChange} />
+              <input type='text' className='form-control' id='elemsID' value={this.props.elemsID} onChange={this.handleIDChange} />
             </div>
           </div>
         </form>
@@ -62,7 +66,9 @@ class ExdefDetailsElementsElemsInput extends Component {
 }
 ExdefDetailsElementsElemsInput.propTypes = {
   type: PropTypes.string,
-  kind: PropTypes.string
+  kind: PropTypes.string,
+  updateID: PropTypes.func,
+  elemsID: PropTypes.string
 }
 
 class DisabledFormControl extends Component {
