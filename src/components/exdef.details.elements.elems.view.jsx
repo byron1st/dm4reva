@@ -4,6 +4,18 @@ import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 import {ipcRenderer} from 'electron'
 
+function validateInput (isValid, inputID, buttonID) {
+  if (isValid) {
+    let currentClassName = document.getElementById(inputID).className
+    let index = currentClassName.indexOf(' errorInput')
+    if (index !== -1) {
+      document.getElementById(inputID).className = currentClassName.substring(0, index)
+    }
+  } else {
+    document.getElementById(inputID).className = document.getElementById(inputID).className + ' errorInput'
+  }
+}
+
 export default class ExdefDetailsElementsElems extends Component {
   constructor () {
     super()
@@ -11,16 +23,43 @@ export default class ExdefDetailsElementsElems extends Component {
       elemID: '',
       source: '',
       sink: '',
-      parents: ''
+      parents: '',
+      makePossible: {
+        elemID: false
+      }
     }
     this.updateElemsID = this.updateElemsID.bind(this)
     this.updateInfo = this.updateInfo.bind(this)
     this.makeAnElem = this.makeAnElem.bind(this)
+    this.getNewPossibility = this.getNewPossibility.bind(this)
+    this.calculateMakePossibility = this.calculateMakePossibility.bind(this)
   }
-  updateElemsID (updatedID) {
-    this.setState({elemID: updatedID})
+  getNewPossibility(isValid, inputType) {
+    let newMakePossible = {}
+    Object.keys(this.state.makePossible).forEach((key) => newMakePossible[key] = this.state.makePossible[key])
+    newMakePossible[inputType] = isValid
+    return newMakePossible
   }
-  updateInfo (info, newValue) {
+  calculateMakePossibility() {
+    let isValid = true
+    Object.keys(this.state.makePossible).forEach((key) => isValid = isValid && this.state.makePossible[key])
+    switch (this.props.kind) {
+      case 'EConnector':
+        isValid = isValid && (this.state.source !== '') && (this.state.sink !== '')
+        break
+      case 'EPort':
+        isValid = isValid && (this.state.parents !== '')
+        break
+    }
+    return isValid
+  }
+  updateElemsID (updatedID, isValid) {
+    let newMakePossible = this.getNewPossibility(isValid, 'elemID')
+    this.setState({elemID: updatedID, makePossible: newMakePossible})
+  }
+  updateInfo (info, newValue, isValid) {
+    let newMakePossible = this.getNewPossibility(isValid, info)
+    this.setState({makePossible: newMakePossible})
     switch (info) {
       case 'source':
         this.setState({source: newValue})
@@ -45,17 +84,30 @@ export default class ExdefDetailsElementsElems extends Component {
       elemID: '',
       source: '',
       sink: '',
-      parents: ''
+      parents: '',
+      makePossible: {
+        elemID: false
+      }
     })
   }
   render () {
+    let isValid = this.calculateMakePossibility()
     return (
       <div className='col-md-12'>
         <div className='row'>
           <div className='col-md-6'>
             <div className='well'>
-              <ExdefDetailsElementsElemsInput type={this.props.type} kind={this.props.kind} elemID={this.state.elemID} updateID={this.updateElemsID} make={this.makeAnElem} updateInfo={this.updateInfo}/>
-              <button type='button' className='btn btn-primary btn-block' onClick={this.makeAnElem} id='make-btn' disabled={this.state.elemID === '' ? true : false}>Make an element</button>
+              <ExdefDetailsElementsElemsInput
+                type={this.props.type}
+                kind={this.props.kind}
+                elemID={this.state.elemID}
+                source={this.state.source}
+                sink={this.state.sink}
+                parents={this.state.parents}
+                updateID={this.updateElemsID}
+                make={this.makeAnElem}
+                updateInfo={this.updateInfo} />
+              <button type='button' className='btn btn-primary btn-block' onClick={this.makeAnElem} id='make-btn' disabled={!isValid} >Make an element</button>
             </div>
           </div>
           <div className='col-md-6'>
@@ -80,29 +132,20 @@ class ExdefDetailsElementsElemsInput extends Component {
     this.handleIDChange = this.handleIDChange.bind(this)
   }
   handleIDChange (event) {
-    let isValid = !ipcRenderer.sendSync('validate-elemID', event.target.value)
-    if (isValid) {
-      document.getElementById('elemID').style['border-color'] = '#66afe9'
-      document.getElementById('elemID').style['box-shadow'] = 'inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)'
-      document.getElementById('make-btn').disabled = false
-      this.props.updateID(event.target.value)
-    } else {
-      document.getElementById('elemID').style['border-color'] = '#FF7D7D'
-      document.getElementById('elemID').style['box-shadow'] = 'inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233,102,102,0.6)'
-      document.getElementById('make-btn').disabled = true
-      this.props.updateID(event.target.value)
-    }
+    let isValid = !ipcRenderer.sendSync('validate-elemID', {value:event.target.value, inputType:'elemID'})
+    validateInput(isValid, 'elemID', 'make-btn')
+    this.props.updateID(event.target.value, isValid)
   }
   render () {
     let addedViews = []
     switch (this.props.kind) {
       case 'EConnector':
-        addedViews.push(<FormContrlWithElemsIDValidataion key='source' id='source' label='Source' update={this.props.updateInfo}/>)
-        addedViews.push(<FormContrlWithElemsIDValidataion key='sink' id='sink' label='Sink' update={this.props.updateInfo} />)
+        addedViews.push(<FormContrlWithElemsIDValidataion key='source' id='source' label='Source' value={this.props.source} update={this.props.updateInfo}/>)
+        addedViews.push(<FormContrlWithElemsIDValidataion key='sink' id='sink' label='Sink' value={this.props.sink} update={this.props.updateInfo} />)
         break
       case 'EComponent':
       case 'EPort':
-        addedViews.push(<FormContrlWithElemsIDValidataion key='parents' id='parents' label='Parents' update={this.props.updateInfo} />)
+        addedViews.push(<FormContrlWithElemsIDValidataion key='parents' id='parents' label='Parents' value={this.props.parents} update={this.props.updateInfo} />)
         break
     }
 
@@ -114,7 +157,7 @@ class ExdefDetailsElementsElemsInput extends Component {
           <div className='form-group'>
             <label for='elemID' className='col-md-3 control-label'>ID</label>
             <div className='col-md-9'>
-              <input type='text' className='form-control' id='elemID' value={this.props.elemID} onChange={this.handleIDChange} />
+              <input type='text' className='form-control errorInput' id='elemID' value={this.props.elemID} onChange={this.handleIDChange} />
             </div>
           </div>
           {addedViews}
@@ -128,7 +171,10 @@ ExdefDetailsElementsElemsInput.propTypes = {
   kind: PropTypes.string,
   updateID: PropTypes.func,
   elemID: PropTypes.string,
-  updateInfo: PropTypes.func
+  updateInfo: PropTypes.func,
+  source: PropTypes.string,
+  sink: PropTypes.string,
+  parents: PropTypes.string
 }
 
 class DisabledFormControl extends Component {
@@ -155,17 +201,9 @@ class FormContrlWithElemsIDValidataion extends Component {
     this.validateID = this.validateID.bind(this)
   }
   validateID (event) {
-    let isValid = ipcRenderer.sendSync('validate-elemID', event.target.value)
-    if (isValid) {
-      document.getElementById(this.props.id).style['border-color'] = '#66afe9'
-      document.getElementById(this.props.id).style['box-shadow'] = 'inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)'
-      document.getElementById('make-btn').disabled = false
-      this.props.update(this.props.id, event.target.value)
-    } else {
-      document.getElementById(this.props.id).style['border-color'] = '#FF7D7D'
-      document.getElementById(this.props.id).style['box-shadow'] = 'inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233,102,102,0.6)'
-      document.getElementById('make-btn').disabled = true
-    }
+    let isValid = ipcRenderer.sendSync('validate-elemID', {value:event.target.value, inputType:this.props.id})
+    validateInput(isValid, this.props.id, 'make-btn')
+    this.props.update(this.props.id, event.target.value, isValid)
   }
   render () {
     return (
@@ -173,7 +211,7 @@ class FormContrlWithElemsIDValidataion extends Component {
         <div className='form-group'>
           <label for={this.props.id} className='col-md-3 control-label'>{this.props.label}</label>
           <div className='col-md-9'>
-            <input type='text' className='form-control' id={this.props.id} onChange={this.validateID} />
+            <input type='text' className='form-control errorInput' value={this.props.value} id={this.props.id} onChange={this.validateID} />
           </div>
         </div>
       </div>
@@ -183,7 +221,8 @@ class FormContrlWithElemsIDValidataion extends Component {
 FormContrlWithElemsIDValidataion.propTypes = {
   id: PropTypes.string,
   label: PropTypes.string,
-  update: PropTypes.func
+  update: PropTypes.func,
+  value: PropTypes.string
 }
 
 class ExdefDetailsElementsElemsRecords extends Component {

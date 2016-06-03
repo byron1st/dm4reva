@@ -150,8 +150,17 @@ ipcMain.on('validate-muID', (event, arg) => {
 })
 
 ipcMain.on('validate-elemID', (event, arg) => {
-  if (arg === '') event.returnValue = true
-  elemsDB.validateID(arg, (err, num) => {
+  if (arg.value === '') {
+    switch (arg.inputType) {
+      case 'elemID':
+        event.returnValue = true
+      case 'source':
+      case 'sink':
+      case 'parents':
+        event.returnValue = false
+    }
+  }
+  elemsDB.validateID(arg.value, (err, num) => {
     if (num === 0) event.returnValue = false
     else event.returnValue = true
   })

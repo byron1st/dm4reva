@@ -41,3 +41,8 @@ body {
   overflow-y: scroll;
   height: 80%;
 }
+
+.form-control:focus.errorInput {
+  border-color: #FF7D7D;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233,102,102,0.6);
+}
