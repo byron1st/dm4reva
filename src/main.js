@@ -25,7 +25,7 @@ function createExdefWindow (docs) {
   if (config.mode === 'test') exdefWindow.webContents.openDevTools()
 }
 
-app.on('ready', () => {
+function loadDataAndCreateWindow () {
   if (config.mode === 'test') {
     loadInitialTestData().then(() => exdefDB.read({}, {kind:1, type:1}, (err, docs) => {
       if (err) return handleErrors (err)
@@ -35,6 +35,10 @@ app.on('ready', () => {
     if (err) return handleErrors (err)
     createExdefWindow(docs)
   })
+}
+
+app.on('ready', () => {
+  loadDataAndCreateWindow()
 })
 
 app.on('activate', () => {
@@ -156,6 +160,23 @@ ipcMain.on('validate-elemID', (event, arg) => {
 ipcMain.on('save-elem', (event, arg) => {
   elemsDB.create(arg, (err, doc) => {
     if (err) return handleErrors(err)
+  })
+})
+
+ipcMain.on('reset', (event) => {
+  exdefDB.deleteAll((err, num) => {
+    if (err) return handleErrors (err)
+    drDB.deleteAll((err, num) => {
+      if (err) return handleErrors (err)
+      erDB.deleteAll((err, num) => {
+        if (err) return handleErrors (err)
+        elemsDB.deleteAll((err, num) => {
+          if (err) return handleErrors (err)
+          exdefWindow.close()
+          loadDataAndCreateWindow()
+        })
+      })
+    })
   })
 })
 

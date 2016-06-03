@@ -70,7 +70,7 @@ const template = [
       {
         label: 'reset all',
         click(item, focusedWindow) {
-          //TODO: send ipc!
+          ipcRenderer.send('reset')
         }
       }
     ]
