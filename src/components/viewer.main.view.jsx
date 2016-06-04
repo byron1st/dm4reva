@@ -3,13 +3,20 @@
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 import {remote} from 'electron'
+import ViewerBody from './viewer.body.view.js'
 
 class ViewerMain extends Component {
   constructor () {
     super()
+    this.state = {
+      elemsList: []
+    }
     this.export = this.export.bind(this)
     this.refresh = this.refresh.bind(this)
     this.search = this.search.bind(this)
+  }
+  componentWillMount() {
+    this.setState({elemsList: this.props.elemsList})
   }
   export () {
     console.log('todo: export a diagram')
@@ -29,6 +36,7 @@ class ViewerMain extends Component {
         </div>
         <div className='row'>
           <div className='col-md-12'>
+            <ViewerBody elemsList={this.state.elemsList} />
           </div>
         </div>
       </div>
