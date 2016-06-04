@@ -9,6 +9,7 @@ import fs from 'fs'
 import config from './app.config.js'
 
 let exdefWindow = null
+let viewerWindow = null
 
 function handleErrors (err) {
   dialog.showErrorBox('An error occurs', err.toString())
@@ -35,6 +36,17 @@ function loadDataAndCreateWindow () {
     if (err) return handleErrors (err)
     createExdefWindow(docs)
   })
+}
+
+function createViewerWindow (docs) {
+  viewerWindow = new BrowserWindow({
+    width: 1280,
+    height: 720
+  })
+  viewerWindow.elemsList = docs
+  viewerWindow.loadURL(path.join('file://', __dirname, 'index.viewer.html'))
+  viewerWindow.on('closed', () => viewerWindow = null)
+  if (config.mode === 'test') viewerWindow.webContents.openDevTools()
 }
 
 app.on('ready', () => {
@@ -187,6 +199,16 @@ ipcMain.on('reset', (event) => {
       })
     })
   })
+})
+
+ipcMain.on('open-viewer', (event) => {
+  if (viewerWindow) viewerWindow.focus()
+  else {
+    elemsDB.read({}, {kind:1, type:1}, (err, docs) => {
+      if (err) return handleErrors(err)
+      createViewerWindow(docs)
+    })
+  }
 })
 
 /** Test Mode **/

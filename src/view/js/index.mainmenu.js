@@ -68,9 +68,24 @@ const template = [
         }
       },
       {
+        type: 'separator'
+      },
+      {
         label: 'reset all',
         click(item, focusedWindow) {
           ipcRenderer.send('reset')
+        }
+      }
+    ]
+  },
+  {
+    label: 'Viewer',
+    submenu: [
+      {
+        label: 'Open a diagram',
+        accelerator: 'CmdOrCtrl+V',
+        click(item, focusedWindow) {
+          ipcRenderer.send('open-viewer')
         }
       }
     ]

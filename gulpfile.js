@@ -27,6 +27,21 @@ gulp.task('copy:bootstrap:fonts', () => {
   .pipe(gulp.dest('./dist/lib/bootstrap/fonts'))
 })
 
+gulp.task('copy:vis', () => {
+  return gulp.src([
+    './node_modules/vis/dist/vis.min.css',
+    './node_modules/vis/dist/vis.min.js'
+  ])
+  .pipe(gulp.dest('./dist/lib/vis'))
+})
+
+gulp.task('copy:vis:img', () => {
+  return gulp.src([
+    './node_modules/vis/dist/img/*/*'
+  ])
+  .pipe(gulp.dest('./dist/lib/vis/img'))
+})
+
 gulp.task('compile:js', () => {
   return gulp.src([
       './src/*.js',
@@ -46,4 +61,4 @@ gulp.task('copy:view', () => {
   .pipe(gulp.dest('./dist'))
 })
 
-gulp.task('default', ['clean', 'compile:js', 'copy:bootstrap:js', 'copy:bootstrap:css', 'copy:bootstrap:fonts', 'copy:view'])
+gulp.task('default', ['clean', 'compile:js', 'copy:bootstrap:js', 'copy:bootstrap:css', 'copy:bootstrap:fonts', 'copy:vis', 'copy:vis:img', 'copy:view'])
