@@ -13,6 +13,7 @@ import Datastore from 'nedb'
 }
 **/
 const db = new Datastore({filename: path.join(__dirname, '../db/elems.db'), autoload: true})
+db.ensureIndex({fieldName: 'elemID', unique: true})
 
 export function create(items, cb) {
   db.insert(items, (err, docs) => {

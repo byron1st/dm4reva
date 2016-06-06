@@ -68,6 +68,22 @@ const template = [
         }
       },
       {
+        label: 'import elements',
+        click(item, focusedWindow) {
+          dialog.showOpenDialog({
+            properties: ['openFile']
+          }, (filenames) => {
+            if (filenames) {
+              window.$('#progressBar').show()
+              fs.readFile(filenames[0], (err, data) => {
+                if (err) handleErrors(err)
+                ipcRenderer.send('save-elems', data)
+              })
+            }
+          })
+        }
+      },
+      {
         type: 'separator'
       },
       {
@@ -138,11 +154,7 @@ if (process.platform === 'darwin') {
   })
 }
 
-ipcRenderer.on('save-drs-reply', (event, arg) => {
-  window.$('#progressBar').hide()
-})
-
-ipcRenderer.on('save-ers-reply', (event, arg) => {
+ipcRenderer.on('save-reply', (event, arg) => {
   window.$('#progressBar').hide()
 })
 

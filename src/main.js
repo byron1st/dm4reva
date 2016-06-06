@@ -113,7 +113,7 @@ ipcMain.on('add-new-exdef', (event, arg) => {
 ipcMain.on('save-drs', (event, arg) => {
   drDB.create(JSON.parse(arg.toString()), (err, docs) => {
     if (err) return handleErrors(err)
-    event.sender.send('save-drs-reply')
+    event.sender.send('save-reply')
     dialog.showMessageBox({type: 'info',
                           title: 'Dependency relationships are added',
                           message: docs.length + ' DRs are added.',
@@ -135,7 +135,7 @@ ipcMain.on('read-drs', (event, arg) => {
 ipcMain.on('save-ers', (event, arg) => {
   erDB.create(JSON.parse(arg.toString()), (err, docs) => {
     if (err) return handleErrors(err)
-    event.sender.send('save-ers-reply')
+    event.sender.send('save-reply')
     dialog.showMessageBox({type: 'info',
                           title: 'Execution records are added',
                           message: docs.length + ' ERs are added.',
@@ -184,6 +184,17 @@ ipcMain.on('save-elem', (event, arg) => {
   })
 })
 
+ipcMain.on('save-elems', (event, arg) => {
+  elemsDB.create(JSON.parse(arg.toString()), (err, docs) => {
+    if (err) return handleErrors(err)
+    event.sender.send('save-reply')
+    dialog.showMessageBox({type: 'info',
+                          title: 'Execution view elements are added',
+                          message: docs.length + ' elements are added.',
+                          buttons: ['OK']})
+  })
+})
+
 ipcMain.on('reset', (event) => {
   exdefDB.deleteAll((err, num) => {
     if (err) return handleErrors (err)
@@ -214,11 +225,12 @@ ipcMain.on('open-viewer', (event) => {
 /** Test Mode **/
 function loadInitialTestData() {
   let exdefBDPS = JSON.parse(fs.readFileSync('./test/resources/exdef.bdps.json'))
-  let elemsBDPS = JSON.parse(fs.readFileSync('./test/resources/elems.bdps.json'))
+  // let elemsBDPS = JSON.parse(fs.readFileSync('./test/resources/elems.bdps.json'))
   return new Promise((resolve, reject) => {
     exdefDB.create(exdefBDPS, (err, docs) => {
       if (err) reject()
-      elemsDB.create(elemsBDPS, (err, elems) => resolve())
+      // elemsDB.create(elemsBDPS, (err, elems) => resolve())
+      resolve()
     })
   })
 }
