@@ -1,3 +1,8 @@
 body {
   padding-top: 70px;
+  height: 100%
+}
+
+#diagram {
+  height: 100%
 }

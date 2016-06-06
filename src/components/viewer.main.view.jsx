@@ -28,7 +28,6 @@ class ViewerMain extends Component {
     console.log(query)
   }
   render () {
-    console.log(this.props.elemsList)
     return (
       <div>
         <div className='row'>
