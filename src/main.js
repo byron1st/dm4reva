@@ -214,10 +214,11 @@ ipcMain.on('open-viewer', (event) => {
 /** Test Mode **/
 function loadInitialTestData() {
   let exdefBDPS = JSON.parse(fs.readFileSync('./test/resources/exdef.bdps.json'))
+  let elemsBDPS = JSON.parse(fs.readFileSync('./test/resources/elems.bdps.json'))
   return new Promise((resolve, reject) => {
     exdefDB.create(exdefBDPS, (err, docs) => {
       if (err) reject()
-      resolve()
+      elemsDB.create(elemsBDPS, (err, elems) => resolve())
     })
   })
 }

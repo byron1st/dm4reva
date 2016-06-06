@@ -1,0 +1,58 @@
+[
+  {
+    "elemID": "SourceFilter",
+    "source": "",
+    "sink": "",
+    "parents": "",
+    "type": "Thread",
+    "kind": "EComponent"
+  },
+  {
+    "elemID": "BankingFilter",
+    "source": "",
+    "sink": "",
+    "parents": "",
+    "type": "Thread",
+    "kind": "EComponent"
+  },
+  {
+    "elemID": "TransactionSinkFilter",
+    "source": "",
+    "sink": "",
+    "parents": "",
+    "type": "Thread",
+    "kind": "EComponent"
+  },
+  {
+    "elemID": "SumSinkFilter",
+    "source": "",
+    "sink": "",
+    "parents": "",
+    "type": "Thread",
+    "kind": "EComponent"
+  },
+  {
+    "elemID": "Pipe01",
+    "source": "SourceFilter",
+    "sink": "BankingFilter",
+    "parents": "",
+    "type": "StreamI/O",
+    "kind": "EConnector"
+  },
+  {
+    "elemID": "Pipe02",
+    "source": "BankingFilter",
+    "sink": "TransactionSinkFilter",
+    "parents": "",
+    "type": "StreamI/O",
+    "kind": "EConnector"
+  },
+  {
+    "elemID": "Pipe03",
+    "source": "BankingFilter",
+    "sink": "SumSinkFilter",
+    "parents": "",
+    "type": "StreamI/O",
+    "kind": "EConnector"
+  }
+]
