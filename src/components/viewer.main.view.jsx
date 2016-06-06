@@ -2,8 +2,15 @@
 
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
-import {remote} from 'electron'
+import {remote, ipcRenderer} from 'electron'
 import ViewerBody from './viewer.body.view.js'
+
+function showOnProgressBox () {
+  remote.dialog.showMessageBox({type: 'info',
+                        title: 'Under construction',
+                        message: 'This feature is developing now. Someday, this feature will be added.',
+                        buttons: ['OK']})
+}
 
 class ViewerMain extends Component {
   constructor () {
@@ -19,13 +26,13 @@ class ViewerMain extends Component {
     this.setState({elemsList: this.props.elemsList})
   }
   export () {
-    console.log('todo: export a diagram')
+    showOnProgressBox()
   }
   refresh () {
-    console.log('todo: refresh')
+    ipcRenderer.send('refresh-elems')
   }
   search (query) {
-    console.log(query)
+    showOnProgressBox()
   }
   render () {
     return (

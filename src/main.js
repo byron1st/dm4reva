@@ -222,6 +222,14 @@ ipcMain.on('open-viewer', (event) => {
   }
 })
 
+ipcMain.on('refresh-elems', (event) => {
+  viewerWindow.close()
+  elemsDB.read({}, {kind:1, type:1}, (err, docs) => {
+    if (err) return handleErrors(err)
+    createViewerWindow(docs)
+  })
+})
+
 /** Test Mode **/
 function loadInitialTestData() {
   let exdefBDPS = JSON.parse(fs.readFileSync('./test/resources/exdef.bdps.json'))
