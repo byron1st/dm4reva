@@ -1,12 +1,8 @@
-import {ipcRenderer, remote} from 'electron'
+import {ipcRenderer, dialog, app, Menu} from 'electron'
 import fs from 'fs'
 
-const dialog = remote.dialog
-const app = remote.app
-const Menu = remote.Menu
-
 function handleErrors (err) {
-  ipcRenderer.send('handle-errors', err)
+  // ipcRenderer.send('handle-errors', err)
 }
 
 const template = [
@@ -27,7 +23,7 @@ const template = [
               window.$('#progressBar').show()
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                ipcRenderer.send('save-exdefs', data)
+                // ipcRenderer.send('save-exdefs', data)
               })
             }
           })
@@ -44,7 +40,7 @@ const template = [
               window.$('#progressBar').show()
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                ipcRenderer.send('save-drs', data)
+                // ipcRenderer.send('save-drs', data)
               })
             }
           })
@@ -61,7 +57,7 @@ const template = [
               window.$('#progressBar').show()
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                ipcRenderer.send('save-ers', data)
+                // ipcRenderer.send('save-ers', data)
               })
             }
           })
@@ -77,7 +73,7 @@ const template = [
               window.$('#progressBar').show()
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                ipcRenderer.send('save-elems', data)
+                // ipcRenderer.send('save-elems', data)
               })
             }
           })
@@ -89,7 +85,7 @@ const template = [
       {
         label: 'reset all',
         click(item, focusedWindow) {
-          ipcRenderer.send('reset')
+          // ipcRenderer.send('reset')
         }
       }
     ]
@@ -101,7 +97,7 @@ const template = [
         label: 'Open a diagram',
         accelerator: 'CmdOrCtrl+V',
         click(item, focusedWindow) {
-          ipcRenderer.send('open-viewer')
+          // ipcRenderer.send('open-viewer')
         }
       }
     ]
@@ -154,9 +150,9 @@ if (process.platform === 'darwin') {
   })
 }
 
-ipcRenderer.on('save-reply', (event, arg) => {
-  window.$('#progressBar').hide()
-})
+// ipcRenderer.on('save-reply', (event, arg) => {
+//   window.$('#progressBar').hide()
+// })
 
 const menu = Menu.buildFromTemplate(template);
 Menu.setApplicationMenu(menu);

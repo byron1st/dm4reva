@@ -1,5 +1,5 @@
 'use strict'
-import {app, BrowserWindow, ipcMain, dialog} from 'electron'
+import {app, BrowserWindow, ipcMain, dialog, Menu} from 'electron'
 import path from 'path'
 import * as exdefDB from './exdef.db.js'
 import * as drDB from './dr.db.js'
@@ -15,41 +15,44 @@ function handleErrors (err) {
   dialog.showErrorBox('An error occurs', err.toString())
 }
 
-function createExdefWindow (docs) {
-  exdefWindow = new BrowserWindow({
-    width: 1280,
-    height: 720
+function createExdefWindow () {
+  exdefDB.read({}, {kind:1, type:1}, (err, docs) => {
+    if (err) return handleErrors (err)
+
+    exdefWindow = new BrowserWindow({
+      width: 1280,
+      height: 720
+    })
+    exdefWindow.exdefList = docs
+    exdefWindow.loadURL(path.join('file://', __dirname, 'index.exdef.html'))
+    exdefWindow.on('closed', () => exdefWindow = null)
+    if (config.mode === 'test') exdefWindow.webContents.openDevTools()
   })
-  exdefWindow.exdefList = docs
-  exdefWindow.loadURL(path.join('file://', __dirname, 'index.exdef.html'))
-  exdefWindow.on('closed', () => exdefWindow = null)
-  if (config.mode === 'test') exdefWindow.webContents.openDevTools()
 }
 
 function loadDataAndCreateWindow () {
-  if (config.mode === 'test') {
-    loadInitialTestData().then(() => exdefDB.read({}, {kind:1, type:1}, (err, docs) => {
-      if (err) return handleErrors (err)
-      createExdefWindow(docs)
-    }))
-  } else exdefDB.read({}, {kind:1, type:1}, (err, docs) => {
-    if (err) return handleErrors (err)
-    createExdefWindow(docs)
-  })
+  if (config.mode === 'test') loadInitialTestData().then(() => createExdefWindow())
+  else createExdefWindow()
 }
 
 function createViewerWindow (docs) {
-  viewerWindow = new BrowserWindow({
-    width: 1280,
-    height: 720
+  elemsDB.read({}, {kind:1, type:1}, (err, docs) => {
+    if (err) return handleErrors(err)
+
+    viewerWindow = new BrowserWindow({
+      width: 1280,
+      height: 720
+    })
+    viewerWindow.elemsList = docs
+    viewerWindow.loadURL(path.join('file://', __dirname, 'index.viewer.html'))
+    viewerWindow.on('closed', () => viewerWindow = null)
+    if (config.mode === 'test') viewerWindow.webContents.openDevTools()
   })
-  viewerWindow.elemsList = docs
-  viewerWindow.loadURL(path.join('file://', __dirname, 'index.viewer.html'))
-  viewerWindow.on('closed', () => viewerWindow = null)
-  if (config.mode === 'test') viewerWindow.webContents.openDevTools()
 }
 
 app.on('ready', () => {
+  const menu = Menu.buildFromTemplate(mainmenu)
+  Menu.setApplicationMenu(menu)
   loadDataAndCreateWindow()
 })
 
@@ -67,13 +70,6 @@ app.on('will-quit', () => {
 
 ipcMain.on('handle-errors', (event, arg) => {
   handleErrors(err)
-})
-
-ipcMain.on('save-exdefs', (event, arg) => {
-  exdefDB.create(JSON.parse(arg.toString()), (err, docs) => {
-    if (err) return handleErrors(err)
-    event.sender.send('save-exdefs-reply', docs)
-  })
 })
 
 ipcMain.on('update-anExdef', (event, arg) => {
@@ -110,17 +106,6 @@ ipcMain.on('add-new-exdef', (event, arg) => {
   })
 })
 
-ipcMain.on('save-drs', (event, arg) => {
-  drDB.create(JSON.parse(arg.toString()), (err, docs) => {
-    if (err) return handleErrors(err)
-    event.sender.send('save-reply')
-    dialog.showMessageBox({type: 'info',
-                          title: 'Dependency relationships are added',
-                          message: docs.length + ' DRs are added.',
-                          buttons: ['OK']})
-  })
-})
-
 ipcMain.on('read-drs', (event, arg) => {
   drDB.readDRsOfInfs(arg, (err, docs) => {
     if (err) {
@@ -129,17 +114,6 @@ ipcMain.on('read-drs', (event, arg) => {
     } else {
       event.returnValue = docs
     }
-  })
-})
-
-ipcMain.on('save-ers', (event, arg) => {
-  erDB.create(JSON.parse(arg.toString()), (err, docs) => {
-    if (err) return handleErrors(err)
-    event.sender.send('save-reply')
-    dialog.showMessageBox({type: 'info',
-                          title: 'Execution records are added',
-                          message: docs.length + ' ERs are added.',
-                          buttons: ['OK']})
   })
 })
 
@@ -184,51 +158,202 @@ ipcMain.on('save-elem', (event, arg) => {
   })
 })
 
-ipcMain.on('save-elems', (event, arg) => {
-  elemsDB.create(JSON.parse(arg.toString()), (err, docs) => {
-    if (err) return handleErrors(err)
-    event.sender.send('save-reply')
-    dialog.showMessageBox({type: 'info',
-                          title: 'Execution view elements are added',
-                          message: docs.length + ' elements are added.',
-                          buttons: ['OK']})
-  })
-})
-
-ipcMain.on('reset', (event) => {
-  exdefDB.deleteAll((err, num) => {
-    if (err) return handleErrors (err)
-    drDB.deleteAll((err, num) => {
-      if (err) return handleErrors (err)
-      erDB.deleteAll((err, num) => {
-        if (err) return handleErrors (err)
-        elemsDB.deleteAll((err, num) => {
-          if (err) return handleErrors (err)
-          exdefWindow.close()
-          loadDataAndCreateWindow()
-        })
-      })
-    })
-  })
-})
-
-ipcMain.on('open-viewer', (event) => {
-  if (viewerWindow) viewerWindow.focus()
-  else {
-    elemsDB.read({}, {kind:1, type:1}, (err, docs) => {
-      if (err) return handleErrors(err)
-      createViewerWindow(docs)
-    })
-  }
-})
-
 ipcMain.on('refresh-elems', (event) => {
   viewerWindow.close()
-  elemsDB.read({}, {kind:1, type:1}, (err, docs) => {
-    if (err) return handleErrors(err)
-    createViewerWindow(docs)
-  })
+  createViewerWindow()
 })
+
+/** Main menu **/
+const mainmenu = [
+  {
+    label: 'Datastore',
+    submenu: [
+      {
+        label: 'import Exdef.s',
+        accelerator: 'CmdOrCtrl+E',
+        click(item, focusedWindow) {
+          dialog.showOpenDialog({
+            properties: ['openFile'],
+            filters: [
+              {name: 'json File', extensions: ['json']}
+            ]
+          }, (filenames) => {
+            if (filenames) {
+              // window.$('#progressBar').show()
+              // TODO ipc show-loading
+              fs.readFile(filenames[0], (err, data) => {
+                if (err) handleErrors(err)
+                exdefDB.create(JSON.parse(arg.toString()), (err, docs) => {
+                  if (err) return handleErrors(err)
+                  // event.sender.send('hide-loading', docs)
+                  // TODO add docs
+                  // TODO ipc hide-loading
+                })
+              })
+            }
+          })
+        }
+      },
+      {
+        label: 'import DRs',
+        accelerator: 'CmdOrCtrl+D',
+        click(item, focusedWindow) {
+          dialog.showOpenDialog({
+            properties: ['openFile']
+          }, (filenames) => {
+            if (filenames) {
+              // TODO ipc show-loading
+              fs.readFile(filenames[0], (err, data) => {
+                if (err) handleErrors(err)
+                // ipcRenderer.send('save-drs', data)
+                drDB.create(JSON.parse(arg.toString()), (err, docs) => {
+                  if (err) return handleErrors(err)
+                  // event.sender.send('save-reply')
+                  // TODO ipc hide-loading
+                  dialog.showMessageBox({type: 'info',
+                                        title: 'Dependency relationships are added',
+                                        message: docs.length + ' DRs are added.',
+                                        buttons: ['OK']})
+                })
+              })
+            }
+          })
+        }
+      },
+      {
+        label: 'import records',
+        accelerator: 'CmdOrCtrl+R',
+        click(item, focusedWindow) {
+          dialog.showOpenDialog({
+            properties: ['openFile']
+          }, (filenames) => {
+            if (filenames) {
+              // TODO ipc show-loading
+              fs.readFile(filenames[0], (err, data) => {
+                if (err) handleErrors(err)
+                erDB.create(JSON.parse(arg.toString()), (err, docs) => {
+                  if (err) return handleErrors(err)
+                  // event.sender.send('save-reply')
+                  // TODO ipc hide-loading
+                  dialog.showMessageBox({type: 'info',
+                                        title: 'Execution records are added',
+                                        message: docs.length + ' ERs are added.',
+                                        buttons: ['OK']})
+                })
+              })
+            }
+          })
+        }
+      },
+      {
+        label: 'import elements',
+        click(item, focusedWindow) {
+          dialog.showOpenDialog({
+            properties: ['openFile']
+          }, (filenames) => {
+            if (filenames) {
+              // window.$('#progressBar').show()
+              // TODO ipc show-loading
+              fs.readFile(filenames[0], (err, data) => {
+                if (err) handleErrors(err)
+                elemsDB.create(JSON.parse(arg.toString()), (err, docs) => {
+                  if (err) return handleErrors(err)
+                  // event.sender.send('save-reply')
+                  // TODO ipc hide-loading
+                  dialog.showMessageBox({type: 'info',
+                                        title: 'Execution view elements are added',
+                                        message: docs.length + ' elements are added.',
+                                        buttons: ['OK']})
+                })
+              })
+            }
+          })
+        }
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: 'reset all',
+        click(item, focusedWindow) {
+          exdefDB.deleteAll((err, num) => {
+            if (err) return handleErrors (err)
+            drDB.deleteAll((err, num) => {
+              if (err) return handleErrors (err)
+              erDB.deleteAll((err, num) => {
+                if (err) return handleErrors (err)
+                elemsDB.deleteAll((err, num) => {
+                  if (err) return handleErrors (err)
+                  exdefWindow.close()
+                  loadDataAndCreateWindow()
+                })
+              })
+            })
+          })
+        }
+      }
+    ]
+  },
+  {
+    label: 'Viewer',
+    submenu: [
+      {
+        label: 'Open a diagram',
+        accelerator: 'CmdOrCtrl+V',
+        click(item, focusedWindow) {
+          if (viewerWindow) viewerWindow.focus()
+          else createViewerWindow()
+        }
+      }
+    ]
+  }
+]
+
+if (process.platform === 'darwin') {
+  const name = app.getName();
+  mainmenu.unshift({
+    label: name,
+    submenu: [
+      {
+        label: 'About ' + name,
+        role: 'about'
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: 'Services',
+        role: 'services',
+        submenu: []
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: 'Hide ' + name,
+        accelerator: 'Command+H',
+        role: 'hide'
+      },
+      {
+        label: 'Hide Others',
+        accelerator: 'Command+Alt+H',
+        role: 'hideothers'
+      },
+      {
+        label: 'Show All',
+        role: 'unhide'
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: 'Quit',
+        accelerator: 'Command+Q',
+        click() { app.quit() }
+      },
+    ]
+  })
+}
 
 /** Test Mode **/
 function loadInitialTestData() {
