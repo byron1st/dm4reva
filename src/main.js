@@ -1,11 +1,11 @@
 'use strict'
 import {app, BrowserWindow, ipcMain, dialog, Menu} from 'electron'
 import path from 'path'
+import fs from 'fs'
 import * as exdefDB from './exdef.db.js'
 import * as drDB from './dr.db.js'
 import * as erDB from './er.db.js'
 import * as elemsDB from './elems.db.js'
-import fs from 'fs'
 import config from './app.config.js'
 
 let exdefWindow = null
@@ -13,6 +13,7 @@ let viewerWindow = null
 
 function handleErrors (err) {
   dialog.showErrorBox('An error occurs', err.toString())
+  ipcRenderer.send('hide-loading')
 }
 
 function createExdefWindow () {
@@ -179,15 +180,15 @@ const mainmenu = [
             ]
           }, (filenames) => {
             if (filenames) {
-              // window.$('#progressBar').show()
-              // TODO ipc show-loading
+              if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                exdefDB.create(JSON.parse(arg.toString()), (err, docs) => {
+                exdefDB.create(JSON.parse(data.toString()), (err, docs) => {
                   if (err) return handleErrors(err)
-                  // event.sender.send('hide-loading', docs)
-                  // TODO add docs
-                  // TODO ipc hide-loading
+                  if (exdefWindow) {
+                    exdefWindow.webContents.send('notify-udpate', docs)
+                    exdefWindow.webContents.send('hide-loading')
+                  }
                 })
               })
             }
@@ -202,14 +203,12 @@ const mainmenu = [
             properties: ['openFile']
           }, (filenames) => {
             if (filenames) {
-              // TODO ipc show-loading
+              if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                // ipcRenderer.send('save-drs', data)
-                drDB.create(JSON.parse(arg.toString()), (err, docs) => {
+                drDB.create(JSON.parse(data.toString()), (err, docs) => {
                   if (err) return handleErrors(err)
-                  // event.sender.send('save-reply')
-                  // TODO ipc hide-loading
+                  if (exdefWindow) exdefWindow.webContents.send('hide-loading')
                   dialog.showMessageBox({type: 'info',
                                         title: 'Dependency relationships are added',
                                         message: docs.length + ' DRs are added.',
@@ -228,13 +227,12 @@ const mainmenu = [
             properties: ['openFile']
           }, (filenames) => {
             if (filenames) {
-              // TODO ipc show-loading
+              if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                erDB.create(JSON.parse(arg.toString()), (err, docs) => {
+                erDB.create(JSON.parse(data.toString()), (err, docs) => {
                   if (err) return handleErrors(err)
-                  // event.sender.send('save-reply')
-                  // TODO ipc hide-loading
+                  if (exdefWindow) exdefWindow.webContents.send('hide-loading')
                   dialog.showMessageBox({type: 'info',
                                         title: 'Execution records are added',
                                         message: docs.length + ' ERs are added.',
@@ -252,14 +250,12 @@ const mainmenu = [
             properties: ['openFile']
           }, (filenames) => {
             if (filenames) {
-              // window.$('#progressBar').show()
-              // TODO ipc show-loading
+              if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                elemsDB.create(JSON.parse(arg.toString()), (err, docs) => {
+                elemsDB.create(JSON.parse(data.toString()), (err, docs) => {
                   if (err) return handleErrors(err)
-                  // event.sender.send('save-reply')
-                  // TODO ipc hide-loading
+                  if (exdefWindow) exdefWindow.webContents.send('hide-loading')
                   dialog.showMessageBox({type: 'info',
                                         title: 'Execution view elements are added',
                                         message: docs.length + ' elements are added.',
@@ -358,11 +354,9 @@ if (process.platform === 'darwin') {
 /** Test Mode **/
 function loadInitialTestData() {
   let exdefBDPS = JSON.parse(fs.readFileSync('./test/resources/exdef.bdps.json'))
-  // let elemsBDPS = JSON.parse(fs.readFileSync('./test/resources/elems.bdps.json'))
   return new Promise((resolve, reject) => {
     exdefDB.create(exdefBDPS, (err, docs) => {
       if (err) reject()
-      // elemsDB.create(elemsBDPS, (err, elems) => resolve())
       resolve()
     })
   })

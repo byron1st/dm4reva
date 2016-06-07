@@ -30,7 +30,7 @@ class ExdefMain extends Component {
   }
   componentWillMount () {
     this.setState({exdefList: this.props.exdefList})
-    ipcRenderer.on('save-exdefs-reply', (event, arg) => this.addExdefsToList(arg))
+    ipcRenderer.on('notify-udpate', (event, arg) => this.addExdefsToList(arg))
   }
   selectAnExdef (_id) {
     this.setState({selectedExdef:_id})
@@ -53,7 +53,6 @@ class ExdefMain extends Component {
   addExdefsToList (addedExdefList) {
     let updatedExdefList = this.state.exdefList.concat(addedExdefList)
     updatedExdefList.sort(sortKindAndType)
-    window.$('#progressBar').hide()
     this.setState({exdefList: updatedExdefList})
   }
   addNewExdef (newExdefData) {
@@ -76,3 +75,5 @@ class ExdefMain extends Component {
 }
 
 ReactDOM.render(<ExdefMain exdefList={remote.getCurrentWindow().exdefList}/>, document.getElementById('exdefMain'))
+ipcRenderer.on('show-loading', (event) => window.$('#progressBar').show())
+ipcRenderer.on('hide-loading', (event) => window.$('#progressBar').hide())
