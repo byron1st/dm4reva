@@ -36,7 +36,7 @@ function loadDataAndCreateWindow () {
   else createExdefWindow()
 }
 
-function createViewerWindow (docs) {
+function createViewerWindow () {
   elemsDB.read({}, {kind:1, type:1}, (err, docs) => {
     if (err) return handleErrors(err)
 
