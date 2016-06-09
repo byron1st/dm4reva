@@ -167,6 +167,18 @@ ipcMain.on('refresh-elems', (event) => {
 /** Main menu **/
 const mainmenu = [
   {
+    label: 'Edit',
+    submenu: [
+      { label: 'Undo', accelerator: 'CmdOrCtrl+Z', role: 'undo' },
+      { label: 'Redo', accelerator: 'Shift+CmdOrCtrl+Z', role: 'redo' },
+      { type: 'separator' },
+      { label: 'Cut', accelerator: 'CmdOrCtrl+X', role: 'cut' },
+      { label: 'Copy', accelerator: 'CmdOrCtrl+C', role: 'copy' },
+      { label: 'Paste', accelerator: 'CmdOrCtrl+V', role: 'paste' },
+      { label: 'Select All', accelerator: 'CmdOrCtrl+A', role: 'selectall' }
+    ]
+  },
+  {
     label: 'Datastore',
     submenu: [
       {
@@ -266,9 +278,7 @@ const mainmenu = [
           })
         }
       },
-      {
-        type: 'separator'
-      },
+      { type: 'separator' },
       {
         label: 'reset all',
         click(item, focusedWindow) {
@@ -295,7 +305,7 @@ const mainmenu = [
     submenu: [
       {
         label: 'Open a diagram',
-        accelerator: 'CmdOrCtrl+V',
+        accelerator: 'CmdOrCtrl+Shift+V',
         click(item, focusedWindow) {
           if (viewerWindow) viewerWindow.focus()
           else createViewerWindow()
