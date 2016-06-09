@@ -140,12 +140,12 @@ class ExdefDetailsElementsElemsInput extends Component {
     let addedViews = []
     switch (this.props.kind) {
       case 'EConnector':
-        addedViews.push(<FormContrlWithElemsIDValidataion key='source' id='source' label='Source' value={this.props.source} update={this.props.updateInfo}/>)
-        addedViews.push(<FormContrlWithElemsIDValidataion key='sink' id='sink' label='Sink' value={this.props.sink} update={this.props.updateInfo} />)
+        addedViews.push(<FormContrlWithElemsIDValidataion key='source' id='source' label='Source' value={this.props.source} update={this.props.updateInfo} mandatory={true}/>)
+        addedViews.push(<FormContrlWithElemsIDValidataion key='sink' id='sink' label='Sink' value={this.props.sink} update={this.props.updateInfo} mandatory={true}/>)
         break
       case 'EComponent':
       case 'EPort':
-        addedViews.push(<FormContrlWithElemsIDValidataion key='parents' id='parents' label='Parents' value={this.props.parents} update={this.props.updateInfo} />)
+        addedViews.push(<FormContrlWithElemsIDValidataion key='parents' id='parents' label='Parents' value={this.props.parents} update={this.props.updateInfo} mandatory={false}/>)
         break
     }
 
@@ -211,7 +211,7 @@ class FormContrlWithElemsIDValidataion extends Component {
         <div className='form-group'>
           <label for={this.props.id} className='col-md-3 control-label'>{this.props.label}</label>
           <div className='col-md-9'>
-            <input type='text' className='form-control errorInput' value={this.props.value} id={this.props.id} onChange={this.validateID} />
+            <input type='text' className={this.props.mandatory ? 'form-control errorInput' : 'form-control'} value={this.props.value} id={this.props.id} onChange={this.validateID} />
           </div>
         </div>
       </div>
@@ -222,7 +222,8 @@ FormContrlWithElemsIDValidataion.propTypes = {
   id: PropTypes.string,
   label: PropTypes.string,
   update: PropTypes.func,
-  value: PropTypes.string
+  value: PropTypes.string,
+  mandatory: PropTypes.bool
 }
 
 class ExdefDetailsElementsElemsRecords extends Component {

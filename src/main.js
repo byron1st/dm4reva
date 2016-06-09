@@ -140,10 +140,10 @@ ipcMain.on('validate-elemID', (event, arg) => {
   if (arg.value === '') {
     switch (arg.inputType) {
       case 'elemID':
+      case 'parents':
         event.returnValue = true
       case 'source':
       case 'sink':
-      case 'parents':
         event.returnValue = false
     }
   }
