@@ -5,14 +5,14 @@ import ReactDOM from 'react-dom'
 import {ipcRenderer} from 'electron'
 
 function validateInput (isValid, inputID, buttonID) {
+  let currentClassName = document.getElementById(inputID).className
   if (isValid) {
-    let currentClassName = document.getElementById(inputID).className
     let index = currentClassName.indexOf(' errorInput')
     if (index !== -1) {
       document.getElementById(inputID).className = currentClassName.substring(0, index)
     }
   } else {
-    document.getElementById(inputID).className = document.getElementById(inputID).className + ' errorInput'
+    document.getElementById(inputID).className = currentClassName + ' errorInput'
   }
 }
 

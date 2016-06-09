@@ -232,13 +232,15 @@ class ExdefDetailsEditMU extends Component {
   }
   validateID (event) {
     let isValid = ipcRenderer.sendSync('validate-muID', event.target.value)
+    let currentClassName = document.getElementById('mu-new-id').className
     if (isValid) {
-      document.getElementById('mu-new-id').style['border-color'] = '#66afe9'
-      document.getElementById('mu-new-id').style['box-shadow'] = 'inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)'
+      let index = currentClassName.indexOf(' errorInput')
+      if (index !== -1) {
+        document.getElementById('mu-new-id').className = currentClassName.substring(0, index)
+      }
       document.getElementById('add-mu-btn').disabled = false
     } else {
-      document.getElementById('mu-new-id').style['border-color'] = '#FF7D7D'
-      document.getElementById('mu-new-id').style['box-shadow'] = 'inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(233,102,102,0.6)'
+      document.getElementById('mu-new-id').className = currentClassName + ' errorInput'
       document.getElementById('add-mu-btn').disabled = true
     }
   }
