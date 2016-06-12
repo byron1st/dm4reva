@@ -2,12 +2,7 @@
 import {app, BrowserWindow, ipcMain, dialog, Menu} from 'electron'
 import path from 'path'
 import fs from 'fs'
-import * as exdefDB from './exdef.db.js'
-import * as drDB from './dr.db.js'
-import * as erDB from './er.db.js'
-import * as elemsDB from './elems.db.js'
-import initDBs, * as db from './db.js'
-import {nexdefDB, ndrDB, nerDB, nelemsDB} from './db.js'
+import * as db from './db.js'
 import config from './app.config.js'
 
 let exdefWindow = null
@@ -19,7 +14,7 @@ function handleErrors (err) {
 }
 
 function createExdefWindow () {
-  exdefDB.read({}, {kind:1, type:1}, (err, docs) => {
+  db.read(db.nexdef, {}, {kind:1, type:1}, (err, docs) => {
     if (err) return handleErrors (err)
 
     exdefWindow = new BrowserWindow({
@@ -34,15 +29,17 @@ function createExdefWindow () {
 }
 
 function loadDataAndCreateWindow () {
-  initDBs(path.join(app.getPath('userData'), 'db'), () => {
-    console.log(nexdefDB)
+  let dbDir
+  if (config.mode === 'test') dbDir = 'db'
+
+  db.initialize(dbDir, () => {
     if (config.mode === 'test') loadInitialTestData().then(() => createExdefWindow())
     else createExdefWindow()
   })
 }
 
 function createViewerWindow () {
-  elemsDB.read({}, {kind:1, type:1}, (err, docs) => {
+  db.read(db.nelems, {}, {kind:1, type:1}, (err, docs) => {
     if (err) return handleErrors(err)
 
     viewerWindow = new BrowserWindow({
@@ -71,7 +68,6 @@ app.on('window-all-closed', () => {
 })
 
 app.on('will-quit', () => {
-  if (config.mode === 'test') unloadInitialTestData()
 })
 
 ipcMain.on('handle-errors', (event, arg) => {
@@ -79,7 +75,7 @@ ipcMain.on('handle-errors', (event, arg) => {
 })
 
 ipcMain.on('update-anExdef', (event, arg) => {
-  exdefDB.update(arg, (err) => {
+  db.update(db.nexdef, arg, (err) => {
     if (err) {
       handleErrors(err)
       event.returnValue = false
@@ -90,7 +86,7 @@ ipcMain.on('update-anExdef', (event, arg) => {
 })
 
 ipcMain.on('remove-anExdef', (event, arg) => {
-  exdefDB.deleteOne(arg, (err) => {
+  db.deleteOne(db.nexdef, arg, (err) => {
     if (err) {
       handleErrors(err)
       event.returnValue = false
@@ -101,7 +97,7 @@ ipcMain.on('remove-anExdef', (event, arg) => {
 })
 
 ipcMain.on('add-new-exdef', (event, arg) => {
-  exdefDB.create(arg, (err, doc) => {
+  db.create(db.nexdef, arg, (err, doc) => {
     if (err) {
       handleErrors(err)
       event.returnValue = null
@@ -113,7 +109,7 @@ ipcMain.on('add-new-exdef', (event, arg) => {
 })
 
 ipcMain.on('read-drs', (event, arg) => {
-  drDB.readDRsOfInfs(arg, (err, docs) => {
+  db.readDRsOfInfs(arg, (err, docs) => {
     if (err) {
       handleErrors(err)
       event.returnValue = null
@@ -124,7 +120,7 @@ ipcMain.on('read-drs', (event, arg) => {
 })
 
 ipcMain.on('read-ers', (event, arg) => {
-  erDB.readRecordsOfMUs(arg, (err, docs) => {
+  db.readRecordsOfMUs(arg, (err, docs) => {
     if (err) {
       handleErrors(err)
       event.returnValue = null
@@ -135,7 +131,7 @@ ipcMain.on('read-ers', (event, arg) => {
 })
 
 ipcMain.on('validate-muID', (event, arg) => {
-  exdefDB.validateMUID(arg, (err, num) => {
+  db.validateMUID(arg, (err, num) => {
     if (num === 0) event.returnValue = true
     else event.returnValue = false
   })
@@ -152,14 +148,14 @@ ipcMain.on('validate-elemID', (event, arg) => {
         event.returnValue = false
     }
   }
-  elemsDB.validateID(arg.value, (err, num) => {
+  db.validateID(arg.value, (err, num) => {
     if (num === 0) event.returnValue = false
     else event.returnValue = true
   })
 })
 
 ipcMain.on('save-elem', (event, arg) => {
-  elemsDB.create(arg, (err, doc) => {
+  db.create(db.nelems, arg, (err, doc) => {
     if (err) return handleErrors(err)
   })
 })
@@ -200,7 +196,7 @@ const mainmenu = [
               if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                exdefDB.create(JSON.parse(data.toString()), (err, docs) => {
+                db.create(db.nexdef, JSON.parse(data.toString()), (err, docs) => {
                   if (err) return handleErrors(err)
                   if (exdefWindow) {
                     exdefWindow.webContents.send('notify-udpate', docs)
@@ -223,7 +219,7 @@ const mainmenu = [
               if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                drDB.create(JSON.parse(data.toString()), (err, docs) => {
+                db.create(db.ndr, JSON.parse(data.toString()), (err, docs) => {
                   if (err) return handleErrors(err)
                   if (exdefWindow) exdefWindow.webContents.send('hide-loading')
                   dialog.showMessageBox({type: 'info',
@@ -247,7 +243,7 @@ const mainmenu = [
               if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                erDB.create(JSON.parse(data.toString()), (err, docs) => {
+                db.create(db.ner, JSON.parse(data.toString()), (err, docs) => {
                   if (err) return handleErrors(err)
                   if (exdefWindow) exdefWindow.webContents.send('hide-loading')
                   dialog.showMessageBox({type: 'info',
@@ -270,7 +266,7 @@ const mainmenu = [
               if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                elemsDB.create(JSON.parse(data.toString()), (err, docs) => {
+                db.create(db.nelems, JSON.parse(data.toString()), (err, docs) => {
                   if (err) return handleErrors(err)
                   if (exdefWindow) exdefWindow.webContents.send('hide-loading')
                   dialog.showMessageBox({type: 'info',
@@ -287,13 +283,13 @@ const mainmenu = [
       {
         label: 'reset all',
         click(item, focusedWindow) {
-          exdefDB.deleteAll((err, num) => {
+          db.deleteAll(db.nexdef, (err, num) => {
             if (err) return handleErrors (err)
-            drDB.deleteAll((err, num) => {
+            db.deleteAll(db.ndr, (err, num) => {
               if (err) return handleErrors (err)
-              erDB.deleteAll((err, num) => {
+              db.deleteAll(db.ner, (err, num) => {
                 if (err) return handleErrors (err)
-                elemsDB.deleteAll((err, num) => {
+                db.deleteAll(db.nelems, (err, num) => {
                   if (err) return handleErrors (err)
                   exdefWindow.close()
                   loadDataAndCreateWindow()
@@ -370,14 +366,9 @@ if (process.platform === 'darwin') {
 function loadInitialTestData() {
   let exdefBDPS = JSON.parse(fs.readFileSync('./test/resources/exdef.bdps.json'))
   return new Promise((resolve, reject) => {
-    exdefDB.create(exdefBDPS, (err, docs) => {
+    db.create(db.nexdef, exdefBDPS, (err, docs) => {
       if (err) reject()
       resolve()
     })
   })
-}
-
-function unloadInitialTestData() {
-  exdefDB.deleteAll()
-  drDB.deleteAll()
 }

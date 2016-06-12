@@ -3,7 +3,11 @@ const del = require('del')
 const babel = require('gulp-babel')
 
 gulp.task('clean', () => {
-  return del.sync(['dist/**/**/*', 'dist/*', 'db/*'])
+  return del.sync([
+    'dist/**/**/*',
+    'dist/*',
+    'db/*'
+  ])
 })
 
 gulp.task('copy:bootstrap:js', () => {
@@ -45,7 +49,6 @@ gulp.task('copy:vis:img', () => {
 gulp.task('compile:js', () => {
   return gulp.src([
       './src/*.js',
-      './src/db/*.js',
       './src/view/js/*.js',
       './src/components/*.jsx'
     ])
