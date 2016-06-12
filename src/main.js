@@ -6,6 +6,8 @@ import * as exdefDB from './exdef.db.js'
 import * as drDB from './dr.db.js'
 import * as erDB from './er.db.js'
 import * as elemsDB from './elems.db.js'
+import initDBs, * as db from './db.js'
+import {nexdefDB, ndrDB, nerDB, nelemsDB} from './db.js'
 import config from './app.config.js'
 
 let exdefWindow = null
@@ -32,8 +34,11 @@ function createExdefWindow () {
 }
 
 function loadDataAndCreateWindow () {
-  if (config.mode === 'test') loadInitialTestData().then(() => createExdefWindow())
-  else createExdefWindow()
+  initDBs(path.join(app.getPath('userData'), 'db'), () => {
+    console.log(nexdefDB)
+    if (config.mode === 'test') loadInitialTestData().then(() => createExdefWindow())
+    else createExdefWindow()
+  })
 }
 
 function createViewerWindow () {

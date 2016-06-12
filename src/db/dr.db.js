@@ -11,7 +11,7 @@ import Datastore from 'nedb'
 }
 **/
 const db = new Datastore({filename: path.join(__dirname, '../db/dr.db'), autoload: true})
-db.ensureIndex({fieldname: 'inf'})
+db.ensureIndex({fieldName: 'inf'})
 
 export function create(items, cb) {
   db.insert(items, (err, docs) => {
