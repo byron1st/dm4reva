@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html style="height:100%">
+  <head>
+    <meta charset="UTF-8">
+    <script type="application/javascript">
+      window.$ = window.jQuery = require('jquery')
+    </script>
+    <title>Initializing</title>
+    <script type="text/javascript" src="./lib/bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./lib/bootstrap/css/bootstrap.min.css">
+  </head>
+  <body style="height:100%; margin:0;">
+    <div class="container-fluid" style="height:100%">
+      <div class="row" style="min-height:100%">
+        <div class="col-md-12" style="padding-bottom:50px">
+          <h4>Select a directory where DBs are located</h4>
+          <div class="input-group">
+            <input type="text" class="form-control" id="dbDir" disabled />
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button" onclick="clickChoose()">Choose</button>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:-50px; height:50px;">
+        <div class="col-md-12">
+          <button type="button" class="btn btn-default pull-right" onclick="selectdbDir()">Confirm</button>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      let remote = require('electron').remote
+      let ipcRenderer = require('electron').ipcRenderer
+      function clickChoose () {
+        remote.dialog.showOpenDialog({properties:['openDirectory']}, function (filenames) {
+          $('#dbDir').val(filenames[0])
+        })
+      }
+      function selectdbDir () {
+        ipcRenderer.send('set-db', $('#dbDir').val())
+      }
+    </script>
+  </body>
+</html>

@@ -4,13 +4,51 @@ import path from 'path'
 import fs from 'fs'
 import * as db from './db.js'
 import config from './app.config.js'
+import Datastore from 'nedb'
+/*
+{
+  dbpath: string
+}
+*/
+const configDB = new Datastore({filename: path.join(app.getPath('userData'), 'config.json'), autoload: true})
 
+let userConfig = {}
 let exdefWindow = null
 let viewerWindow = null
+let initWindow = null
 
 function handleErrors (err) {
   dialog.showErrorBox('An error occurs', err.toString())
   ipcRenderer.send('hide-loading')
+}
+
+function initialize () {
+  configDB.findOne({_id: 1}, (err, pref) => {
+    if (err) return handleErrors(err)
+    if (!pref) {
+      return configDB.insert({_id: 1}, (err, newPref) => {
+        userConfig = newPref
+        getPreferences()
+      })
+    } else {
+      userConfig = pref
+      getPreferences()
+    }
+  })
+}
+
+function getPreferences () {
+  let dbDir
+  if (config.mode === 'test') loadDataAndCreateWindow('db')
+  else if (userConfig.dbpath) loadDataAndCreateWindow(userConfig.dbpath)
+  else createInitWindow()
+}
+
+function loadDataAndCreateWindow (dir) {
+  db.initialize(dir, () => {
+    if (config.mode === 'test') loadInitialTestData().then(() => createExdefWindow())
+    else createExdefWindow()
+  })
 }
 
 function createExdefWindow () {
@@ -25,16 +63,6 @@ function createExdefWindow () {
     exdefWindow.loadURL(path.join('file://', __dirname, 'index.exdef.html'))
     exdefWindow.on('closed', () => exdefWindow = null)
     if (config.mode === 'test') exdefWindow.webContents.openDevTools()
-  })
-}
-
-function loadDataAndCreateWindow () {
-  let dbDir
-  if (config.mode === 'test') dbDir = 'db'
-
-  db.initialize(dbDir, () => {
-    if (config.mode === 'test') loadInitialTestData().then(() => createExdefWindow())
-    else createExdefWindow()
   })
 }
 
@@ -53,10 +81,20 @@ function createViewerWindow () {
   })
 }
 
+function createInitWindow () {
+  initWindow = new BrowserWindow({
+    width: 800,
+    height: 200
+  })
+  initWindow.loadURL(path.join('file://', __dirname, 'index.init.html'))
+  initWindow.on('closed', () => initWindow = null)
+  if (config.mode === 'test') initWindow.webContents.openDevTools()
+}
+
 app.on('ready', () => {
   const menu = Menu.buildFromTemplate(mainmenu)
   Menu.setApplicationMenu(menu)
-  loadDataAndCreateWindow()
+  initialize()
 })
 
 app.on('activate', () => {
@@ -68,6 +106,13 @@ app.on('window-all-closed', () => {
 })
 
 app.on('will-quit', () => {
+})
+
+ipcMain.on('set-db', (event, arg) => {
+  configDB.update({_id: 1}, {dbpath: arg}, {upsert: true}, (err) => {
+    if (err) return handleErrors(err)
+    loadDataAndCreateWindow(arg)
+  })
 })
 
 ipcMain.on('handle-errors', (event, arg) => {
