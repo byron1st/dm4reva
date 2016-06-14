@@ -76,7 +76,7 @@ class ExdefDetailsInfoInf extends Component {
               <h3>Interfaces</h3>
             </div>
             <div className='col-md-4'>
-              <button className='btn btn-info btn-xs pull-right' id='seeDRBtn' onClick={this.props.getDRs.bind(this)}>See selected dependency relationships</button>
+              <button className='btn btn-info btn-xs pull-right' id='seeDRBtn' onClick={this.props.getDRs.bind(this)}>See target-specific dependency relationships</button>
             </div>
           </div>
           <div className='row'>
@@ -157,7 +157,7 @@ class ExdefDetailsInfoDRModal extends Component {
         <div className='modal-dialog' role='document'>
           <div className='modal-content'>
             <div className='modal-header'>
-              <h4 className='modal-title' id='drModalLabel'>Selected dependency relationships</h4>
+              <h4 className='modal-title' id='drModalLabel'>Target-specific dependency relationships</h4>
             </div>
             <div className='modal-body' style={getOverflowYStyle('500px')}>
               <ul className='list-group'>
