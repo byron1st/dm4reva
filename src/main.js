@@ -23,7 +23,7 @@ function handleErrors (err, message) {
   if (exdefWindow) exdefWindow.webContents.send('hide-loading')
 }
 
-function validateJSONFileFormat (kind, rawString, cb) {
+function validateJSONFormat (kind, rawString, cb) {
   let converted = {}
   try {
     converted = JSON.parse(rawString)
@@ -252,7 +252,7 @@ const mainmenu = [
               if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                validateJSONFileFormat('exdef', data.toString(), (jsonConverted) => {
+                validateJSONFormat('exdef', data.toString(), (jsonConverted) => {
                   db.create(db.nexdef, jsonConverted, (err, docs) => {
                     if (err) return handleErrors(err)
                     if (exdefWindow) {
@@ -277,7 +277,7 @@ const mainmenu = [
               if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                validateJSONFileFormat('dr', data.toString(), (jsonConverted) => {
+                validateJSONFormat('dr', data.toString(), (jsonConverted) => {
                   db.create(db.ndr, jsonConverted, (err, docs) => {
                     if (err) return handleErrors(err)
                     if (exdefWindow) exdefWindow.webContents.send('hide-loading')
@@ -303,7 +303,7 @@ const mainmenu = [
               if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                validateJSONFileFormat('er', data.toString(), (jsonConverted) => {
+                validateJSONFormat('er', data.toString(), (jsonConverted) => {
                   db.create(db.ner, jsonConverted, (err, docs) => {
                     if (err) return handleErrors(err)
                     if (exdefWindow) exdefWindow.webContents.send('hide-loading')
@@ -328,7 +328,7 @@ const mainmenu = [
               if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                validateJSONFileFormat('elems', data.toString(), (jsonConverted) => {
+                validateJSONFormat('elems', data.toString(), (jsonConverted) => {
                   db.create(db.nelems, JSON.parse(data.toString()), (err, docs) => {
                     if (err) return handleErrors(err)
                     if (exdefWindow) exdefWindow.webContents.send('hide-loading')
