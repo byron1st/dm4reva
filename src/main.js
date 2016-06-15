@@ -17,9 +17,20 @@ let exdefWindow = null
 let viewerWindow = null
 let initWindow = null
 
-function handleErrors (err) {
-  dialog.showErrorBox('An error occurs', err.toString())
-  ipcRenderer.send('hide-loading')
+function handleErrors (err, message) {
+  if (message) dialog.showErrorBox('An error occurs', message)
+  else dialog.showErrorBox('An error occurs', err.toString())
+  if (exdefWindow) exdefWindow.webContents.send('hide-loading')
+}
+
+function validateJSONFileFormat (kind, rawString, cb) {
+  let converted = {}
+  try {
+    converted = JSON.parse(rawString)
+  } catch (e) {
+    return handleErrors(e, e.name + ': ' + e.message)
+  }
+  if (cb) cb(converted)
 }
 
 function initialize () {
@@ -228,7 +239,7 @@ const mainmenu = [
     label: 'Datastore',
     submenu: [
       {
-        label: 'import Exdef.s',
+        label: 'import type definitions',
         accelerator: 'CmdOrCtrl+E',
         click(item, focusedWindow) {
           dialog.showOpenDialog({
@@ -241,12 +252,14 @@ const mainmenu = [
               if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                db.create(db.nexdef, JSON.parse(data.toString()), (err, docs) => {
-                  if (err) return handleErrors(err)
-                  if (exdefWindow) {
-                    exdefWindow.webContents.send('notify-udpate', docs)
-                    exdefWindow.webContents.send('hide-loading')
-                  }
+                validateJSONFileFormat('exdef', data.toString(), (jsonConverted) => {
+                  db.create(db.nexdef, jsonConverted, (err, docs) => {
+                    if (err) return handleErrors(err)
+                    if (exdefWindow) {
+                      exdefWindow.webContents.send('notify-udpate', docs)
+                      exdefWindow.webContents.send('hide-loading')
+                    }
+                  })
                 })
               })
             }
@@ -254,7 +267,7 @@ const mainmenu = [
         }
       },
       {
-        label: 'import DRs',
+        label: 'import dependency relationships',
         accelerator: 'CmdOrCtrl+D',
         click(item, focusedWindow) {
           dialog.showOpenDialog({
@@ -264,13 +277,15 @@ const mainmenu = [
               if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                db.create(db.ndr, JSON.parse(data.toString()), (err, docs) => {
-                  if (err) return handleErrors(err)
-                  if (exdefWindow) exdefWindow.webContents.send('hide-loading')
-                  dialog.showMessageBox({type: 'info',
-                                        title: 'Dependency relationships are added',
-                                        message: docs.length + ' DRs are added.',
-                                        buttons: ['OK']})
+                validateJSONFileFormat('dr', data.toString(), (jsonConverted) => {
+                  db.create(db.ndr, jsonConverted, (err, docs) => {
+                    if (err) return handleErrors(err)
+                    if (exdefWindow) exdefWindow.webContents.send('hide-loading')
+                    dialog.showMessageBox({type: 'info',
+                                          title: 'Dependency relationships are added',
+                                          message: docs.length + ' DRs are added.',
+                                          buttons: ['OK']})
+                  })
                 })
               })
             }
@@ -288,13 +303,15 @@ const mainmenu = [
               if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                db.create(db.ner, JSON.parse(data.toString()), (err, docs) => {
-                  if (err) return handleErrors(err)
-                  if (exdefWindow) exdefWindow.webContents.send('hide-loading')
-                  dialog.showMessageBox({type: 'info',
-                                        title: 'Execution records are added',
-                                        message: docs.length + ' ERs are added.',
-                                        buttons: ['OK']})
+                validateJSONFileFormat('er', data.toString(), (jsonConverted) => {
+                  db.create(db.ner, jsonConverted, (err, docs) => {
+                    if (err) return handleErrors(err)
+                    if (exdefWindow) exdefWindow.webContents.send('hide-loading')
+                    dialog.showMessageBox({type: 'info',
+                                          title: 'Execution records are added',
+                                          message: docs.length + ' ERs are added.',
+                                          buttons: ['OK']})
+                  })
                 })
               })
             }
@@ -311,13 +328,15 @@ const mainmenu = [
               if (exdefWindow) exdefWindow.webContents.send('show-loading')
               fs.readFile(filenames[0], (err, data) => {
                 if (err) handleErrors(err)
-                db.create(db.nelems, JSON.parse(data.toString()), (err, docs) => {
-                  if (err) return handleErrors(err)
-                  if (exdefWindow) exdefWindow.webContents.send('hide-loading')
-                  dialog.showMessageBox({type: 'info',
-                                        title: 'Execution view elements are added',
-                                        message: docs.length + ' elements are added.',
-                                        buttons: ['OK']})
+                validateJSONFileFormat('elems', data.toString(), (jsonConverted) => {
+                  db.create(db.nelems, JSON.parse(data.toString()), (err, docs) => {
+                    if (err) return handleErrors(err)
+                    if (exdefWindow) exdefWindow.webContents.send('hide-loading')
+                    dialog.showMessageBox({type: 'info',
+                                          title: 'Execution view elements are added',
+                                          message: docs.length + ' elements are added.',
+                                          buttons: ['OK']})
+                  })
                 })
               })
             }
