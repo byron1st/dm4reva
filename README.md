@@ -11,6 +11,7 @@ DM4REVA는 소프트웨어 아키텍처 뷰[^1] 중 하나인 실행 뷰(Executi
 * [React](https://facebook.github.io/react/) (v1.2.2): UI 개발을 위한 JavaScript 라이브러리이다. React는 UI 컴포넌트들이 데이터가 단방향으로 흐르는 명시적인 계층 구조를 갖게 함으로써 유지보수, 코드 재사용에 강점을 갖는다.
 * [Twitter Bootstrap 3](http://getbootstrap.com): 본인같은 디자인 고자를 위한 UI 프레임워크이다.
 * [jQuery](http://getbootstrap.com) (v2.2.4): 프론트엔드 개발에서 널리 활용되고 있는 JavaScript 라이브러리로 Twitter Bootstrap을 실행시키기 위한 필수 라이브러리이며, 많은 좋은 기능들을 API로 제공한다.
+* [showdown](https://github.com/showdownjs/showdown): markdown 문법으로 기록된 텍스트를 html로 변환해주는 JavaScript 라이브러리이다.
 
 ### Technology used during the development
 * [Gulp](http://gulpjs.com): JavaScript 빌드 도구. Electron의 JavaScript 파일들에서 ES6 표준 문법을 사용하기 위해 활용하였다.(Electron은 Chromium 기반이기 때문에 Chromium에서 아직 지원하지 않는 ES6 문법은 실행하지 못한다.) Gulp에 [Babel](http://babeljs.io)을 결합하여, Electron의 모든 JavaScript 파일들을 변환하여 실행하였다.
@@ -18,7 +19,7 @@ DM4REVA는 소프트웨어 아키텍처 뷰[^1] 중 하나인 실행 뷰(Executi
 ## Software architecture
 ![실행 시 DM4REVA 구조](http://byron1st.pe.kr/wp-content/uploads/2016/06/DM4REVA_runtime_architecture.png)
 
-DM4REVA는 Electron 기반이기 때문에, 모든 창은 독립적인 프로세스로 실행된다. Main 프로세스는 Electron 어플리케이션의 전반적인 실행, 관리를 수행하며, 메인 메뉴를 생성하고, `db.js`를 통해 DB 파일들과 통신한다. 또한, Renderer 프로세스들의 생성, 파괴를 관리하고, Renderer 프로세스들과는 Electron에서 제공하는 IPC API를 사용한다. `db.js`는 NeDB 라이브러리를 통해 DB 파일들과 통신한다.
+DM4REVA는 Electron 기반이기 때문에, 모든 창은 독립적인 프로세스로 실행된다. Main 프로세스는 Electron 어플리케이션의 전반적인 실행, 관리를 수행하며, 메인 메뉴를 생성하고, `db.js`를 통해 DB 파일들과 통신한다. 또한, Renderer 프로세스들의 생성, 파괴를 관리하고, Renderer 프로세스들과는 Electron에서 제공하는 IPC API를 사용하여 통신한다. `db.js`는 NeDB 라이브러리를 통해 DB 파일들과 통신한다.
 
 Renderer 프로세스들은 각각 창을 생성하며, Exdef는 메인이 되는 창을, Viewer는 다이어그램을 볼 수 있는 창을, Init은 Workspace를 변경할 수 있는 세팅 창을 생성한다. 각각은 HTML, css, React component 들로 구성되어 있다.
 
@@ -30,9 +31,14 @@ Exdef 모듈은 `exdef.*.js`, `index.exdef.html` 등으로 구성되어 있으�
 
 마지막으로, DB 구조는 위의 그림과 같다. 기본적으로 NoSQL 기반이고, 본인 자체가 DB를 엄격하게 구조화할 정도로 잘 아는 것은 아니라, 최소한의 기본만 잡고 개발되었다. NeDB 자체는 Scheme을 강제하는 방법은 없으나, 잘못된 포멧의 json 문서가 삽입되지 않도록 최소한의 validation 기능을 `db.js`에 구현하였다. 링크의 경우도, NeDB에서 지원하지 않기 때문에, 구현 시 따로 신경을 써주어야 한다.
 
-## Repository
+### Statics
+* SLOC: 약 2,200
 
-[GitHub](https://github.com/byron1st/dm4reva)
+## License
+[MIT license](https://github.com/showdownjs/showdown)
+
+## Homepage
+[Polymorphism](http://byron1st.pe.kr/?page_id=119)
 
 [^1]: [ISO/IEC/IEEE 42010 Systems and software engineering — Architecture description](http://www.iso-architecture.org/ieee-1471/cm/)
 [^2]: "Execution architecture view" (C. Hofmeister *et. al.*, *Applied Software Architecture*. Addison-Wesley Professional, 2000.) "System-level concurrency model" (N. Rozanski and E. Woods, *Software Systems Architecture*. 2nd Edition, Addison-Wesley, 2012.) "실행뷰" (강성원, *소프트웨어 아키텍처로의 초대*. 개정판, 홍릉과학출판사, 2015.
