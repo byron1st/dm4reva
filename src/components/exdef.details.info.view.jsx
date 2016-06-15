@@ -33,7 +33,7 @@ export default class ExdefDetailsInfo extends Component {
         <div className='col-md-12'>
           <ExdefDetailsInfoHeader type={this.props.exdef.type} kind={this.props.exdef.kind} />
           <ExdefDetailsInfoInf inf={this.props.exdef.inf} getDRs={this.getDRs} />
-          <ExdefDetailsInfoIDRules idRules={this.props.exdef.id_rules} />
+          <ExdefDetailsInfoIDRules idRulesHTML={this.props.exdef.id_rules_html} />
           <ExdefDetailsInfoMU mu={this.props.exdef.mu} />
         </div>
         <ExdefDetailsInfoDRModal drs={this.state.drs}/>
@@ -95,14 +95,27 @@ ExdefDetailsInfoInf.propTypes = {
 }
 
 class ExdefDetailsInfoIDRules extends Component {
+  constructor () {
+    super()
+    this.showParsedIDRulesHTML = this.showParsedIDRulesHTML.bind(this)
+  }
+  showParsedIDRulesHTML () {
+    let parsed = $.parseHTML(this.props.idRulesHTML)
+    $('#idRulesHTML').html(parsed)
+  }
+  componentDidMount () {
+    this.showParsedIDRulesHTML()
+  }
+  componentDidUpdate (prevProps, prevState) {
+    this.showParsedIDRulesHTML()
+  }
   render () {
     return (
       <div className='row'>
         <div className='col-md-12'>
           <h3>Identification Rules</h3>
           <div className='panel panel-default'>
-            <div className='panel-body'>
-              {this.props.idRules}
+            <div className='panel-body' id='idRulesHTML'>
             </div>
           </div>
         </div>
@@ -111,7 +124,7 @@ class ExdefDetailsInfoIDRules extends Component {
   }
 }
 ExdefDetailsInfoIDRules.propTypes = {
-  idRules: PropTypes.string
+  idRulesHTML: PropTypes.string
 }
 
 class ExdefDetailsInfoMU extends Component {

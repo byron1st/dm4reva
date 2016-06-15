@@ -18,7 +18,8 @@ export default class ExdefList extends Component {
       kind: newKind,
       inf: [],
       mu: [],
-      id_rules: ''
+      id_rules: '',
+      id_rules_html: ''
     }
     this.props.add(newExdefData)
   }
