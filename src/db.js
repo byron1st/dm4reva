@@ -2,6 +2,7 @@
 import path from 'path'
 import Datastore from 'nedb'
 import {dialog} from 'electron'
+import Scheme from './db.scheme.js'
 
 function loadADB (db) {
   return new Promise((resolve, reject) => {
@@ -10,6 +11,52 @@ function loadADB (db) {
       else resolve(db)
     })
   })
+}
+
+function validateScheme (kind, items) {
+  let scheme = Scheme[kind]
+  let validationResult = true
+  if (scheme) {
+    if (Array.isArray(items)) {
+      validationResult = items.every(
+        (item) => {
+            let keys = Object.keys(scheme)
+            return keys.every(
+              (key) => {
+                  if ((!item[key] || item[key] === '') && scheme[key].isMandatory) return false
+                  if ((!item[key] || item[key] === '') && !scheme[key].isMandatory) return true
+                  if (Array.isArray(scheme[key].type)) {
+                    if (scheme[key].type.indexOf(item[key]) === -1) return false
+                  } else {
+                    switch (scheme[key].type) {
+                      case 'string': return (typeof item[key] === 'string')
+                      case 'array':
+                        if (!Array.isArray(item[key])) return false
+                        return item[key].every(
+                          (subitem) => {
+                            if (scheme[key].item === 'string') return (typeof subitem === 'string')
+                            else {
+                              let subKeys = Object.keys(scheme[key].item)
+                              return subKeys.every((subkey) => {
+                                if (!subitem[subkey] && scheme[key].item[subkey].isMandatory) return false
+                                return (typeof subitem[subkey] === 'string')
+                              })
+                            }
+                          })
+                      case 'object': return (item[key] instanceof Object) && !Array.isArray(item[key])
+                    }
+                  }
+                  return true
+                })
+          })
+    } else {
+      //should be an array
+      validationResult = false
+    }
+  } else {
+    validationResult = false
+  }
+  return validationResult
 }
 
 export let nexdef, ndr, ner, nelems
@@ -40,13 +87,25 @@ export function initialize (dbDir, cb) {
 }
 
 export function create(db, items, cb) {
-  db.insert(items, (err, docs) => {
-    if (cb) {
-      if (err) return cb(err, null)
-      if (!docs) return cb(Error('No items'), null)
-      return cb(null, docs)
-    }
-  })
+  let validationResult
+  switch (db) {
+    case nexdef: validationResult = validateScheme('exdef', items); break;
+    case ndr: validationResult = validateScheme('dr', items); break;
+    case ner: validationResult = validateScheme('er', items); break;
+    case nelems: validationResult = validateScheme('elems', items); break;
+    default: validationResult = false; break;
+  }
+  if (validationResult) {
+    db.insert(items, (err, docs) => {
+      if (cb) {
+        if (err) return cb(err, null)
+        if (!docs) return cb(Error('No items'), null)
+        return cb(null, docs)
+      }
+    })
+  } else {
+    if (cb) return cb(Error('Data validation failed.'), null)
+  }
 }
 
 export function read(db, queryObj, sortCondition, cb) {
