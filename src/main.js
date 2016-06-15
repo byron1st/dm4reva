@@ -122,6 +122,9 @@ app.on('will-quit', () => {
 ipcMain.on('set-db', (event, arg) => {
   configDB.update({_id: 1}, {dbpath: arg}, {upsert: true}, (err) => {
     if (err) return handleErrors(err)
+    if (initWindow) initWindow.close()
+    if (viewerWindow) viewerWindow.close()
+    if (exdefWindow) exdefWindow.close()
     loadDataAndCreateWindow(arg)
   })
 })
