@@ -2,7 +2,7 @@ export default {
   exdef: {
     type: {isMandatory: true, type: 'string'},
     kind: {isMandatory: true, type: ['EComponent', 'EConnector', 'EPort']},
-    inf: {isMandatory: false, type: 'array', item: 'string'},
+    inf: {isMandatory: true, type: 'array', item: 'string'},
     mu: {isMandatory: false, type: 'array',
       item: {
         muID: {isMandatory: true, type: 'string'},
@@ -11,7 +11,20 @@ export default {
     id_rules: {isMandatory: false, type: 'string'},
     id_rules_html: {isMandatory: false, type: 'string'}
   },
-  dr: {},
-  er: {},
-  elems: {}
+  dr: {
+    inf: {isMandatory: true, type: 'string'},
+    sink: {isMandatory: true, type: 'string'},
+    source: {isMandatory: true, type: 'string'},
+    rkind: {isMandatory: true, type: 'string'}
+  },
+  er: {
+    muID: {isMandatory: true, type: 'string'},
+    meta: {isMandatory: true, type: 'object'},
+    values: {isMandatory: false, type: 'object'}
+  },
+  elems: {
+    elemID: {isMandatory: true, type: 'string'},
+    type: {isMandatory: true, type: 'string'},
+    kind: {isMandatory: true, type: ['EComponent', 'EConnector', 'EPort']}
+  }
 }

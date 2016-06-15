@@ -23,8 +23,8 @@ function validateScheme (kind, items) {
             let keys = Object.keys(scheme)
             return keys.every(
               (key) => {
-                  if (!item[key] && scheme[key].isMandatory) return false
-                  if (!item[key] && !scheme[key].isMandatory) return true
+                  if ((!item[key] || item[key] === '') && scheme[key].isMandatory) return false
+                  if ((!item[key] || item[key] === '') && !scheme[key].isMandatory) return true
                   if (Array.isArray(scheme[key].type)) {
                     if (scheme[key].type.indexOf(item[key]) === -1) return false
                   } else {
@@ -43,14 +43,15 @@ function validateScheme (kind, items) {
                               })
                             }
                           })
+                      case 'object': return (item[key] instanceof Object) && !Array.isArray(item[key])
                     }
                   }
                   return true
                 })
           })
     } else {
-      //TODO
-      validationResult = true
+      //should be an array
+      validationResult = false
     }
   } else {
     validationResult = false
@@ -90,8 +91,8 @@ export function create(db, items, cb) {
   switch (db) {
     case nexdef: validationResult = validateScheme('exdef', items); break;
     case ndr: validationResult = validateScheme('dr', items); break;
-    case ner: validationResult = validateScheme('dr', items); break;
-    case nelems: validationResult = validateScheme('dr', items); break;
+    case ner: validationResult = validateScheme('er', items); break;
+    case nelems: validationResult = validateScheme('elems', items); break;
     default: validationResult = false; break;
   }
   if (validationResult) {
