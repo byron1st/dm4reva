@@ -239,6 +239,13 @@ const mainmenu = [
     label: 'Datastore',
     submenu: [
       {
+        label: 'change the workspace',
+        click(item, focusedWindow) {
+          createInitWindow()
+        }
+      },
+      { type: 'separator' },
+      {
         label: 'import type definitions',
         accelerator: 'CmdOrCtrl+E',
         click(item, focusedWindow) {
@@ -320,6 +327,7 @@ const mainmenu = [
       },
       {
         label: 'import elements',
+        accelerator: 'CmdOrCtrl+Shift+E',
         click(item, focusedWindow) {
           dialog.showOpenDialog({
             properties: ['openFile']
