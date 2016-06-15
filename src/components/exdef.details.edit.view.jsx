@@ -3,6 +3,7 @@
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 import {ipcRenderer} from 'electron'
+import showdown from 'showdown'
 
 function getOverflowYStyle(height) {
   return {
@@ -82,7 +83,7 @@ export default class ExdefDetailsEdit extends Component {
     return index === -1 ? true : false
   }
   saveExdef () {
-    let udpatedExdef = {
+    let updatedExdef = {
       _id: this.state._id,
       type: this.state.type,
       kind: this.state.kind,
@@ -90,7 +91,9 @@ export default class ExdefDetailsEdit extends Component {
       id_rules: this.state.id_rules,
       mu: this.state.mu.slice()
     }
-    this.props.save(udpatedExdef)
+    let converter = new showdown.Converter()
+    updatedExdef.id_rules_html = converter.makeHtml(updatedExdef.id_rules)
+    this.props.save(updatedExdef)
   }
   render () {
     return (
