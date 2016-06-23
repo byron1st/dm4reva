@@ -156,7 +156,10 @@ ipcMain.on('remove-anExdef', (event, arg) => {
 })
 
 ipcMain.on('add-new-exdef', (event, arg) => {
-  db.create(db.nexdef, arg, (err, doc) => {
+  let argToArray = []
+  if (!Array.isArray(arg)) argToArray.push(arg)
+  else argToArray = arg
+  db.create(db.nexdef, argToArray, (err, doc) => {
     if (err) {
       handleErrors(err)
       event.returnValue = null
@@ -356,6 +359,26 @@ const mainmenu = [
       },
       { type: 'separator' },
       {
+        label: 'reset records',
+        click(item, focusedWindow) {
+          db.deleteAll(db.ner, (err, num) => {
+            if (err) return handleErrors (err)
+            exdefWindow.close()
+            createExdefWindow()
+          })
+        }
+      },
+      {
+        label: 'reset elements',
+        click(item, focusedWindow) {
+          db.deleteAll(db.nelems, (err, num) => {
+            if (err) return handleErrors (err)
+            exdefWindow.close()
+            createExdefWindow()
+          })
+        }
+      },
+      {
         label: 'reset all',
         click(item, focusedWindow) {
           db.deleteAll(db.nexdef, (err, num) => {
@@ -367,7 +390,10 @@ const mainmenu = [
                 db.deleteAll(db.nelems, (err, num) => {
                   if (err) return handleErrors (err)
                   exdefWindow.close()
-                  loadDataAndCreateWindow()
+
+                  if (config.mode === 'test') loadDataAndCreateWindow('db')
+                  else if (userConfig.dbpath) loadDataAndCreateWindow(userConfig.dbpath)
+                  else createInitWindow()
                 })
               })
             })
