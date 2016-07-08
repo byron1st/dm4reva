@@ -14,7 +14,6 @@ const configDB = new Datastore({filename: path.join(app.getPath('userData'), 'co
 
 let userConfig = {}
 let exdefWindow = null
-let viewerWindow = null
 let initWindow = null
 
 function handleErrors (err, message) {
@@ -77,21 +76,6 @@ function createExdefWindow () {
   })
 }
 
-function createViewerWindow () {
-  db.read(db.nelems, {}, {kind:1, type:1}, (err, docs) => {
-    if (err) return handleErrors(err)
-
-    viewerWindow = new BrowserWindow({
-      width: 1280,
-      height: 720
-    })
-    viewerWindow.elemsList = docs
-    viewerWindow.loadURL(path.join('file://', __dirname, 'index.viewer.html'))
-    viewerWindow.on('closed', () => viewerWindow = null)
-    if (config.mode === 'test') viewerWindow.webContents.openDevTools()
-  })
-}
-
 function createInitWindow () {
   initWindow = new BrowserWindow({
     width: 800,
@@ -123,7 +107,6 @@ ipcMain.on('set-db', (event, arg) => {
   configDB.update({_id: 1}, {dbpath: arg}, {upsert: true}, (err) => {
     if (err) return handleErrors(err)
     if (initWindow) initWindow.close()
-    if (viewerWindow) viewerWindow.close()
     if (exdefWindow) exdefWindow.close()
     loadDataAndCreateWindow(arg)
   })
@@ -197,34 +180,6 @@ ipcMain.on('validate-muID', (event, arg) => {
     if (num === 0) event.returnValue = true
     else event.returnValue = false
   })
-})
-
-ipcMain.on('validate-elemID', (event, arg) => {
-  if (arg.value === '') {
-    switch (arg.inputType) {
-      case 'elemID':
-      case 'parents':
-        event.returnValue = true
-      case 'source':
-      case 'sink':
-        event.returnValue = false
-    }
-  }
-  db.validateID(arg.value, (err, num) => {
-    if (num === 0) event.returnValue = false
-    else event.returnValue = true
-  })
-})
-
-ipcMain.on('save-elem', (event, arg) => {
-  db.create(db.nelems, arg, (err, doc) => {
-    if (err) return handleErrors(err)
-  })
-})
-
-ipcMain.on('refresh-elems', (event) => {
-  viewerWindow.close()
-  createViewerWindow()
 })
 
 /** Main menu **/
@@ -331,47 +286,11 @@ const mainmenu = [
           })
         }
       },
-      {
-        label: 'import elements',
-        accelerator: 'CmdOrCtrl+Shift+E',
-        click(item, focusedWindow) {
-          dialog.showOpenDialog({
-            properties: ['openFile']
-          }, (filenames) => {
-            if (filenames) {
-              if (exdefWindow) exdefWindow.webContents.send('show-loading')
-              fs.readFile(filenames[0], (err, data) => {
-                if (err) handleErrors(err)
-                validateJSONFormat('elems', data.toString(), (jsonConverted) => {
-                  db.create(db.nelems, JSON.parse(data.toString()), (err, docs) => {
-                    if (err) return handleErrors(err)
-                    if (exdefWindow) exdefWindow.webContents.send('hide-loading')
-                    dialog.showMessageBox({type: 'info',
-                                          title: 'Execution view elements are added',
-                                          message: docs.length + ' elements are added.',
-                                          buttons: ['OK']})
-                  })
-                })
-              })
-            }
-          })
-        }
-      },
       { type: 'separator' },
       {
         label: 'reset records',
         click(item, focusedWindow) {
           db.deleteAll(db.ner, (err, num) => {
-            if (err) return handleErrors (err)
-            exdefWindow.close()
-            createExdefWindow()
-          })
-        }
-      },
-      {
-        label: 'reset elements',
-        click(item, focusedWindow) {
-          db.deleteAll(db.nelems, (err, num) => {
             if (err) return handleErrors (err)
             exdefWindow.close()
             createExdefWindow()
@@ -398,19 +317,6 @@ const mainmenu = [
               })
             })
           })
-        }
-      }
-    ]
-  },
-  {
-    label: 'Viewer',
-    submenu: [
-      {
-        label: 'Open a diagram',
-        accelerator: 'CmdOrCtrl+Shift+V',
-        click(item, focusedWindow) {
-          if (viewerWindow) viewerWindow.focus()
-          else createViewerWindow()
         }
       }
     ]
