@@ -12,6 +12,8 @@ import Datastore from 'nedb'
 */
 const configDB = new Datastore({filename: path.join(app.getPath('userData'), 'config.json'), autoload: true})
 
+let prefFilePath = ''
+let preferences = {}
 let userConfig = {}
 let exdefWindow = null
 let initWindow = null
@@ -33,26 +35,39 @@ function validateJSONFormat (kind, rawString, cb) {
 }
 
 function initialize () {
-  configDB.findOne({_id: 1}, (err, pref) => {
-    if (err) return handleErrors(err)
-    if (!pref) {
-      return configDB.insert({_id: 1}, (err, newPref) => {
-        userConfig = newPref
-        getPreferences()
-      })
-    } else {
-      userConfig = pref
-      getPreferences()
-    }
-  })
-}
+  // configDB.findOne({_id: 1}, (err, pref) => {
+  //   if (err) return handleErrors(err)
+  //   if (!pref) {
+  //     return configDB.insert({_id: 1}, (err, newPref) => {
+  //       userConfig = newPref
+  //       getPreferences()
+  //     })
+  //   } else {
+  //     userConfig = pref
+  //     getPreferences()
+  //   }
+  // })
+  if (config.mode === 'test') prefFilePath = './test/pref.json'
+  else prefFilePath = path.join(app.getPath('userData'), 'pref.json')
 
-function getPreferences () {
-  let dbDir
-  if (config.mode === 'test') loadDataAndCreateWindow('db')
-  else if (userConfig.dbpath) loadDataAndCreateWindow(userConfig.dbpath)
+  try {
+    fs.accessSync(prefFilePath, fs.F_OK)
+    preferences = JSON.parse(fs.readFileSync(prefFilePath))
+  } catch(err) {
+    preferences = { savePath:'' }
+  }
+
+  if (preferences.savePath) loadDataAndCreateWindow(preferences.savePath)
   else createInitWindow()
 }
+
+// function getPreferences () {
+//   let dbDir
+//   if (config.mode === 'test') loadDataAndCreateWindow('db')
+//   // else if (userConfig.dbpath) loadDataAndCreateWindow(userConfig.dbpath)
+//   else if (preferences.savePath) loadDataAndCreateWindow(preferences.savePath)
+//   else createInitWindow()
+// }
 
 function loadDataAndCreateWindow (dir) {
   db.initialize(dir, () => {
@@ -101,15 +116,21 @@ app.on('window-all-closed', () => {
 })
 
 app.on('will-quit', () => {
+  console.log(JSON.stringify(preferences))
+  fs.writeFileSync(prefFilePath, JSON.stringify(preferences))
 })
 
 ipcMain.on('set-db', (event, arg) => {
-  configDB.update({_id: 1}, {dbpath: arg}, {upsert: true}, (err) => {
-    if (err) return handleErrors(err)
-    if (initWindow) initWindow.close()
-    if (exdefWindow) exdefWindow.close()
-    loadDataAndCreateWindow(arg)
-  })
+  // configDB.update({_id: 1}, {dbpath: arg}, {upsert: true}, (err) => {
+  //   if (err) return handleErrors(err)
+  //   if (initWindow) initWindow.close()
+  //   if (exdefWindow) exdefWindow.close()
+  //   loadDataAndCreateWindow(arg)
+  // })
+  preferences.savePath = arg
+  if (initWindow) initWindow.close()
+  if (exdefWindow) exdefWindow.close()
+  loadDataAndCreateWindow(preferences.savePath)
 })
 
 ipcMain.on('handle-errors', (event, arg) => {
