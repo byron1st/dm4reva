@@ -4,13 +4,6 @@ import path from 'path'
 import fs from 'fs'
 import * as db from './db.js'
 import config from './app.config.js'
-import Datastore from 'nedb'
-/*
-{
-  dbpath: string
-}
-*/
-const configDB = new Datastore({filename: path.join(app.getPath('userData'), 'config.json'), autoload: true})
 
 let prefFilePath = ''
 let preferences = {}
@@ -28,25 +21,13 @@ function validateJSONFormat (kind, rawString, cb) {
   let converted = {}
   try {
     converted = JSON.parse(rawString)
+    if (cb) cb(converted)
   } catch (e) {
     return handleErrors(e, e.name + ': ' + e.message)
   }
-  if (cb) cb(converted)
 }
 
 function initialize () {
-  // configDB.findOne({_id: 1}, (err, pref) => {
-  //   if (err) return handleErrors(err)
-  //   if (!pref) {
-  //     return configDB.insert({_id: 1}, (err, newPref) => {
-  //       userConfig = newPref
-  //       getPreferences()
-  //     })
-  //   } else {
-  //     userConfig = pref
-  //     getPreferences()
-  //   }
-  // })
   if (config.mode === 'test') prefFilePath = './test/pref.json'
   else prefFilePath = path.join(app.getPath('userData'), 'pref.json')
 
@@ -61,33 +42,30 @@ function initialize () {
   else createInitWindow()
 }
 
-// function getPreferences () {
-//   let dbDir
-//   if (config.mode === 'test') loadDataAndCreateWindow('db')
-//   // else if (userConfig.dbpath) loadDataAndCreateWindow(userConfig.dbpath)
-//   else if (preferences.savePath) loadDataAndCreateWindow(preferences.savePath)
-//   else createInitWindow()
-// }
-
 function loadDataAndCreateWindow (dir) {
   db.initialize(dir, () => {
-    if (config.mode === 'test') loadInitialTestData().then(() => createExdefWindow())
+    if (config.mode === 'test') loadInitialTestData().then(() => createExdefWindow()).catch((err) => console.log(err))
     else createExdefWindow()
   })
 }
 
 function createExdefWindow () {
-  db.read(db.nexdef, {}, {kind:1, type:1}, (err, docs) => {
+  db.read(db.nexdef, {}, {kind:1, type:1}, (err, exdefs) => {
     if (err) return handleErrors (err)
 
-    exdefWindow = new BrowserWindow({
-      width: 1280,
-      height: 720
+    db.read(db.mu, {}, {}, (err, mus) => {
+      if (err) return handleErrors (err)
+
+      exdefWindow = new BrowserWindow({
+        width: 1280,
+        height: 720
+      })
+      exdefWindow.exdefList = exdefs
+      exdefWindow.muList = mus
+      exdefWindow.loadURL(path.join('file://', __dirname, 'index.exdef.html'))
+      exdefWindow.on('closed', () => exdefWindow = null)
+      if (config.mode === 'test') exdefWindow.webContents.openDevTools()
     })
-    exdefWindow.exdefList = docs
-    exdefWindow.loadURL(path.join('file://', __dirname, 'index.exdef.html'))
-    exdefWindow.on('closed', () => exdefWindow = null)
-    if (config.mode === 'test') exdefWindow.webContents.openDevTools()
   })
 }
 
@@ -116,17 +94,10 @@ app.on('window-all-closed', () => {
 })
 
 app.on('will-quit', () => {
-  console.log(JSON.stringify(preferences))
   fs.writeFileSync(prefFilePath, JSON.stringify(preferences))
 })
 
 ipcMain.on('set-db', (event, arg) => {
-  // configDB.update({_id: 1}, {dbpath: arg}, {upsert: true}, (err) => {
-  //   if (err) return handleErrors(err)
-  //   if (initWindow) initWindow.close()
-  //   if (exdefWindow) exdefWindow.close()
-  //   loadDataAndCreateWindow(arg)
-  // })
   preferences.savePath = arg
   if (initWindow) initWindow.close()
   if (exdefWindow) exdefWindow.close()
@@ -393,10 +364,14 @@ if (process.platform === 'darwin') {
 /** Test Mode **/
 function loadInitialTestData() {
   let exdefBDPS = JSON.parse(fs.readFileSync('./test/resources/exdef.bdps.json'))
+  let muBDPS = JSON.parse(fs.readFileSync('./test/resources/mu.bdps.json'))
   return new Promise((resolve, reject) => {
     db.create(db.nexdef, exdefBDPS, (err, docs) => {
       if (err) reject()
-      resolve()
+      db.create(db.mu, muBDPS, (err, docs) => {
+        if (err) reject()
+        resolve()
+      })
     })
   })
 }

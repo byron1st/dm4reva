@@ -59,17 +59,18 @@ function validateScheme (kind, items) {
   return validationResult
 }
 
-export let nexdef, ndr, ner, nelems
+export let nexdef, ndr, ner, nelems, mu
 
 export function initialize (dbDir, cb) {
   nexdef = new Datastore({filename: path.join(dbDir, 'exdef.db')})
   ndr = new Datastore({filename: path.join(dbDir, 'dr.db')})
   ner = new Datastore({filename: path.join(dbDir, 'er.db')})
   nelems = new Datastore({filename: path.join(dbDir, 'elems.db')})
+  mu = new Datastore({filename: path.join(dbDir, 'mu.db')})
   loadADB(nexdef)
   .then((exdefDB) => {
     exdefDB.ensureIndex({fieldName: 'type', unique: true})
-    exdefDB.ensureIndex({fieldName: 'mu.muID'})
+    // exdefDB.ensureIndex({fieldName: 'mu.muID'})
     return loadADB(ndr)
   })
   .then((drDB) => {
@@ -77,6 +78,11 @@ export function initialize (dbDir, cb) {
     return loadADB(ner)
   })
   .then((erDB) => {
+    return loadADB(mu)
+  })
+  .then((muDB) => {
+    muDB.ensureIndex({fieldName: 'exdefType'})
+    muDB.ensureIndex({fieldName: 'muID', unique: true})
     return loadADB(nelems)
   })
   .then((elemsDB) => {
@@ -87,25 +93,33 @@ export function initialize (dbDir, cb) {
 }
 
 export function create(db, items, cb) {
-  let validationResult
-  switch (db) {
-    case nexdef: validationResult = validateScheme('exdef', items); break;
-    case ndr: validationResult = validateScheme('dr', items); break;
-    case ner: validationResult = validateScheme('er', items); break;
-    case nelems: validationResult = validateScheme('elems', items); break;
-    default: validationResult = false; break;
-  }
-  if (validationResult) {
-    db.insert(items, (err, docs) => {
-      if (cb) {
-        if (err) return cb(err, null)
-        if (!docs) return cb(Error('No items'), null)
-        return cb(null, docs)
-      }
-    })
-  } else {
-    if (cb) return cb(Error('Data validation failed.'), null)
-  }
+  // let validationResult
+  // switch (db) {
+  //   case nexdef: validationResult = validateScheme('exdef', items); break;
+  //   case ndr: validationResult = validateScheme('dr', items); break;
+  //   case ner: validationResult = validateScheme('er', items); break;
+  //   case nelems: validationResult = validateScheme('elems', items); break;
+  //   default: validationResult = false; break;
+  // }
+  // if (validationResult) {
+  //   db.insert(items, (err, docs) => {
+  //     if (cb) {
+  //       if (err) return cb(err, null)
+  //       if (!docs) return cb(Error('No items'), null)
+  //       return cb(null, docs)
+  //     }
+  //   })
+  // } else {
+  //   if (cb) return cb(Error('Data validation failed.'), null)
+  // }
+
+  db.insert(items, (err, docs) => {
+    if (cb) {
+      if (err) return cb(err, null)
+      if (!docs) return cb(Error('No items'), null)
+      return cb(null, docs)
+    }
+  })
 }
 
 export function read(db, queryObj, sortCondition, cb) {

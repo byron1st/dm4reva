@@ -1,18 +1,22 @@
 [
   {
-    "mu":"mu01",
+    "exdefType": "Thread",
+    "muID":"mu01",
     "desc":"java/lang/Thread.init(Ljava/lang/ThreadGroup;Ljava/lang/Runnable;Ljava/lang/String;JLjava/security/AccessControlContext;)V"
   },
   {
-    "mu":"mu02",
+    "exdefType": "StreamI/O",
+    "muID":"mu02",
     "desc":"java/io/PipedInputStream.read()I"
   },
   {
-    "mu":"mu03",
+    "exdefType": "StreamI/O",
+    "muID":"mu03",
     "desc":"java/io/PipedOutputStream.write([B)V"
   },
   {
-    "mu":"mu04",
+    "exdefType": "StreamI/O",
+    "muID":"mu04",
     "desc":"java/io/PipedInputStream.receive([BII)V"
-  },
+  }
 ]

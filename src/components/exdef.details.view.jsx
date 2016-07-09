@@ -55,5 +55,6 @@ export default class ExdefDetails extends Component {
 }
 ExdefDetails.propTypes = {
   save: PropTypes.func,
-  exdef: PropTypes.object
+  exdef: PropTypes.object,
+  muList: PropTypes.array
 }

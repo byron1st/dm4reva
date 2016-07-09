@@ -20,7 +20,8 @@ class ExdefMain extends Component {
     super()
     this.state = {
       selectedExdef:'',
-      exdefList: []
+      exdefList: [],
+      muList: []
     }
     this.selectAnExdef = this.selectAnExdef.bind(this)
     this.removeAnExdef = this.removeAnExdef.bind(this)
@@ -30,6 +31,7 @@ class ExdefMain extends Component {
   }
   componentWillMount () {
     this.setState({exdefList: this.props.exdefList})
+    this.setState({muList: this.props.muList})
     ipcRenderer.on('notify-udpate', (event, arg) => this.addExdefsToList(arg))
   }
   selectAnExdef (_id) {
@@ -63,7 +65,8 @@ class ExdefMain extends Component {
     let selectedExdefDetails = this.state.exdefList.find((exdef) => exdef._id === this.state.selectedExdef)
     let exdefDetailsView
     if (selectedExdefDetails) {
-      exdefDetailsView = <ExdefDetails save={this.saveAnExdefDetails} exdef={selectedExdefDetails} />
+      let selectedExdefMuList = this.state.muList.filter((mu) => mu.exdefType === selectedExdefDetails.type)
+      exdefDetailsView = <ExdefDetails save={this.saveAnExdefDetails} exdef={selectedExdefDetails} muList={selectedExdefMuList}/>
     }
     return (
       <div id='main'>
@@ -74,6 +77,7 @@ class ExdefMain extends Component {
   }
 }
 
-ReactDOM.render(<ExdefMain exdefList={remote.getCurrentWindow().exdefList}/>, document.getElementById('exdefMain'))
+let currentWindow = remote.getCurrentWindow()
+ReactDOM.render(<ExdefMain exdefList={currentWindow.exdefList} muList={currentWindow.muList}/>, document.getElementById('exdefMain'))
 ipcRenderer.on('show-loading', (event) => window.$('#progressBar').show())
 ipcRenderer.on('hide-loading', (event) => window.$('#progressBar').hide())
