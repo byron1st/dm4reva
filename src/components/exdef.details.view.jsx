@@ -30,7 +30,7 @@ export default class ExdefDetails extends Component {
     let tabContent
     switch(this.state.tabName) {
       case 'Info':
-        tabContent = <ExdefDetailsInfo exdef={this.props.exdef}/>
+        tabContent = <ExdefDetailsInfo exdef={this.props.exdef} muList={this.props.muList}/>
         break;
       case 'Edit':
         tabContent = <ExdefDetailsEdit exdef={this.props.exdef} save={this.props.save}/>

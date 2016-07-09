@@ -34,7 +34,7 @@ export default class ExdefDetailsInfo extends Component {
           <ExdefDetailsInfoHeader type={this.props.exdef.type} kind={this.props.exdef.kind} />
           <ExdefDetailsInfoInf inf={this.props.exdef.inf} getDRs={this.getDRs} />
           <ExdefDetailsInfoIDRules idRulesHTML={this.props.exdef.id_rules_html} />
-          <ExdefDetailsInfoMU mu={this.props.exdef.mu} />
+          <ExdefDetailsInfoMU muList={this.props.muList} />
         </div>
         <ExdefDetailsInfoDRModal drs={this.state.drs}/>
       </div>
@@ -42,7 +42,8 @@ export default class ExdefDetailsInfo extends Component {
   }
 }
 ExdefDetailsInfo.propTypes = {
-  exdef: PropTypes.object
+  exdef: PropTypes.object,
+  muList: PropTypes.array
 }
 
 class ExdefDetailsInfoHeader extends Component {
@@ -130,11 +131,11 @@ ExdefDetailsInfoIDRules.propTypes = {
 class ExdefDetailsInfoMU extends Component {
   render () {
     let muListItemView = []
-    this.props.mu.forEach((anItem) => muListItemView.push(
-      <li className='list-group-item' key={anItem.muID}>
-        <h5 className='list-group-item-heading'>[{anItem.muID}]</h5>
+    this.props.muList.forEach((mu) => muListItemView.push(
+      <li className='list-group-item' key={mu.muID}>
+        <h5 className='list-group-item-heading'>[{mu.muID}]</h5>
         <p className='list-group-item-text'>
-          {anItem.desc}
+          {mu.desc}
         </p>
       </li>))
     return (
@@ -148,7 +149,7 @@ class ExdefDetailsInfoMU extends Component {
   }
 }
 ExdefDetailsInfoMU.propTypes = {
-  mu: PropTypes.array
+  muList: PropTypes.array
 }
 
 class ExdefDetailsInfoDRModal extends Component {
