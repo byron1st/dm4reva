@@ -21,7 +21,8 @@ class ExdefMain extends Component {
     this.state = {
       selectedExdef:'',
       exdefList: [],
-      muList: []
+      muList: [],
+      recordsList: []
     }
     this.selectAnExdef = this.selectAnExdef.bind(this)
     this.removeAnExdef = this.removeAnExdef.bind(this)
@@ -29,13 +30,16 @@ class ExdefMain extends Component {
     this.addExdefsToList = this.addExdefsToList.bind(this)
     this.addNewExdef = this.addNewExdef.bind(this)
     this.addMuToList = this.addMuToList.bind(this)
+    this.addRecrodsToList = this.addRecrodsToList.bind(this)
     this.validateMUIDfromOthers = this.validateMUIDfromOthers.bind(this)
   }
   componentWillMount () {
     this.setState({exdefList: this.props.exdefList})
     this.setState({muList: this.props.muList})
+    this.setState({recordsList: this.props.recordsList})
     ipcRenderer.on('notify-update', (event, arg) => this.addExdefsToList(arg))
     ipcRenderer.on('notify-mu-add', (event, arg) => this.addMuToList(arg))
+    ipcRenderer.on('notify-records-add', (event, arg) => this.addRecrodsToList(arg))
   }
   selectAnExdef (_id) {
     this.setState({selectedExdef:_id})
@@ -90,6 +94,11 @@ class ExdefMain extends Component {
     })
     this.setState({muList: updatedMuList})
   }
+  addRecrodsToList (addedRecordsList) {
+    let updatedRecordsList = this.state.recordsList.concat(addedRecordsList)
+    console.log(updatedRecordsList)
+    this.setState({recordsList: updatedRecordsList})
+  }
   addNewExdef (newExdefData) {
     let newExdef = ipcRenderer.sendSync('add-new-exdef', newExdefData)
     if (newExdef) this.addExdefsToList(newExdef)
@@ -103,7 +112,9 @@ class ExdefMain extends Component {
     let exdefDetailsView
     if (selectedExdefDetails) {
       let selectedExdefMuList = this.state.muList.filter((mu) => mu.exdefType === selectedExdefDetails.type)
-      exdefDetailsView = <ExdefDetails save={this.saveAnExdefDetails} exdef={selectedExdefDetails} muList={selectedExdefMuList} validateMUIDfromOthers={this.validateMUIDfromOthers}/>
+      let selectedMuIDList = selectedExdefMuList.map((e) => e.muID)
+      let selectedExdefRecordsList = this.state.recordsList.filter((record) => selectedMuIDList.indexOf(record.muID) !== -1)
+      exdefDetailsView = <ExdefDetails save={this.saveAnExdefDetails} exdef={selectedExdefDetails} muList={selectedExdefMuList} recordsList={selectedExdefRecordsList} validateMUIDfromOthers={this.validateMUIDfromOthers}/>
     }
     return (
       <div id='main'>
@@ -115,6 +126,6 @@ class ExdefMain extends Component {
 }
 
 let currentWindow = remote.getCurrentWindow()
-ReactDOM.render(<ExdefMain exdefList={currentWindow.exdefList} muList={currentWindow.muList}/>, document.getElementById('exdefMain'))
+ReactDOM.render(<ExdefMain exdefList={currentWindow.exdefList} muList={currentWindow.muList} recordsList={currentWindow.recordsList}/>, document.getElementById('exdefMain'))
 ipcRenderer.on('show-loading', (event) => window.$('#progressBar').show())
 ipcRenderer.on('hide-loading', (event) => window.$('#progressBar').hide())

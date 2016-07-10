@@ -51,20 +51,25 @@ function loadDataAndCreateWindow (dir) {
 
 function createExdefWindow () {
   db.read(db.nexdef, {}, {kind:1, type:1}, (err, exdefs) => {
-    if (err) return handleErrors (err)
+    if (err) return handleErrors(err)
 
     db.read(db.mu, {}, {muID:1}, (err, mus) => {
-      if (err) return handleErrors (err)
+      if (err) return handleErrors(err)
 
-      exdefWindow = new BrowserWindow({
-        width: 1280,
-        height: 720
+      db.read(db.ner, {}, {}, (err, records) => {
+        if (err) return handleErrors(err)
+
+        exdefWindow = new BrowserWindow({
+          width: 1280,
+          height: 720
+        })
+        exdefWindow.exdefList = exdefs
+        exdefWindow.muList = mus
+        exdefWindow.recordsList = records
+        exdefWindow.loadURL(path.join('file://', __dirname, 'index.exdef.html'))
+        exdefWindow.on('closed', () => exdefWindow = null)
+        if (config.mode === 'test') exdefWindow.webContents.openDevTools()
       })
-      exdefWindow.exdefList = exdefs
-      exdefWindow.muList = mus
-      exdefWindow.loadURL(path.join('file://', __dirname, 'index.exdef.html'))
-      exdefWindow.on('closed', () => exdefWindow = null)
-      if (config.mode === 'test') exdefWindow.webContents.openDevTools()
     })
   })
 }
@@ -322,7 +327,10 @@ const mainmenu = [
                 validateJSONFormat('er', data.toString(), (jsonConverted) => {
                   db.create(db.ner, jsonConverted, (err, docs) => {
                     if (err) return handleErrors(err)
-                    if (exdefWindow) exdefWindow.webContents.send('hide-loading')
+                    if (exdefWindow) {
+                      exdefWindow.webContents.send('notify-records-add', docs)
+                      exdefWindow.webContents.send('hide-loading')
+                    }
                     dialog.showMessageBox({type: 'info',
                                           title: 'Execution records are added',
                                           message: docs.length + ' ERs are added.',
