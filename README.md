@@ -27,7 +27,7 @@ Renderer 프로세스들은 각각 창을 생성하며, Exdef는 메인이 되�
 
 Exdef 모듈은 `exdef.*.js`, `index.exdef.html` 등으로 구성되어 있으며, 각각의 관계는 위의 그림과 같다. 각각의 React file들은 1개 ~ 여러개의 세부 React component 들로 구성되어 있으며, 유사한 계층 구조를 갖고 있다. `index.exdef.html`에서는 jQuery와 Twitter Bootstrap을 로드하고 `exdef.main.view.js` 파일을 로드한다.
 
-![DB 구조](http://byron1st.pe.kr/wp-content/uploads/2016/06/DM4REVA_db.png)
+![DM4REVA의 DB 구조](http://byron1st.pe.kr/wp-content/uploads/2016/05/DM4REVA_db.png)
 
 마지막으로, DB 구조는 위의 그림과 같다. 기본적으로 NoSQL 기반이고, 본인 자체가 DB를 엄격하게 구조화할 정도로 잘 아는 것은 아니라, 최소한의 기본만 잡고 개발되었다. NeDB 자체는 Scheme을 강제하는 방법은 없으나, 잘못된 포멧의 json 문서가 삽입되지 않도록 최소한의 validation 기능을 `db.js`에 구현하였다. 링크의 경우도, NeDB에서 지원하지 않기 때문에, 구현 시 따로 신경을 써주어야 한다.
 
