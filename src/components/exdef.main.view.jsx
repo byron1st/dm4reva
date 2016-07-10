@@ -28,6 +28,7 @@ class ExdefMain extends Component {
     this.saveAnExdefDetails = this.saveAnExdefDetails.bind(this)
     this.addExdefsToList = this.addExdefsToList.bind(this)
     this.addNewExdef = this.addNewExdef.bind(this)
+    this.validateMUIDfromOthers = this.validateMUIDfromOthers.bind(this)
   }
   componentWillMount () {
     this.setState({exdefList: this.props.exdefList})
@@ -44,13 +45,34 @@ class ExdefMain extends Component {
     let success = ipcRenderer.sendSync('remove-anExdef', _id)
     if (success) this.setState({exdefList: updatedExdefList})
   }
-  saveAnExdefDetails (updatedExdef) {
+  saveAnExdefDetails (updatedExdef, updatedMuListforExdef, removedMuListforExdef) {
     let updatedExdefList = this.state.exdefList.slice()
     let idx = this.state.exdefList.map((e) => e._id).indexOf(updatedExdef._id)
     updatedExdefList.splice(idx, 1, updatedExdef)
     updatedExdefList.sort(sortKindAndType)
-    let success = ipcRenderer.sendSync('update-anExdef', updatedExdef)
-    if (success) this.setState({exdefList: updatedExdefList})
+
+    let updatedMuList = this.state.muList.slice()
+    let muIDList = updatedMuList.map((e) => e.muID)
+    updatedMuListforExdef.forEach((mu) => {
+      let idx = muIDList.indexOf(mu.muID)
+      if (idx === -1) updatedMuList.push(mu)
+      else updatedMuList.splice(idx, 1, mu)
+    })
+
+    let removedMuIDList = removedMuListforExdef.map((e) => e.muID)
+    removedMuIDList.forEach((removedMu) => {
+      let removedIdx = updatedMuList.map((e) => e.muID).indexOf(removedMu)
+      if (removedIdx !== -1) updatedMuList.splice(removedIdx, 1)
+    })
+
+    updatedMuList.sort((a, b) => {
+      if (a.muID > b.muID) return 1
+      if (b.muID < a.muID) return -1
+      return 0
+    })
+
+    let success = ipcRenderer.sendSync('update-anExdef', [updatedExdef, JSON.stringify(updatedMuList), JSON.stringify(removedMuIDList)])
+    if (success) this.setState({exdefList: updatedExdefList, muList: updatedMuList})
   }
   addExdefsToList (addedExdefList) {
     let updatedExdefList = this.state.exdefList.concat(addedExdefList)
@@ -61,12 +83,16 @@ class ExdefMain extends Component {
     let newExdef = ipcRenderer.sendSync('add-new-exdef', newExdefData)
     if (newExdef) this.addExdefsToList(newExdef)
   }
+  validateMUIDfromOthers (muID) {
+    let index = this.state.muList.map((e) => e.muID).indexOf(muID)
+    return index === -1 ? true : false
+  }
   render () {
     let selectedExdefDetails = this.state.exdefList.find((exdef) => exdef._id === this.state.selectedExdef)
     let exdefDetailsView
     if (selectedExdefDetails) {
       let selectedExdefMuList = this.state.muList.filter((mu) => mu.exdefType === selectedExdefDetails.type)
-      exdefDetailsView = <ExdefDetails save={this.saveAnExdefDetails} exdef={selectedExdefDetails} muList={selectedExdefMuList}/>
+      exdefDetailsView = <ExdefDetails save={this.saveAnExdefDetails} exdef={selectedExdefDetails} muList={selectedExdefMuList} validateMUIDfromOthers={this.validateMUIDfromOthers}/>
     }
     return (
       <div id='main'>

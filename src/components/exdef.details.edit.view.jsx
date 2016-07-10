@@ -21,7 +21,8 @@ export default class ExdefDetailsEdit extends Component {
       kind: '',
       inf: [],
       id_rules:'',
-      mu:[]
+      muList:[],
+      removedMuList: []
     }
     this.updateType = this.updateType.bind(this)
     this.updateKind = this.updateKind.bind(this)
@@ -41,7 +42,7 @@ export default class ExdefDetailsEdit extends Component {
     this.setState({kind: this.props.exdef.kind})
     this.setState({inf: this.props.exdef.inf.slice()})
     this.setState({id_rules: this.props.exdef.id_rules})
-    this.setState({mu: this.props.exdef.mu.slice()})
+    this.setState({muList: this.props.muList.slice()})
   }
   updateType (newType) {
     this.setState({type: newType})
@@ -63,24 +64,28 @@ export default class ExdefDetailsEdit extends Component {
     this.setState({inf: this.state.inf.concat(newItem)})
   }
   updateMUItem (updatedItem, index) {
-    let updatedMU = this.state.mu.slice()
+    let updatedMU = this.state.muList.slice()
     updatedMU.splice(index, 1, updatedItem)
-    this.setState({mu: updatedMU})
+    this.setState({muList: updatedMU})
   }
   removeMUItem (index) {
-    let updatedMU = this.state.mu.slice()
-    updatedMU.splice(index, 1)
-    this.setState({mu: updatedMU})
+    let updatedMU = this.state.muList.slice()
+    let updatedRemovedMuList = this.state.removedMuList.slice()
+    let removed = updatedMU.splice(index, 1)
+    updatedRemovedMuList.push(removed[0])
+    this.setState({muList: updatedMU})
+    this.setState({removedMuList: updatedRemovedMuList})
   }
   addMUItem (newItem) {
-    this.setState({mu: this.state.mu.concat(newItem)})
+    this.setState({muList: this.state.muList.concat(newItem)})
   }
   updateIdRules (newValue) {
     this.setState({id_rules: newValue})
   }
   validateMUID (muID) {
-    let index = this.state.mu.map((e) => e.muID).indexOf(muID)
-    return index === -1 ? true : false
+    let index = this.state.muList.map((e) => e.muID).indexOf(muID)
+    if (index !== -1) return false
+    else return this.props.validateMUIDfromOthers(muID)
   }
   saveExdef () {
     let updatedExdef = {
@@ -88,12 +93,11 @@ export default class ExdefDetailsEdit extends Component {
       type: this.state.type,
       kind: this.state.kind,
       inf: this.state.inf.slice(),
-      id_rules: this.state.id_rules,
-      mu: this.state.mu.slice()
+      id_rules: this.state.id_rules
     }
     let converter = new showdown.Converter()
     updatedExdef.id_rules_html = converter.makeHtml(updatedExdef.id_rules)
-    this.props.save(updatedExdef)
+    this.props.save(updatedExdef, this.state.muList.slice(), this.state.removedMuList.slice())
   }
   render () {
     return (
@@ -107,7 +111,7 @@ export default class ExdefDetailsEdit extends Component {
           <ExdefDetailsEditTypeAndKind type={this.state.type} kind={this.state.kind} updateType={this.updateType} updateKind={this.updateKind}/>
           <ExdefDetailsEditInf list={this.state.inf} update={this.updateInfItem} add={this.addInfItem} remove={this.removeInfItem}/>
           <ExdefDetailsEditIdRules id_rules={this.state.id_rules} update={this.updateIdRules}/>
-          <ExdefDetailsEditMU muList={this.state.mu} update={this.updateMUItem} add={this.addMUItem} remove={this.removeMUItem} validateMUID={this.validateMUID}/>
+          <ExdefDetailsEditMU muList={this.state.muList} exdefType={this.state.type} update={this.updateMUItem} add={this.addMUItem} remove={this.removeMUItem} validateMUID={this.validateMUID}/>
         </div>
       </div>
     )
@@ -115,7 +119,9 @@ export default class ExdefDetailsEdit extends Component {
 }
 ExdefDetailsEdit.propTypes = {
   exdef: PropTypes.object,
-  save: PropTypes.func
+  muList: PropTypes.array,
+  save: PropTypes.func,
+  validateMUIDfromOthers: PropTypes.func
 }
 
 class ExdefDetailsEditTypeAndKind extends Component {
@@ -239,12 +245,8 @@ class ExdefDetailsEditMU extends Component {
     this.handleAdd = this.handleAdd.bind(this)
   }
   validateID (event) {
-    let isValid = this.props.validateMUID(event.target.value)
-    if (isValid) {
-      isValid = ipcRenderer.sendSync('validate-muID', event.target.value)
-    }
     let currentClassName = document.getElementById('mu-new-id').className
-    if (isValid) {
+    if (this.props.validateMUID(event.target.value)) {
       let index = currentClassName.indexOf(' errorInput')
       if (index !== -1) {
         document.getElementById('mu-new-id').className = currentClassName.substring(0, index)
@@ -258,7 +260,8 @@ class ExdefDetailsEditMU extends Component {
   handleAdd () {
     let newMu = {
       muID: $('#mu-new-id').val(),
-      desc: $('#mu-new-desc').val()
+      desc: $('#mu-new-desc').val(),
+      exdefType: this.props.exdefType
     }
     $('#mu-new-id').val('')
     $('#mu-new-desc').val('')
@@ -307,6 +310,7 @@ class ExdefDetailsEditMU extends Component {
 }
 ExdefDetailsEditMU.propTypes = {
   muList: PropTypes.array,
+  exdefType: PropTypes.string,
   add: PropTypes.func,
   update: PropTypes.func,
   remove: PropTypes.func,
@@ -322,7 +326,9 @@ class ExdefDetailsEditMUItem extends Component {
   handleUpdate (event) {
     let updatedMU = {
       muID: this.props.mu.muID,
-      desc: event.target.value
+      desc: event.target.value,
+      exdefType: this.props.mu.exdefType,
+      _id: this.props.mu._id
     }
     this.props.update(updatedMU, event.target.name)
   }

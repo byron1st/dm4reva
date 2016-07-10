@@ -134,7 +134,23 @@ export function read(db, queryObj, sortCondition, cb) {
 export function update(db, anItem, cb) {
   db.update({_id: anItem._id}, anItem, (err) => {
     if (err) cb(err)
-    if (cb) cb(null)
+    if (cb) cb()
+  })
+}
+
+export function upsert(db, anItem, cb) {
+  db.update({_id: anItem._id}, anItem, {upsert: true}, (err) => {
+    if (err) cb(err)
+    else cb()
+  })
+}
+
+export function deleteByQuery(db, query, cb) {
+  db.remove(query, { multi: true }, (err,num) => {
+    if (cb) {
+      if (err) return cb(err)
+      else return cb()
+    }
   })
 }
 

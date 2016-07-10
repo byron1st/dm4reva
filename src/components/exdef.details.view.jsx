@@ -33,7 +33,7 @@ export default class ExdefDetails extends Component {
         tabContent = <ExdefDetailsInfo exdef={this.props.exdef} muList={this.props.muList}/>
         break;
       case 'Edit':
-        tabContent = <ExdefDetailsEdit exdef={this.props.exdef} save={this.props.save}/>
+        tabContent = <ExdefDetailsEdit exdef={this.props.exdef} muList={this.props.muList} save={this.props.save} validateMUIDfromOthers={this.props.validateMUIDfromOthers}/>
         break;
       case 'Elements':
         tabContent = <ExdefDetailsElements exdef={this.props.exdef} />
@@ -56,5 +56,6 @@ export default class ExdefDetails extends Component {
 ExdefDetails.propTypes = {
   save: PropTypes.func,
   exdef: PropTypes.object,
-  muList: PropTypes.array
+  muList: PropTypes.array,
+  validateMUIDfromOthers: PropTypes.func
 }

@@ -44,7 +44,7 @@ function initialize () {
 
 function loadDataAndCreateWindow (dir) {
   db.initialize(dir, () => {
-    if (config.mode === 'test') loadInitialTestData().then(() => createExdefWindow()).catch((err) => console.log(err))
+    if (config.mode === 'test') loadInitialTestData().then(() => createExdefWindow()).catch((err) => handleErrors(err))
     else createExdefWindow()
   })
 }
@@ -109,12 +109,40 @@ ipcMain.on('handle-errors', (event, arg) => {
 })
 
 ipcMain.on('update-anExdef', (event, arg) => {
-  db.update(db.nexdef, arg, (err) => {
+  db.update(db.nexdef, arg[0], (err) => {
     if (err) {
       handleErrors(err)
       event.returnValue = false
     } else {
-      event.returnValue = true
+      let muList = JSON.parse(arg[1])
+      let count = muList.length
+      if (count === 0) {
+        db.deleteByQuery(db.mu, {'muID': {$in: JSON.parse(arg[2])}}, (err) => {
+          if (err) {
+            handleErrors(err)
+            event.returnValue = false
+          }
+          event.returnValue = true
+        })
+      } else {
+        muList.forEach((mu) => db.upsert(db.mu, mu, (err) => {
+          if (err) {
+            handleErrors(err)
+            event.returnValue = false
+          } else {
+            count--
+            if (count === 0) {
+              db.deleteByQuery(db.mu, {'muID': {$in: JSON.parse(arg[2])}}, (err) => {
+                if (err) {
+                  handleErrors(err)
+                  event.returnValue = false
+                }
+                event.returnValue = true
+              })
+            }
+          }
+        }))
+      }
     }
   })
 })
