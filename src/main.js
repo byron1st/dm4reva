@@ -354,7 +354,7 @@ const mainmenu = [
               if (err) return handleErrors (err)
               db.deleteAll(db.ner, (err, num) => {
                 if (err) return handleErrors (err)
-                db.deleteAll(db.nelems, (err, num) => {
+                db.deleteAll(db.mu, (err, num) => {
                   if (err) return handleErrors (err)
                   exdefWindow.close()
 

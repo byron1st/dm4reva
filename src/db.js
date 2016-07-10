@@ -61,13 +61,12 @@ function validateScheme (kind, items) {
   return validationResult
 }
 
-export let nexdef, ndr, ner, nelems, mu
+export let nexdef, ndr, ner, mu
 
 export function initialize (dbDir, cb) {
   nexdef = new Datastore({filename: path.join(dbDir, 'exdef.db')})
   ndr = new Datastore({filename: path.join(dbDir, 'dr.db')})
   ner = new Datastore({filename: path.join(dbDir, 'er.db')})
-  nelems = new Datastore({filename: path.join(dbDir, 'elems.db')})
   mu = new Datastore({filename: path.join(dbDir, 'mu.db')})
   loadADB(nexdef)
   .then((exdefDB) => {
@@ -84,10 +83,6 @@ export function initialize (dbDir, cb) {
   .then((muDB) => {
     muDB.ensureIndex({fieldName: 'exdefType'})
     muDB.ensureIndex({fieldName: 'muID', unique: true})
-    return loadADB(nelems)
-  })
-  .then((elemsDB) => {
-    elemsDB.ensureIndex({fieldName: 'elemID', unique: true})
     if (cb) cb()
   })
   .catch((err) => console.log(err))
