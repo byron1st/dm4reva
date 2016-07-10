@@ -28,12 +28,14 @@ class ExdefMain extends Component {
     this.saveAnExdefDetails = this.saveAnExdefDetails.bind(this)
     this.addExdefsToList = this.addExdefsToList.bind(this)
     this.addNewExdef = this.addNewExdef.bind(this)
+    this.addMuToList = this.addMuToList.bind(this)
     this.validateMUIDfromOthers = this.validateMUIDfromOthers.bind(this)
   }
   componentWillMount () {
     this.setState({exdefList: this.props.exdefList})
     this.setState({muList: this.props.muList})
-    ipcRenderer.on('notify-udpate', (event, arg) => this.addExdefsToList(arg))
+    ipcRenderer.on('notify-update', (event, arg) => this.addExdefsToList(arg))
+    ipcRenderer.on('notify-mu-add', (event, arg) => this.addMuToList(arg))
   }
   selectAnExdef (_id) {
     this.setState({selectedExdef:_id})
@@ -78,6 +80,15 @@ class ExdefMain extends Component {
     let updatedExdefList = this.state.exdefList.concat(addedExdefList)
     updatedExdefList.sort(sortKindAndType)
     this.setState({exdefList: updatedExdefList})
+  }
+  addMuToList (addedMuList) {
+    let updatedMuList = this.state.muList.concat(addedMuList)
+    updatedMuList.sort((a, b) => {
+      if (a.muID > b.muID) return 1
+      if (b.muID < a.muID) return -1
+      return 0
+    })
+    this.setState({muList: updatedMuList})
   }
   addNewExdef (newExdefData) {
     let newExdef = ipcRenderer.sendSync('add-new-exdef', newExdefData)

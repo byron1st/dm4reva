@@ -27,6 +27,7 @@ function validateScheme (kind, items) {
                   if ((!item[key] || item[key] === '') && !scheme[key].isMandatory) return true
                   if (Array.isArray(scheme[key].type)) {
                     if (scheme[key].type.indexOf(item[key]) === -1) return false
+                    else return true
                   } else {
                     switch (scheme[key].type) {
                       case 'string': return (typeof item[key] === 'string')
@@ -35,13 +36,14 @@ function validateScheme (kind, items) {
                         return item[key].every(
                           (subitem) => {
                             if (scheme[key].item === 'string') return (typeof subitem === 'string')
-                            else {
-                              let subKeys = Object.keys(scheme[key].item)
-                              return subKeys.every((subkey) => {
-                                if (!subitem[subkey] && scheme[key].item[subkey].isMandatory) return false
-                                return (typeof subitem[subkey] === 'string')
-                              })
-                            }
+                            // only string is allowed for the array type at this moment.
+                            // else {
+                            //   let subKeys = Object.keys(scheme[key].item)
+                            //   return subKeys.every((subkey) => {
+                            //     if (!subitem[subkey] && scheme[key].item[subkey].isMandatory) return false
+                            //     return (typeof subitem[subkey] === 'string')
+                            //   })
+                            // }
                           })
                       case 'object': return (item[key] instanceof Object) && !Array.isArray(item[key])
                     }
@@ -70,7 +72,6 @@ export function initialize (dbDir, cb) {
   loadADB(nexdef)
   .then((exdefDB) => {
     exdefDB.ensureIndex({fieldName: 'type', unique: true})
-    // exdefDB.ensureIndex({fieldName: 'mu.muID'})
     return loadADB(ndr)
   })
   .then((drDB) => {
@@ -93,33 +94,25 @@ export function initialize (dbDir, cb) {
 }
 
 export function create(db, items, cb) {
-  // let validationResult
-  // switch (db) {
-  //   case nexdef: validationResult = validateScheme('exdef', items); break;
-  //   case ndr: validationResult = validateScheme('dr', items); break;
-  //   case ner: validationResult = validateScheme('er', items); break;
-  //   case nelems: validationResult = validateScheme('elems', items); break;
-  //   default: validationResult = false; break;
-  // }
-  // if (validationResult) {
-  //   db.insert(items, (err, docs) => {
-  //     if (cb) {
-  //       if (err) return cb(err, null)
-  //       if (!docs) return cb(Error('No items'), null)
-  //       return cb(null, docs)
-  //     }
-  //   })
-  // } else {
-  //   if (cb) return cb(Error('Data validation failed.'), null)
-  // }
-
-  db.insert(items, (err, docs) => {
-    if (cb) {
-      if (err) return cb(err, null)
-      if (!docs) return cb(Error('No items'), null)
-      return cb(null, docs)
-    }
-  })
+  let validationResult
+  switch (db) {
+    case nexdef: validationResult = validateScheme('exdef', items); break;
+    case ndr: validationResult = validateScheme('dr', items); break;
+    case ner: validationResult = validateScheme('er', items); break;
+    case mu: validationResult = validateScheme('mu', items); break;
+    default: validationResult = false; break;
+  }
+  if (validationResult) {
+    db.insert(items, (err, docs) => {
+      if (cb) {
+        if (err) return cb(err, null)
+        if (!docs) return cb(Error('No items'), null)
+        return cb(null, docs)
+      }
+    })
+  } else {
+    if (cb) return cb(Error('Data validation failed.'), null)
+  }
 }
 
 export function read(db, queryObj, sortCondition, cb) {

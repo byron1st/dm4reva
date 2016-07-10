@@ -53,7 +53,7 @@ function createExdefWindow () {
   db.read(db.nexdef, {}, {kind:1, type:1}, (err, exdefs) => {
     if (err) return handleErrors (err)
 
-    db.read(db.mu, {}, {}, (err, mus) => {
+    db.read(db.mu, {}, {muID:1}, (err, mus) => {
       if (err) return handleErrors (err)
 
       exdefWindow = new BrowserWindow({
@@ -273,6 +273,34 @@ const mainmenu = [
                                           title: 'Dependency relationships are added',
                                           message: docs.length + ' DRs are added.',
                                           buttons: ['OK']})
+                  })
+                })
+              })
+            }
+          })
+        }
+      },
+      {
+        label: 'import monitoring units',
+        accelerator: 'CmdOrCtrl+M',
+        click(item, focusedWindow) {
+          dialog.showOpenDialog({
+            properties: ['openFile'],
+            filters: [
+              {name: 'json File', extensions: ['json']}
+            ]
+          }, (filenames) => {
+            if (filenames) {
+              if (exdefWindow) exdefWindow.webContents.send('show-loading')
+              fs.readFile(filenames[0], (err, data) => {
+                if (err) handleErrors(err)
+                validateJSONFormat('mu', data.toString(), (jsonConverted) => {
+                  db.create(db.mu, jsonConverted, (err, docs) => {
+                    if (err) return handleErrors(err)
+                    if (exdefWindow) {
+                      exdefWindow.webContents.send('notify-mu-add', docs)
+                      exdefWindow.webContents.send('hide-loading')
+                    }
                   })
                 })
               })

@@ -1,0 +1,10 @@
+[
+  {
+    "exdefType": "StreamI/O",
+    "desc":"java/io/PipedOutputStream.write([B)V"
+  },
+  {
+    "exdefType": "StreamI/O",
+    "muID":"mu09"
+  }
+]
