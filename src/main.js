@@ -113,7 +113,7 @@ ipcMain.on('set-db', (event, arg) => {
 })
 
 ipcMain.on('handle-errors', (event, arg) => {
-  handleErrors(err)
+  handleErrors(new Error(arg))
 })
 
 ipcMain.on('update-anExdef', (event, arg) => {
@@ -153,6 +153,20 @@ ipcMain.on('update-anExdef', (event, arg) => {
       }
     }
   })
+})
+
+ipcMain.on('update-exdef', (event, arg) => {
+  if (arg._id) {
+    db.update(db.nexdef, arg, (err) => {
+      if (err) {
+        handleErrors(err)
+        event.returnValue = false
+      } else event.returnValue = true
+    })
+  } else {
+    handleErrors(new Error('No _id exists'))
+    event.returnValue = false
+  }
 })
 
 ipcMain.on('remove-anExdef', (event, arg) => {

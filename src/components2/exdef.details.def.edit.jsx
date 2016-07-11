@@ -2,6 +2,9 @@
 
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
+import {ipcRenderer} from 'electron'
+
+const kinds = ['EComponent', 'EConnector', 'EPort']
 
 export default class DefEdit extends Component {
   constructor () {
@@ -13,6 +16,7 @@ export default class DefEdit extends Component {
     }
     this.getNewProps = this.getNewProps.bind(this)
     this.updateValues = this.updateValues.bind(this)
+    this.updateExdef = this.updateExdef.bind(this)
   }
   componentWillMount () {
     this.getNewProps(this.props)
@@ -32,14 +36,23 @@ export default class DefEdit extends Component {
     updatedState[key.toLowerCase()] = value
     this.setState(updatedState)
   }
+  updateExdef () {
+    let validationKind = kinds.indexOf(this.state.kind) !== -1
+    if (validationKind) this.props.updateExdef(this.props.exdef._id, this.state.type, this.state.kind, this.state.inf)
+    else ipcRenderer.send('handle-errors', 'The value of the Kind should be one of EComponent, EConnector, and EPort.')
+  }
   render () {
     return (
       <div className='row'>
         <div className='col-md-12'>
           <form className='form-horizontal'>
             <div className='form-group'>
-              <div className='col-md-6'><button className='btn btn-primary btn-block'>Save</button></div>
-              <div className='col-md-6'><button className='btn btn-danger btn-block'>Cancel</button></div>
+              <div className='col-md-6'>
+                <button type='button' className='btn btn-primary btn-block' onClick={this.updateExdef}>Save</button>
+              </div>
+              <div className='col-md-6'>
+                <button type='button' className='btn btn-danger btn-block' onClick={() => this.props.toggleEdit()}>Cancel</button>
+              </div>
             </div>
             <DefEditTypeAndKind name='Type' value={this.state.type} updateValues={this.updateValues} />
             <DefEditTypeAndKind name='Kind' value={this.state.kind} updateValues={this.updateValues} />
@@ -51,7 +64,9 @@ export default class DefEdit extends Component {
   }
 }
 DefEdit.propTypes = {
-  exdef: PropTypes.object.isRequired
+  exdef: PropTypes.object.isRequired,
+  updateExdef: PropTypes.func.isRequired,
+  toggleEdit: PropTypes.func.isRequired
 }
 
 class DefEditTypeAndKind extends Component {
@@ -105,7 +120,7 @@ class DefEditInf extends Component {
         <div className='col-md-10'>
           <div className='input-group input-group-sm'>
             <span className='input-group-btn'>
-              <button className='btn btn-primary' onClick={() => this.addInf($('#newInf').val())}>Add</button>
+              <button type='button' className='btn btn-primary' onClick={() => this.addInf($('#newInf').val())}>Add</button>
             </span>
             <input type='text' className='form-control' placeholder='add a new interface' defaultValue='' id='newInf'/>
           </div>

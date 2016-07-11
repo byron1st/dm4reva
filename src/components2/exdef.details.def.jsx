@@ -33,7 +33,7 @@ export default class Def extends Component {
     this.setState({editMode: !this.state.editMode})
   }
   buildDefContent () {
-    if (this.state.editMode) return <DefEdit exdef={this.props.exdef} />
+    if (this.state.editMode) return <DefEdit exdef={this.props.exdef} updateExdef={this.props.updateExdef} toggleEdit={this.toggleEdit} />
     else return <DefView exdef={this.props.exdef} />
   }
   render () {
@@ -57,5 +57,6 @@ export default class Def extends Component {
   }
 }
 Def.propTypes = {
-  exdef: PropTypes.object.isRequired
+  exdef: PropTypes.object.isRequired,
+  updateExdef: PropTypes.func.isRequired
 }

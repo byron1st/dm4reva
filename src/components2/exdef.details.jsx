@@ -41,7 +41,7 @@ export default class Details extends Component {
   buildContent () {
     switch(this.state.tab) {
       case tab.def:
-        return <Def exdef={this.props.exdef} />
+        return <Def exdef={this.props.exdef} updateExdef={this.props.updateExdef}/>
       case tab.id:
         return <Id />
       case tab.er:
@@ -64,5 +64,6 @@ export default class Details extends Component {
   }
 }
 Details.propTypes = {
-  exdef: PropTypes.object.isRequired
+  exdef: PropTypes.object.isRequired,
+  updateExdef: PropTypes.func.isRequired
 }
