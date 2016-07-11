@@ -68,7 +68,10 @@ function createExdefWindow () {
         exdefWindow.recordsList = records
         exdefWindow.loadURL(path.join('file://', __dirname, 'index.exdef.html'))
         exdefWindow.on('closed', () => exdefWindow = null)
-        if (config.mode === 'test') exdefWindow.webContents.openDevTools()
+        if (config.mode === 'test') {
+          // exdefWindow.addDevToolsExtension('/Users/byron1st/Library/Application Support/Google/Chrome/Profile 1/Extensions/fmkadmapgofadopljbjfkapdkoienihi/0.14.11_0')
+          exdefWindow.webContents.openDevTools()
+        }
       })
     })
   })

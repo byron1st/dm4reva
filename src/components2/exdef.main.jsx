@@ -6,7 +6,15 @@ import {remote, ipcRenderer} from 'electron'
 
 import List from './exdef.list'
 import Details from './exdef.details'
-
+/**
+exdef= {
+  type: '',
+  kind: '',
+  inf: [],
+  id_rules: '',
+  id_rules_html: ''
+}
+**/
 class Main extends Component {
   constructor () {
     super()

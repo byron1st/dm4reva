@@ -18,6 +18,8 @@
     "kind": "EConnector",
     "inf": [
       "java/io/PipedInputStream",
+      "java/io/PipedInputStreama",
+      "java/io/PipedInputStreamc",
       "java/io/PipedOutputStream"
     ],
     "mu": [
