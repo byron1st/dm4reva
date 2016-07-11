@@ -45,7 +45,7 @@ export default class Details extends Component {
       case tab.id:
         return <Id exdef={this.props.exdef} updateExdefIdRules={this.props.updateExdefIdRules}/>
       case tab.er:
-        return <Er />
+        return <Er exdefType={this.props.exdef.type}/>
     }
   }
   render () {

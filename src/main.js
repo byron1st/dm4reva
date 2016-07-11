@@ -217,6 +217,25 @@ ipcMain.on('read-ers', (event, arg) => {
   })
 })
 
+ipcMain.on('read-ers-exdef', (event, exdefType) => {
+  db.read(db.mu, {exdefType: exdefType}, {muID: 1}, (err, muList) => {
+    if (err) {
+      handleErrors(err)
+      event.returnValue = null
+    } else {
+      let muIdList = muList.map((e) => e.muID)
+      db.readRecordsOfMUs(muIdList, (err, docs) => {
+        if (err) {
+          handleErrors(err)
+          event.returnValue = null
+        } else {
+          event.returnValue = docs
+        }
+      })
+    }
+  })
+})
+
 ipcMain.on('read-mus', (event, arg) => {
   db.read(db.mu, {exdefType: arg}, {muID: 1}, (err, docs) => {
     if (err) {
