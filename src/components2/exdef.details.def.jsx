@@ -11,23 +11,13 @@ export default class Def extends Component {
   constructor () {
     super()
     this.state = {
-      drList: [],
       editMode: false
     }
-    this.getDrList = this.getDrList.bind(this)
     this.toggleEdit = this.toggleEdit.bind(this)
     this.buildDefContent = this.buildDefContent.bind(this)
   }
-  componentWillMount() {
-    this.getDrList(this.props.exdef.inf)
-  }
   componentWillReceiveProps (nextProps) {
-    this.getDrList(nextProps.exdef.inf)
     this.setState({editMode: false})
-  }
-  getDrList (infList) {
-    let updatedDrList = ipcRenderer.sendSync('read-drs', infList)
-    this.setState({drList: updatedDrList})
   }
   toggleEdit () {
     this.setState({editMode: !this.state.editMode})

@@ -14,17 +14,17 @@ export default class DefEdit extends Component {
       kind: '',
       inf: []
     }
-    this.getNewProps = this.getNewProps.bind(this)
+    this.initializeState = this.initializeState.bind(this)
     this.updateValues = this.updateValues.bind(this)
     this.updateExdef = this.updateExdef.bind(this)
   }
   componentWillMount () {
-    this.getNewProps(this.props)
+    this.initializeState(this.props)
   }
   componentWillReceiveProps(nextProps) {
-    this.getNewProps(nextProps)
+    this.initializeState(nextProps)
   }
-  getNewProps (props) {
+  initializeState (props) {
     this.setState({
       type: props.exdef.type,
       kind: props.exdef.kind,

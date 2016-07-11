@@ -157,11 +157,11 @@ ipcMain.on('update-anExdef', (event, arg) => {
 
 ipcMain.on('update-exdef', (event, arg) => {
   if (arg._id) {
-    db.update(db.nexdef, arg, (err) => {
+    db.update(db.nexdef, arg, (err, doc) => {
       if (err) {
         handleErrors(err)
         event.returnValue = false
-      } else event.returnValue = true
+      } else event.returnValue = doc
     })
   } else {
     handleErrors(new Error('No _id exists'))
@@ -217,10 +217,45 @@ ipcMain.on('read-ers', (event, arg) => {
   })
 })
 
+ipcMain.on('read-mus', (event, arg) => {
+  db.read(db.mu, {exdefType: arg}, {muID: 1}, (err, docs) => {
+    if (err) {
+      handleErrors(err)
+      event.returnValue = null
+    } else event.returnValue = docs
+  })
+})
+
 ipcMain.on('validate-muID', (event, arg) => {
   db.validateMUID(arg, (err, num) => {
     if (num === 0) event.returnValue = true
     else event.returnValue = false
+  })
+})
+
+ipcMain.on('save-mu-list', (event, arg) => {
+  db.deleteByQuery(db.mu, {exdefType: arg[0].exdefType}, (err) => {
+    if (err) {
+      handleErrors(err)
+      event.returnValue = false
+    } else {
+      db.create(db.mu, arg, (err, docs) => {
+        if (err) {
+          handleErrors(err)
+          event.returnValue = false
+        } else event.returnValue = docs
+      })
+    }
+  })
+})
+
+ipcMain.on('remove-all-mu-by-exdef', (event, arg) => {
+  db.deleteByQuery(db.mu, {exdefType: arg}, (err) => {
+    if (err) {
+      handleErrors(err)
+      event.returnValue = false
+    }
+    event.returnValue = true
   })
 })
 

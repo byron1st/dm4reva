@@ -43,7 +43,7 @@ export default class Details extends Component {
       case tab.def:
         return <Def exdef={this.props.exdef} updateExdef={this.props.updateExdef}/>
       case tab.id:
-        return <Id />
+        return <Id exdef={this.props.exdef} updateExdefIdRules={this.props.updateExdefIdRules}/>
       case tab.er:
         return <Er />
     }
@@ -65,5 +65,6 @@ export default class Details extends Component {
 }
 Details.propTypes = {
   exdef: PropTypes.object.isRequired,
-  updateExdef: PropTypes.func.isRequired
+  updateExdef: PropTypes.func.isRequired,
+  updateExdefIdRules: PropTypes.func.isRequired
 }

@@ -120,9 +120,9 @@ export function read(db, queryObj, sortCondition, cb) {
 }
 
 export function update(db, anItem, cb) {
-  db.update({_id: anItem._id}, anItem, (err) => {
-    if (err) cb(err)
-    if (cb) cb()
+  db.update({_id: anItem._id}, anItem, {returnUpdatedDocs: true}, (err, num, doc) => {
+    if (err) cb(err, null)
+    if (cb) cb(null, doc)
   })
 }
 
@@ -157,7 +157,7 @@ export function deleteAll(db, cb) {
 }
 
 export function validateMUID(muID, cb) {
-  nexdef.count({'mu.muID': muID}, (err, num) => {
+  mu.count({'muID': muID}, (err, num) => {
     if (err) return cb(err, null)
     if (cb) return cb(null, num)
   })
