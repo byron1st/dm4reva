@@ -10,12 +10,6 @@
     "test": "./node_modules/.bin/mocha --compilers js:babel-core/register",
     "start": "gulp && ./node_modules/.bin/electron ."
   },
-  "babel": {
-    "presets": [
-      "es2015",
-      "react"
-    ]
-  },
   "repository": {
     "type": "git",
     "url": "http://alcyone.kaist.ac.kr/byron1st/dm4reva.git"

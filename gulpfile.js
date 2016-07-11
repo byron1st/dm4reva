@@ -13,10 +13,13 @@ gulp.task('clean', () => {
 gulp.task('compile:js', () => {
   return gulp.src([
       './src/*.js',
-      './src/view/js/*.js',
-      './src/components/*.jsx'
+      // './src/components/*.jsx',
+      './src/components2/*.jsx',
+      './src/view/js/*.js'
     ])
-    .pipe(babel())
+    .pipe(babel({
+      'presets': ['es2015', 'react']
+    }))
     .pipe(gulp.dest('./dist'))
 })
 
