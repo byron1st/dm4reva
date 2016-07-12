@@ -13,8 +13,10 @@ gulp.task('clean', () => {
 gulp.task('compile:js', () => {
   return gulp.src([
       './src/*.js',
-      // './src/components/*.jsx',
+      './src/util/*.js',
       './src/components2/*.jsx',
+      './src/flux/*',
+      './src/flux/actions/*',
       './src/view/js/*.js'
     ])
     .pipe(babel({

@@ -3,16 +3,12 @@
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 
+import {uiActionType} from './action.type'
+import constants from './const'
+
 export default class List extends Component {
-  constructor () {
-    super()
-    this.state = {
-      editMode: false
-    }
-    this.toggleEdit = this.toggleEdit.bind(this)
-  }
   toggleEdit () {
-    this.setState({editMode: !this.state.editMode})
+    this.props.dispatcher.dispatch({type: uiActionType.toggleEdit, value: constants.editPage.list})
   }
   render () {
     let exdefListView = []
@@ -21,16 +17,16 @@ export default class List extends Component {
         <ListItem
           key={exdef._id}
           exdef={exdef}
-          isSelected={exdef._id === this.props.selectedExdef}
-          selectExdef={this.props.selectExdef}
+          isSelected={exdef._id === this.props.store.selectedExdef}
           removeExdef={this.props.removeExdef}
-          editMode={this.state.editMode} />
+          editMode={this.props.store.editMode.list}
+          dispatcher={this.props.dispatcher} />
         ))
     return (
       <div id='exdefList' className='col-md-4'>
         <div className='row'>
           <div className='col-md-12'>
-            <button className='btn btn-xs pull-right' onClick={this.toggleEdit}>edit</button>
+            <button className='btn btn-xs pull-right' onClick={this.toggleEdit.bind(this)}>edit</button>
           </div>
         </div>
         <div className='row'>
@@ -53,15 +49,18 @@ export default class List extends Component {
 List.propTypes = {
   exdefList: PropTypes.array.isRequired,
   selectedExdef: PropTypes.string.isRequired,
-  selectExdef: PropTypes.func.isRequired,
   removeExdef: PropTypes.func.isRequired,
   addExdef: PropTypes.func.isRequired
 }
 
 class ListItem extends Component {
+  select (_id) {
+    this.props.dispatcher.dispatch({type: uiActionType.selectExdef, value: _id})
+  }
   render () {
+    console.log(this.props.isSelected)
     return (
-      <a href='#' className={this.props.isSelected ? 'list-group-item active' : 'list-group-item'} onClick={() => this.props.selectExdef(this.props.exdef._id)}>
+      <a href='#' className={this.props.isSelected ? 'list-group-item active' : 'list-group-item'} onClick={() => this.select(this.props.exdef._id)}>
         {this.props.exdef.type}: {this.props.exdef.kind}
         <button style={this.props.editMode ? {display:'block'} : {display:'none'}} className='btn btn-xs pull-right' onClick={() => this.props.removeExdef(this.props.exdef._id)}>
           [<span className='glyphicon glyphicon-remove'></span>]
@@ -73,9 +72,9 @@ class ListItem extends Component {
 ListItem.propTypes = {
   exdef: PropTypes.object.isRequired,
   isSelected: PropTypes.bool.isRequired,
-  selectExdef: PropTypes.func.isRequired,
   removeExdef: PropTypes.func.isRequired,
-  editMode: PropTypes.bool.isRequired
+  editMode: PropTypes.bool.isRequired,
+  store: PropTypes.object.isRequired
 }
 
 class AddModal extends Component {

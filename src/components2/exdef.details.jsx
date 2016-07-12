@@ -7,44 +7,37 @@ import Def from './exdef.details.def'
 import Id from './exdef.details.id'
 import Er from './exdef.details.er'
 
-const tab = {
-  def: 'Definition',
-  id: 'Identification Rules',
-  er: 'Execution Records'
-}
+import {uiActionType} from './action.type'
+import constants from './const'
+
+const tabNamesList = [constants.detailsTabName.def, constants.detailsTabName.id, constants.detailsTabName.er]
 
 export default class Details extends Component {
   constructor () {
     super()
-    this.state = {
-      tab: tab.def
-    }
     this.selectTab = this.selectTab.bind(this)
     this.buildTabs = this.buildTabs.bind(this)
     this.buildContent = this.buildContent.bind(this)
   }
-  componentWillReceiveProps (nextProps) {
-    this.selectTab(tab.def)
-  }
   selectTab (selectedTab) {
-    this.setState({tab: selectedTab})
+    this.props.dispatcher.dispatch({type: uiActionType.selectTab, value: selectedTab})
   }
   buildTabs () {
-    let tabNamesList = [tab.def, tab.id, tab.er]
     let tabViews = []
     tabNamesList.forEach((tabName) => {
-      if (tabName === this.state.tab) tabViews.push(<li key={tabName} className='active'><a href='#' onClick={() => this.selectTab(tabName)}>{tabName}</a></li>)
-      else tabViews.push(<li key={tabName}><a href='#' onClick={() => this.selectTab(tabName)}>{tabName}</a></li>)
+      if (tabName === this.props.store.detailsTab) {
+        tabViews.push(<li key={tabName} className='active'><a href='#' onClick={() => this.selectTab(tabName)}>{tabName}</a></li>)
+      } else tabViews.push(<li key={tabName}><a href='#' onClick={() => this.selectTab(tabName)}>{tabName}</a></li>)
     })
     return tabViews
   }
   buildContent () {
-    switch(this.state.tab) {
-      case tab.def:
-        return <Def exdef={this.props.exdef} updateExdef={this.props.updateExdef}/>
-      case tab.id:
-        return <Id exdef={this.props.exdef} updateExdefIdRules={this.props.updateExdefIdRules}/>
-      case tab.er:
+    switch(this.props.store.detailsTab) {
+      case constants.detailsTabName.def:
+        return <Def exdef={this.props.exdef} store={this.props.store} dispatcher={this.props.dispatcher} updateExdef={this.props.updateExdef}/>
+      case constants.detailsTabName.id:
+        return <Id exdef={this.props.exdef} store={this.props.store} dispatcher={this.props.dispatcher} updateExdefIdRules={this.props.updateExdefIdRules}/>
+      case constants.detailsTabName.er:
         return <Er exdefType={this.props.exdef.type}/>
     }
   }
@@ -65,6 +58,8 @@ export default class Details extends Component {
 }
 Details.propTypes = {
   exdef: PropTypes.object.isRequired,
+  store: PropTypes.object.isRequired,
+  dispatcher: PropTypes.object.isRequired,
   updateExdef: PropTypes.func.isRequired,
   updateExdefIdRules: PropTypes.func.isRequired
 }

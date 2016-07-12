@@ -9,6 +9,9 @@ import List from './exdef.list'
 import Details from './exdef.details'
 import * as util from './util'
 import Store from './store'
+import Dispatcher from './dispatcher'
+import {uiActionType} from './action.type'
+
 /**
 exdef= {
   type: '',
@@ -19,17 +22,16 @@ exdef= {
 }
 **/
 
-let store = new Store(this)
-
 class Main extends Component {
   constructor () {
     super()
+    this.store = new Store(this)
+    // this.state = this.store.getStore()
     this.state = {
       exdefList: [],
-      selectedExdef: '',
       store: {}
     }
-    this.selectExdef = this.selectExdef.bind(this)
+    this.dispatcher = new Dispatcher(this.store)
     this.removeExdef = this.removeExdef.bind(this)
     this.addExdef = this.addExdef.bind(this)
     this.updateExdef = this.updateExdef.bind(this)
@@ -37,10 +39,7 @@ class Main extends Component {
     this.updateExdefList = this.updateExdefList.bind(this)
   }
   componentWillMount () {
-    this.setState({exdefList: this.props.exdefList, store: store.getStore()})
-  }
-  selectExdef (_id) {
-    this.setState({selectedExdef: _id})
+    this.setState({exdefList: this.props.exdefList, store: this.store.getStore()})
   }
   removeExdef (_id) {
     let updatedExdefList = util.removeAnItemFromList(this.state.exdefList, '_id', _id)
@@ -96,15 +95,12 @@ class Main extends Component {
     }
   }
   render () {
-    console.log(this.state.store)
-    console.log(store.change(['editMode', 'list'], true))
-
     let detailsView
-    if (this.state.selectedExdef) detailsView = <Details exdef={util.getAnItemFromList(this.state.exdefList, '_id', this.state.selectedExdef)} updateExdef={this.updateExdef} updateExdefIdRules={this.updateExdefIdRules}/>
+    if (this.state.store.selectedExdef) detailsView = <Details exdef={util.getAnItemFromList(this.state.exdefList, '_id', this.state.store.selectedExdef)} store={this.state.store} dispatcher={this.dispatcher} updateExdef={this.updateExdef} updateExdefIdRules={this.updateExdefIdRules}/>
     else detailsView = <h1>Select an execution view element type from the list</h1>
     return (
       <div>
-        <List exdefList={this.state.exdefList} selectedExdef={this.state.selectedExdef} selectExdef={this.selectExdef} removeExdef={this.removeExdef} addExdef={this.addExdef}/>
+        <List exdefList={this.state.exdefList} store={this.state.store} dispatcher={this.dispatcher} selectedExdef={this.state.store.selectedExdef} removeExdef={this.removeExdef} addExdef={this.addExdef}/>
         {detailsView}
       </div>
     )

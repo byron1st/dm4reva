@@ -6,7 +6,10 @@ import {ipcRenderer} from 'electron'
 
 import IdView from './exdef.details.id.view'
 import IdEdit from './exdef.details.id.edit'
+
 import * as util from './util'
+import {uiActionType} from './action.type'
+import constants from './const'
 
 const scrollCSS = {
   'overflowY': 'scroll',
@@ -17,7 +20,6 @@ export default class Id extends Component {
   constructor () {
     super()
     this.state = {
-      editMode: false,
       drList: [],
       muList: [],
       id_rules: ''
@@ -32,20 +34,18 @@ export default class Id extends Component {
   }
   componentWillReceiveProps (nextProps) {
     this.initializeState(nextProps)
-    this.setState({editMode: false})
   }
   initializeState (props) {
     let readDrList = ipcRenderer.sendSync('read-drs', props.exdef.inf)
     let readMuList = ipcRenderer.sendSync('read-mus', props.exdef.type)
     this.setState({
-        editMode: false,
         drList: readDrList,
         muList: readMuList,
         id_rules: props.exdef.id_rules
       })
   }
   toggleEdit () {
-    this.setState({editMode: !this.state.editMode})
+    this.props.dispatcher.dispatch({type: uiActionType.toggleEdit, value: constants.editPage.id})
   }
   saveChanges (newMuList, newIdRules) {
     let success
@@ -57,7 +57,7 @@ export default class Id extends Component {
     }
   }
   buildIdContent () {
-    if (this.state.editMode) return <IdEdit
+    if (this.props.store.editMode.id) return <IdEdit
       exdef={this.props.exdef}
       id_rules={this.state.id_rules}
       muList={this.state.muList}
@@ -72,7 +72,7 @@ export default class Id extends Component {
         <div className='row'>
           <div className='col-md-12'>
             <h3>{this.props.exdef.type}
-              {(!this.state.editMode) ? <a href='#'><span className='glyphicon glyphicon-wrench pull-right' onClick={this.toggleEdit}></span></a> : null }
+              {(!this.props.store.editMode.id) ? <a href='#'><span className='glyphicon glyphicon-wrench pull-right' onClick={this.toggleEdit}></span></a> : null }
             </h3>
           </div>
         </div>
