@@ -22,7 +22,6 @@ export default class IdView extends Component {
   }
   render () {
     let muListView = []
-    console.log(this.props.muList)
     this.props.muList.forEach((mu, idx) => muListView.push(
       <div className='panel panel-default' style={marginBottomCSS}>
         <div className='panel-heading'>

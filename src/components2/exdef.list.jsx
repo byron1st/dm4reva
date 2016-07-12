@@ -58,7 +58,6 @@ class ListItem extends Component {
     this.props.dispatcher.dispatch({type: uiActionType.selectExdef, value: _id})
   }
   render () {
-    console.log(this.props.isSelected)
     return (
       <a href='#' className={this.props.isSelected ? 'list-group-item active' : 'list-group-item'} onClick={() => this.select(this.props.exdef._id)}>
         {this.props.exdef.type}: {this.props.exdef.kind}
