@@ -34,11 +34,11 @@ export default class Details extends Component {
   buildContent () {
     switch(this.props.store.detailsTab) {
       case constants.detailsTabName.def:
-        return <Def exdef={this.props.exdef} store={this.props.store} dispatcher={this.props.dispatcher} updateExdef={this.props.updateExdef}/>
+        return <Def store={this.props.store} dispatcher={this.props.dispatcher} />
       case constants.detailsTabName.id:
-        return <Id exdef={this.props.exdef} store={this.props.store} dispatcher={this.props.dispatcher} updateExdefIdRules={this.props.updateExdefIdRules}/>
+        return <Id exdef={this.props.store.exdef} store={this.props.store} dispatcher={this.props.dispatcher} updateExdefIdRules={this.props.updateExdefIdRules}/>
       case constants.detailsTabName.er:
-        return <Er exdefType={this.props.exdef.type}/>
+        return <Er exdefType={this.props.store.exdef.type}/>
     }
   }
   render () {
@@ -55,11 +55,4 @@ export default class Details extends Component {
       </div>
     )
   }
-}
-Details.propTypes = {
-  exdef: PropTypes.object.isRequired,
-  store: PropTypes.object.isRequired,
-  dispatcher: PropTypes.object.isRequired,
-  updateExdef: PropTypes.func.isRequired,
-  updateExdefIdRules: PropTypes.func.isRequired
 }

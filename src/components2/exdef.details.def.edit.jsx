@@ -4,7 +4,9 @@ import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 import {ipcRenderer} from 'electron'
 
-const kinds = ['EComponent', 'EConnector', 'EPort']
+import {type as uiActionType} from './actions.ui'
+import {type as exdefActionType} from './actions.exdef'
+import constants from './const'
 
 export default class DefEdit extends Component {
   constructor () {
@@ -16,7 +18,6 @@ export default class DefEdit extends Component {
     }
     this.initializeState = this.initializeState.bind(this)
     this.updateValues = this.updateValues.bind(this)
-    this.updateExdef = this.updateExdef.bind(this)
   }
   componentWillMount () {
     this.initializeState(this.props)
@@ -26,10 +27,13 @@ export default class DefEdit extends Component {
   }
   initializeState (props) {
     this.setState({
-      type: props.exdef.type,
-      kind: props.exdef.kind,
-      inf: props.exdef.inf
+      type: props.store.selectedExdef.type,
+      kind: props.store.selectedExdef.kind,
+      inf: props.store.selectedExdef.inf
     })
+  }
+  toggleEdit () {
+    this.props.dispatcher.dispatch({type: uiActionType.toggleEdit, value: constants.editPage.def})
   }
   updateValues (key, value) {
     let updatedState = {}
@@ -37,9 +41,19 @@ export default class DefEdit extends Component {
     this.setState(updatedState)
   }
   updateExdef () {
-    let validationKind = kinds.indexOf(this.state.kind) !== -1
-    if (validationKind) this.props.updateExdef(this.props.exdef._id, this.state.type, this.state.kind, this.state.inf)
-    else ipcRenderer.send('handle-errors', 'The value of the Kind should be one of EComponent, EConnector, and EPort.')
+    let validationKind = constants.exdefKindsList.indexOf(this.state.kind) !== -1
+    if (validationKind) {
+      let updatedExdef = {
+        type: this.state.type,
+        kind: this.state.kind,
+        inf: this.state.inf,
+        _id: this.props.store.selectedExdef._id,
+        id_rules: this.props.store.selectedExdef.id_rules,
+        id_rules_html: this.props.store.selectedExdef.id_rules_html
+      }
+
+      this.props.dispatcher.dispatch({type: exdefActionType.updateExdef, value: updatedExdef})
+    } else ipcRenderer.send('handle-errors', 'The value of the Kind should be one of EComponent, EConnector, and EPort.')
   }
   render () {
     return (
@@ -48,10 +62,10 @@ export default class DefEdit extends Component {
           <form className='form-horizontal'>
             <div className='form-group'>
               <div className='col-md-6'>
-                <button type='button' className='btn btn-primary btn-block' onClick={this.updateExdef}>Save</button>
+                <button type='button' className='btn btn-primary btn-block' onClick={this.updateExdef.bind(this)}>Save</button>
               </div>
               <div className='col-md-6'>
-                <button type='button' className='btn btn-danger btn-block' onClick={() => this.props.toggleEdit()}>Cancel</button>
+                <button type='button' className='btn btn-danger btn-block' onClick={this.toggleEdit.bind(this)}>Cancel</button>
               </div>
             </div>
             <DefEditTypeAndKind name='Type' value={this.state.type} updateValues={this.updateValues} />
@@ -62,11 +76,6 @@ export default class DefEdit extends Component {
       </div>
     )
   }
-}
-DefEdit.propTypes = {
-  exdef: PropTypes.object.isRequired,
-  updateExdef: PropTypes.func.isRequired,
-  toggleEdit: PropTypes.func.isRequired
 }
 
 class DefEditTypeAndKind extends Component {

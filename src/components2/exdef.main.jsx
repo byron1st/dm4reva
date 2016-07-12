@@ -12,8 +12,7 @@ import * as util from './util'
 import Store from './store'
 import Dispatcher from './dispatcher'
 import initializeActions from './actions'
-import {type as uiActionType} from './actions.ui'
-import {type as listActionType} from './actions.list'
+import {type as exdefActionType} from './actions.exdef'
 
 class Main extends Component {
   constructor () {
@@ -43,8 +42,11 @@ class Main extends Component {
       id_rules: previous.id_rules,
       id_rules_html: previous.id_rules_html
     }
-    let success = ipcRenderer.sendSync('update-exdef', updatedExdef)
-    this.updateExdefList(success, util.replaceAnItem(this.state.exdefList, '_id', updatedExdef._id, success))
+
+    this.dispatcher.dispatch({type: exdefActionType.updateExdef, value: updatedExdef})
+
+    // let success = ipcRenderer.sendSync('update-exdef', updatedExdef)
+    // this.updateExdefList(success, util.replaceAnItem(this.state.exdefList, '_id', updatedExdef._id, success))
   }
   updateExdefIdRules (_id, newIdRules) {
     let previous = util.getAnItemFromList(this.state.exdefList, '_id', _id)
@@ -70,7 +72,12 @@ class Main extends Component {
     console.log(this.state.store.exdefList)
 
     let detailsView
-    if (this.state.store.selectedExdef) detailsView = <Details exdef={this.state.store.selectedExdef} store={this.state.store} dispatcher={this.dispatcher} updateExdef={this.updateExdef} updateExdefIdRules={this.updateExdefIdRules}/>
+    if (this.state.store.selectedExdef) {
+      detailsView = <Details
+        store={this.state.store}
+        dispatcher={this.dispatcher}
+        updateExdefIdRules={this.updateExdefIdRules}/>
+    }
     else detailsView = <h1>Select an execution view element type from the list</h1>
     return (
       <div>

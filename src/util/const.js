@@ -8,5 +8,6 @@ export default {
     def: 'Definition',
     id: 'Identification Rules',
     er: 'Execution Records'
-  }
+  },
+  exdefKindsList: ['EComponent', 'EConnector', 'EPort']
 }
