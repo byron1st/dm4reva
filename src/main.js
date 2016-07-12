@@ -1,9 +1,11 @@
 'use strict'
+
 import {app, BrowserWindow, ipcMain, dialog, Menu} from 'electron'
 import path from 'path'
 import fs from 'fs'
-import * as db from './db.js'
-import config from './app.config.js'
+
+import * as db from './db'
+import config from './app.config'
 
 let prefFilePath = ''
 let preferences = {}
@@ -114,45 +116,6 @@ ipcMain.on('handle-errors', (event, arg) => {
   handleErrors(new Error(arg))
 })
 
-ipcMain.on('update-anExdef', (event, arg) => {
-  db.update(db.nexdef, arg[0], (err) => {
-    if (err) {
-      handleErrors(err)
-      event.returnValue = false
-    } else {
-      let muList = JSON.parse(arg[1])
-      let count = muList.length
-      if (count === 0) {
-        db.deleteByQuery(db.mu, {'muID': {$in: JSON.parse(arg[2])}}, (err) => {
-          if (err) {
-            handleErrors(err)
-            event.returnValue = false
-          }
-          event.returnValue = true
-        })
-      } else {
-        muList.forEach((mu) => db.upsert(db.mu, mu, (err) => {
-          if (err) {
-            handleErrors(err)
-            event.returnValue = false
-          } else {
-            count--
-            if (count === 0) {
-              db.deleteByQuery(db.mu, {'muID': {$in: JSON.parse(arg[2])}}, (err) => {
-                if (err) {
-                  handleErrors(err)
-                  event.returnValue = false
-                }
-                event.returnValue = true
-              })
-            }
-          }
-        }))
-      }
-    }
-  })
-})
-
 ipcMain.on('update-exdef', (event, arg) => {
   if (arg._id) {
     db.update(db.nexdef, arg, (err, doc) => {
@@ -195,17 +158,6 @@ ipcMain.on('add-new-exdef', (event, arg) => {
 
 ipcMain.on('read-drs', (event, arg) => {
   db.readDRsOfInfs(arg, (err, docs) => {
-    if (err) {
-      handleErrors(err)
-      event.returnValue = null
-    } else {
-      event.returnValue = docs
-    }
-  })
-})
-
-ipcMain.on('read-ers', (event, arg) => {
-  db.readRecordsOfMUs(arg, (err, docs) => {
     if (err) {
       handleErrors(err)
       event.returnValue = null

@@ -108,3 +108,5 @@ Main.propTypes = {
 
 let currentWindow = remote.getCurrentWindow()
 ReactDOM.render(<Main exdefList={currentWindow.exdefList} />, document.getElementById('exdefMain'))
+ipcRenderer.on('show-loading', (event) => window.$('#progressBar').show())
+ipcRenderer.on('hide-loading', (event) => window.$('#progressBar').hide())
