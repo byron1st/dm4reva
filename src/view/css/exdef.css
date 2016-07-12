@@ -6,6 +6,11 @@ body {
   margin:0
 }
 
+#footer {
+  margin-top:-1.9em;
+  height:1.9em;
+}
+
 #seeDRBtn, #addInf {
   margin-top: 20px;
 }
@@ -18,28 +23,6 @@ body {
 
 #mainBody {
   min-height:100%;
-}
-
-#footer {
-  margin-top:-1.9em;
-  height:1.9em;
-}
-
-#mu-new {
-  padding-top: 10px;
-}
-
-#mu-new-add-btn {
-  padding-top: 20px;
-}
-
-#ers-view {
-  height: 250px;
-}
-
-.ers-view {
-  overflow-y: scroll;
-  height: 80%;
 }
 
 .form-control:focus.errorInput {

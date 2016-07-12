@@ -7,7 +7,6 @@ import config from './app.config.js'
 
 let prefFilePath = ''
 let preferences = {}
-let userConfig = {}
 let exdefWindow = null
 let initWindow = null
 
@@ -69,7 +68,6 @@ function createExdefWindow () {
         exdefWindow.loadURL(path.join('file://', __dirname, 'index.exdef.html'))
         exdefWindow.on('closed', () => exdefWindow = null)
         if (config.mode === 'test') {
-          // exdefWindow.addDevToolsExtension('/Users/byron1st/Library/Application Support/Google/Chrome/Profile 1/Extensions/fmkadmapgofadopljbjfkapdkoienihi/0.14.11_0')
           exdefWindow.webContents.openDevTools()
         }
       })
@@ -438,7 +436,7 @@ const mainmenu = [
                   exdefWindow.close()
 
                   if (config.mode === 'test') loadDataAndCreateWindow('db')
-                  else if (userConfig.dbpath) loadDataAndCreateWindow(userConfig.dbpath)
+                  else if (preferences.savePath) loadDataAndCreateWindow(preferences.savePath)
                   else createInitWindow()
                 })
               })
