@@ -2,7 +2,7 @@ export function contains(list, key, value) {
   return list.map((e) => e[key]).indexOf(value) !== -1
 }
 export function getAnItemFromList(list, key, value) {
-  return list.find((e) => e[key] === value)
+  return copyObj(list.find((e) => e[key] === value))
 }
 
 export function removeAnItemFromList(list, key, value) {
@@ -31,4 +31,8 @@ export function sortKindAndType (a, b) {
     if (a.type < b.type) return -1
     return 0
   }
+}
+
+export function copyObj(obj) {
+  return JSON.parse(JSON.stringify(obj))
 }

@@ -7,22 +7,13 @@ import showdown from 'showdown'
 
 import List from './exdef.list'
 import Details from './exdef.details'
+
 import * as util from './util'
 import Store from './store'
 import Dispatcher from './dispatcher'
 import initializeActions from './actions'
 import {type as uiActionType} from './actions.ui'
 import {type as listActionType} from './actions.list'
-
-/**
-exdef= {
-  type: '',
-  kind: '',
-  inf: [],
-  id_rules: '',
-  id_rules_html: ''
-}
-**/
 
 class Main extends Component {
   constructor () {
@@ -79,7 +70,7 @@ class Main extends Component {
     console.log(this.state.store.exdefList)
 
     let detailsView
-    if (this.state.store.selectedExdef) detailsView = <Details exdef={util.getAnItemFromList(this.state.store.exdefList, '_id', this.state.store.selectedExdef)} store={this.state.store} dispatcher={this.dispatcher} updateExdef={this.updateExdef} updateExdefIdRules={this.updateExdefIdRules}/>
+    if (this.state.store.selectedExdef) detailsView = <Details exdef={this.state.store.selectedExdef} store={this.state.store} dispatcher={this.dispatcher} updateExdef={this.updateExdef} updateExdefIdRules={this.updateExdefIdRules}/>
     else detailsView = <h1>Select an execution view element type from the list</h1>
     return (
       <div>

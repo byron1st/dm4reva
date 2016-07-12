@@ -1,4 +1,5 @@
 import constants from './const'
+import * as util from './util'
 
 export function init (dispatcher) {
   dispatcher.register([
@@ -45,7 +46,7 @@ function toggleEdit(store, editPage) {
  */
 function selectExdef(store, _id) {
   store.update([
-    {keyPath: ['selectedExdef'], value: _id},
+    {keyPath: ['selectedExdef'], value: util.getAnItemFromList(store.getValue(['exdefList']), '_id', _id)},
     {keyPath: ['detailsTab'], value: constants.detailsTabName.def}
   ])
 }

@@ -1,5 +1,7 @@
 import {remote} from 'electron'
 
+import * as util from './util'
+
 let store = {
   editMode: {
     list: false,
@@ -8,7 +10,7 @@ let store = {
   },
   detailsTab: '',
   selectedExdef: '',
-  exdefList: remote.getCurrentWindow().exdefList
+  exdefList: remote.getCurrentWindow().exdefList,
 }
 
 
@@ -17,7 +19,7 @@ export default class Store {
     this.container = container
   }
   update (list) {
-    let copiedStore = copyObj(store)
+    let copiedStore = util.copyObj(store)
     list.forEach((pair) => {
       let walkerObj = copiedStore
       let lastKey
@@ -36,13 +38,9 @@ export default class Store {
     return walkerObj
   }
   copyValue (keyPath) {
-    return copyObj(this.getValue(keyPath))
+    return util.copyObj(this.getValue(keyPath))
   }
   getStore () {
-    return copyObj(store)
+    return util.copyObj(store)
   }
-}
-
-function copyObj(obj) {
-  return JSON.parse(JSON.stringify(obj))
 }
