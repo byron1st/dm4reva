@@ -7,8 +7,8 @@ import {ipcRenderer} from 'electron'
 import IdView from './exdef.details.id.view'
 import IdEdit from './exdef.details.id.edit'
 
+import {type as uiActionType} from './actions.ui'
 import * as util from './util'
-import {uiActionType} from './action.type'
 import constants from './const'
 
 const scrollCSS = {

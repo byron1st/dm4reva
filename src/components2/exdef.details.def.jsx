@@ -7,7 +7,7 @@ import {ipcRenderer} from 'electron'
 import DefView from './exdef.details.def.view'
 import DefEdit from './exdef.details.def.edit'
 
-import {uiActionType} from './action.type'
+import {type as uiActionType} from './actions.ui'
 import constants from './const'
 
 export default class Def extends Component {

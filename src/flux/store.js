@@ -1,3 +1,5 @@
+import {remote} from 'electron'
+
 let store = {
   editMode: {
     list: false,
@@ -5,7 +7,8 @@ let store = {
     id: false
   },
   detailsTab: '',
-  selectedExdef: ''
+  selectedExdef: '',
+  exdefList: remote.getCurrentWindow().exdefList
 }
 
 
@@ -31,6 +34,9 @@ export default class Store {
     let walkerObj = store
     keyPath.forEach((key) => walkerObj = walkerObj[key])
     return walkerObj
+  }
+  copyValue (keyPath) {
+    return copyObj(this.getValue(keyPath))
   }
   getStore () {
     return copyObj(store)

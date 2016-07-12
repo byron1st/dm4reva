@@ -3,7 +3,8 @@
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 
-import {uiActionType} from './action.type'
+import {type as uiActionType} from './actions.ui'
+import {type as listActionType} from './actions.list'
 import constants from './const'
 
 export default class List extends Component {
@@ -12,14 +13,12 @@ export default class List extends Component {
   }
   render () {
     let exdefListView = []
-    this.props.exdefList.forEach((exdef) =>
+    this.props.store.exdefList.forEach((exdef) =>
       exdefListView.push(
         <ListItem
           key={exdef._id}
           exdef={exdef}
-          isSelected={exdef._id === this.props.store.selectedExdef}
-          removeExdef={this.props.removeExdef}
-          editMode={this.props.store.editMode.list}
+          store={this.props.store}
           dispatcher={this.props.dispatcher} />
         ))
     return (
@@ -41,53 +40,49 @@ export default class List extends Component {
             </div>
           </div>
         </div>
-        <AddModal addExdef={this.props.addExdef} />
+        <AddModal dispatcher={this.props.dispatcher} />
       </div>
     )
   }
-}
-List.propTypes = {
-  exdefList: PropTypes.array.isRequired,
-  selectedExdef: PropTypes.string.isRequired,
-  removeExdef: PropTypes.func.isRequired,
-  addExdef: PropTypes.func.isRequired
 }
 
 class ListItem extends Component {
   select (_id) {
     this.props.dispatcher.dispatch({type: uiActionType.selectExdef, value: _id})
   }
+  remove (_id) {
+    this.props.dispatcher.dispatch({type: listActionType.removeExdef, value: _id})
+  }
   render () {
+    const isSelected= this.props.exdef._id === this.props.store.selectedExdef
+    const aClassName = isSelected ? 'list-group-item active' : 'list-group-item'
+    const btnStyle = this.props.store.editMode.list ? {display:'block'} : {display:'none'}
     return (
-      <a href='#' className={this.props.isSelected ? 'list-group-item active' : 'list-group-item'} onClick={() => this.select(this.props.exdef._id)}>
+      <a href='#' className={aClassName} onClick={() => this.select(this.props.exdef._id)}>
         {this.props.exdef.type}: {this.props.exdef.kind}
-        <button style={this.props.editMode ? {display:'block'} : {display:'none'}} className='btn btn-xs pull-right' onClick={() => this.props.removeExdef(this.props.exdef._id)}>
+        <button style={btnStyle} className='btn btn-xs pull-right' onClick={() => this.remove(this.props.exdef._id)}>
           [<span className='glyphicon glyphicon-remove'></span>]
         </button>
       </a>
     )
   }
 }
-ListItem.propTypes = {
-  exdef: PropTypes.object.isRequired,
-  isSelected: PropTypes.bool.isRequired,
-  removeExdef: PropTypes.func.isRequired,
-  editMode: PropTypes.bool.isRequired,
-  store: PropTypes.object.isRequired
-}
 
 class AddModal extends Component {
-  constructor () {
-    super()
-    this.eraseValues = this.eraseValues.bind(this)
-    this.handleAdd = this.handleAdd.bind(this)
-  }
   eraseValues () {
     $('#addNewType').val('')
     $('#addNewKind').val('')
   }
   handleAdd () {
-    this.props.addExdef($('#addNewType').val(), $('#addNewKind').val())
+    let newExdefObject = {
+      type: $('#addNewType').val(),
+      kind: $('#addNewKind').val(),
+      inf: [],
+      id_rules: '',
+      id_rules_html: ''
+    }
+
+    this.props.dispatcher.dispatch({type: listActionType.addExdef, value: newExdefObject})
     this.eraseValues()
   }
   render () {
@@ -109,15 +104,12 @@ class AddModal extends Component {
               </div>
             </div>
             <div className='modal-footer'>
-              <button className='btn btn-danger' data-dismiss='modal' aria-label='Close' onClick={this.eraseValues}>Cancel</button>
-              <button className='btn btn-primary' data-dismiss='modal' aria-label='Close' onClick={this.handleAdd}>Add</button>
+              <button className='btn btn-danger' data-dismiss='modal' aria-label='Close' onClick={this.eraseValues.bind(this)}>Cancel</button>
+              <button className='btn btn-primary' data-dismiss='modal' aria-label='Close' onClick={this.handleAdd.bind(this)}>Add</button>
             </div>
           </div>
         </div>
       </div>
     )
   }
-}
-AddModal.propTypes = {
-  addExdef: PropTypes.func
 }
