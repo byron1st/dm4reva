@@ -8,6 +8,7 @@ import showdown from 'showdown'
 import List from './exdef.list'
 import Details from './exdef.details'
 import * as util from './util'
+import Store from './store'
 /**
 exdef= {
   type: '',
@@ -17,12 +18,16 @@ exdef= {
   id_rules_html: ''
 }
 **/
+
+let store = new Store(this)
+
 class Main extends Component {
   constructor () {
     super()
     this.state = {
       exdefList: [],
-      selectedExdef: ''
+      selectedExdef: '',
+      store: {}
     }
     this.selectExdef = this.selectExdef.bind(this)
     this.removeExdef = this.removeExdef.bind(this)
@@ -32,7 +37,7 @@ class Main extends Component {
     this.updateExdefList = this.updateExdefList.bind(this)
   }
   componentWillMount () {
-    this.setState({exdefList: this.props.exdefList})
+    this.setState({exdefList: this.props.exdefList, store: store.getStore()})
   }
   selectExdef (_id) {
     this.setState({selectedExdef: _id})
@@ -91,6 +96,9 @@ class Main extends Component {
     }
   }
   render () {
+    console.log(this.state.store)
+    console.log(store.change(['editMode', 'list'], true))
+
     let detailsView
     if (this.state.selectedExdef) detailsView = <Details exdef={util.getAnItemFromList(this.state.exdefList, '_id', this.state.selectedExdef)} updateExdef={this.updateExdef} updateExdefIdRules={this.updateExdefIdRules}/>
     else detailsView = <h1>Select an execution view element type from the list</h1>
