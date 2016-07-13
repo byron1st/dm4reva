@@ -9,8 +9,9 @@ let store = {
     id: false
   },
   detailsTab: '',
-  selectedExdef: '',
-  exdefList: remote.getCurrentWindow().exdefList,
+  selectedExdef: {},
+  updatedExdef: {},
+  exdefList: remote.getCurrentWindow().exdefList
 }
 
 
