@@ -1,6 +1,6 @@
 {
   "name": "dm4reva",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "description": "Datastore Manager for the Reconstruction of Execution View Architecture",
   "main": "dist/main.js",
   "directories": {
@@ -9,10 +9,6 @@
   "scripts": {
     "test": "./node_modules/.bin/mocha --compilers js:babel-core/register",
     "start": "gulp && ./node_modules/.bin/electron ."
-  },
-  "repository": {
-    "type": "git",
-    "url": "http://alcyone.kaist.ac.kr/byron1st/dm4reva.git"
   },
   "author": "byron1st",
   "license": "MIT",
