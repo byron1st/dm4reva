@@ -21,19 +21,15 @@ export const type = {
  * @param  {type} editPage the value of editPage of const.js
  */
 function toggleEdit(store, editPage) {
-  let keyPath
   switch (editPage) {
     case constants.editPage.list:
-      keyPath = ['editMode', 'list']
-      store.update([{keyPath: keyPath, value: !store.getValue(keyPath)}])
+      let keyPathforList = ['editMode', constants.editPage.list]
+      store.update([{keyPath: keyPathforList, value: !store.getValue(keyPathforList)}])
       break
     case constants.editPage.def:
-      keyPath = ['editMode', 'def']
-      store.update([{keyPath: keyPath, value: !store.getValue(keyPath)}])
-      break
     case constants.editPage.id:
-      keyPath = ['editMode', 'id']
-      store.update([{keyPath: keyPath, value: !store.getValue(keyPath)}])
+      let keyPathforDefAndId = ['editMode', editPage]
+      store.update([{keyPath: keyPathforDefAndId, value: !store.getValue(keyPathforDefAndId)}])
       break
     default:
   }
@@ -47,6 +43,7 @@ function toggleEdit(store, editPage) {
 function selectExdef(store, _id) {
   store.update([
     {keyPath: ['selectedExdef'], value: util.getAnItemFromList(store.getValue(['exdefList']), '_id', _id)},
+    {keyPath: ['updatedExdef'], value: util.getAnItemFromList(store.getValue(['exdefList']), '_id', _id)},
     {keyPath: ['detailsTab'], value: constants.detailsTabName.def}
   ])
 }

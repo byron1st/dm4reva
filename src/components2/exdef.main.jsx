@@ -25,28 +25,11 @@ class Main extends Component {
       exdefList: [],
       store: {}
     }
-    this.updateExdef = this.updateExdef.bind(this)
     this.updateExdefIdRules = this.updateExdefIdRules.bind(this)
     this.updateExdefList = this.updateExdefList.bind(this)
   }
   componentWillMount () {
     this.setState({exdefList: this.props.exdefList, store: this.store.getStore()})
-  }
-  updateExdef (_id, type, kind, inf) {
-    let previous = util.getAnItemFromList(this.state.exdefList, '_id', _id)
-    let updatedExdef = {
-      type: type,
-      kind: kind,
-      inf: inf,
-      _id: _id,
-      id_rules: previous.id_rules,
-      id_rules_html: previous.id_rules_html
-    }
-
-    this.dispatcher.dispatch({type: exdefActionType.updateExdef, value: updatedExdef})
-
-    // let success = ipcRenderer.sendSync('update-exdef', updatedExdef)
-    // this.updateExdefList(success, util.replaceAnItem(this.state.exdefList, '_id', updatedExdef._id, success))
   }
   updateExdefIdRules (_id, newIdRules) {
     let previous = util.getAnItemFromList(this.state.exdefList, '_id', _id)
@@ -69,7 +52,7 @@ class Main extends Component {
     }
   }
   render () {
-    console.log(this.state.store.exdefList)
+    console.log(this.state.store)
 
     let detailsView
     if (this.state.store.selectedExdef) {

@@ -9,50 +9,13 @@ import {type as exdefActionType} from './actions.exdef'
 import constants from './const'
 
 export default class DefEdit extends Component {
-  constructor () {
-    super()
-    this.state = {
-      type: '',
-      kind: '',
-      inf: []
-    }
-    this.initializeState = this.initializeState.bind(this)
-    this.updateValues = this.updateValues.bind(this)
-  }
-  componentWillMount () {
-    this.initializeState(this.props)
-  }
-  componentWillReceiveProps(nextProps) {
-    this.initializeState(nextProps)
-  }
-  initializeState (props) {
-    this.setState({
-      type: props.store.selectedExdef.type,
-      kind: props.store.selectedExdef.kind,
-      inf: props.store.selectedExdef.inf
-    })
-  }
   toggleEdit () {
     this.props.dispatcher.dispatch({type: uiActionType.toggleEdit, value: constants.editPage.def})
   }
-  updateValues (key, value) {
-    let updatedState = {}
-    updatedState[key.toLowerCase()] = value
-    this.setState(updatedState)
-  }
   updateExdef () {
-    let validationKind = constants.exdefKindsList.indexOf(this.state.kind) !== -1
-    if (validationKind) {
-      let updatedExdef = {
-        type: this.state.type,
-        kind: this.state.kind,
-        inf: this.state.inf,
-        _id: this.props.store.selectedExdef._id,
-        id_rules: this.props.store.selectedExdef.id_rules,
-        id_rules_html: this.props.store.selectedExdef.id_rules_html
-      }
-
-      this.props.dispatcher.dispatch({type: exdefActionType.updateExdef, value: updatedExdef})
+    let kindValidation = constants.exdefKindsList.indexOf(this.props.store.updatedExdef.kind) !== -1
+    if (kindValidation) {
+      this.props.dispatcher.dispatch({type: exdefActionType.updateExdef, value: constants.editPage.def})
     } else ipcRenderer.send('handle-errors', 'The value of the Kind should be one of EComponent, EConnector, and EPort.')
   }
   render () {
@@ -68,9 +31,9 @@ export default class DefEdit extends Component {
                 <button type='button' className='btn btn-danger btn-block' onClick={this.toggleEdit.bind(this)}>Cancel</button>
               </div>
             </div>
-            <DefEditTypeAndKind name='Type' value={this.state.type} updateValues={this.updateValues} />
-            <DefEditTypeAndKind name='Kind' value={this.state.kind} updateValues={this.updateValues} />
-            <DefEditInf inf={this.state.inf} updateValues={this.updateValues} />
+            <DefEditTypeAndKind name='Type' value={this.props.store.updatedExdef.type} dispatcher={this.props.dispatcher} />
+            <DefEditTypeAndKind name='Kind' value={this.props.store.updatedExdef.kind} dispatcher={this.props.dispatcher} />
+            <DefEditInf inf={this.props.store.updatedExdef.inf} dispatcher={this.props.dispatcher} />
           </form>
         </div>
       </div>
@@ -79,37 +42,33 @@ export default class DefEdit extends Component {
 }
 
 class DefEditTypeAndKind extends Component {
+  handleChange(event) {
+    let changedValue = {key: this.props.name.toLowerCase(), value: event.target.value}
+    this.props.dispatcher.dispatch({type: exdefActionType.updateValue, value: changedValue})
+  }
   render () {
     return (
       <div className='form-group'>
         <label for={this.props.name} className='col-md-2 control-label'>{this.props.name}</label>
         <div className='col-md-10'>
-          <input type='text' className='form-control' id={this.props.name} value={this.props.value} onChange={(event) => this.props.updateValues(this.props.name, event.target.value)} />
+          <input type='text' className='form-control' id={this.props.name} value={this.props.value} onChange={this.handleChange.bind(this)} />
         </div>
       </div>
     )
   }
 }
-DefEditTypeAndKind.propTypes = {
-  name: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
-  updateValues: PropTypes.func.isRequired
-}
 
 class DefEditInf extends Component {
-  constructor () {
-    super()
-    this.removeInf = this.removeInf.bind(this)
-  }
   removeInf (idx) {
     let updatedInfList = this.props.inf.slice()
     updatedInfList.splice(idx, 1)
-    this.props.updateValues('inf', updatedInfList)
+    let changedValue = {key: 'inf', value: updatedInfList}
+    this.props.dispatcher.dispatch({type: exdefActionType.updateValue, value: changedValue})
   }
-  addInf (newInf) {
-    if (newInf) {
-      let updatedInfList = this.props.inf.concat(newInf)
-      this.props.updateValues('inf', updatedInfList)
+  addInf () {
+    if ($('#newInf').val()) {
+      let changedValue = {key: 'inf', value: this.props.inf.concat($('#newInf').val())}
+      this.props.dispatcher.dispatch({type: exdefActionType.updateValue, value: changedValue})
       $('#newInf').val('')
     }
   }
@@ -129,7 +88,7 @@ class DefEditInf extends Component {
         <div className='col-md-10'>
           <div className='input-group input-group-sm'>
             <span className='input-group-btn'>
-              <button type='button' className='btn btn-primary' onClick={() => this.addInf($('#newInf').val())}>Add</button>
+              <button type='button' className='btn btn-primary' onClick={this.addInf.bind(this)}>Add</button>
             </span>
             <input type='text' className='form-control' placeholder='add a new interface' defaultValue='' id='newInf'/>
           </div>
@@ -138,8 +97,4 @@ class DefEditInf extends Component {
       </div>
     )
   }
-}
-DefEditInf.propTypes = {
-  inf: PropTypes.array.isRequired,
-  updateValues: PropTypes.func.isRequired
 }
