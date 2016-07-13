@@ -51,7 +51,6 @@ function selectExdef(store, _id) {
     {keyPath: ['selected', 'muList'], value: drAndMuList.muList},
     {keyPath: ['updated', 'muList'], value: util.copyObj(drAndMuList.muList)},
     {keyPath: ['selected', 'drList'], value: drAndMuList.drList},
-    {keyPath: ['updated', 'drList'], value: util.copyObj(drAndMuList.drList)},
     {keyPath: ['detailsTab'], value: constants.detailsTabName.def}
   ])
 }

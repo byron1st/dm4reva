@@ -15,6 +15,8 @@ export default {
     removeExdef: 'remove-anExdef',
     addExdef: 'add-exdef',
     updateExdef: 'update-exdef',
-    handleErrors: 'handle-errors'
+    handleErrors: 'handle-errors',
+    validateMuID: 'validate-muID',
+    updateExdefWithMuList: 'update-exdef-with-mu'
   }
 }

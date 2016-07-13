@@ -226,36 +226,61 @@ ipcMain.on('read-mus', (event, arg) => {
   })
 })
 
-ipcMain.on('validate-muID', (event, arg) => {
-  db.validateMUID(arg, (err, num) => {
+ipcMain.on(constants.ipcEventType.validateMuID, (event, muID) => {
+  db.validateMUID(muID, (err, num) => {
     if (num === 0) event.returnValue = true
     else event.returnValue = false
   })
 })
 
-ipcMain.on('save-mu-list', (event, arg) => {
-  db.deleteByQuery(db.mu, {exdefType: arg[0].exdefType}, (err) => {
-    if (err) {
-      handleErrors(err)
-      event.returnValue = false
-    } else {
-      db.create(db.mu, arg, (err, docs) => {
-        if (err) {
-          handleErrors(err)
-          event.returnValue = false
-        } else event.returnValue = docs
-      })
-    }
-  })
-})
+/**
+ * @arg  {exdef: '', muList: ''}
+ */
+ipcMain.on(constants.ipcEventType.updateExdefWithMuList, (event, arg) => {
+  function removeAllMuList (cb) {
+    db.deleteByQuery(db.mu, {exdefType: arg.exdef.type}, (err) => {
+      if (err) {
+        handleErrors(err)
+        event.returnValue = false
+      } else if (cb) cb()
+    })
+  }
+  function createNewMuList (cb) {
+    db.create(db.mu, arg.muList, (err, docs) => {
+      if (err) {
+        handleErrors(err)
+        event.returnValue = false
+      } else if (cb) cb()
+    })
+  }
+  function readMuListAndUpdateExdef () {
+    let count = 2
+    let returnObj = {}
+    db.read(db.mu, {exdefType: arg.exdef.type}, {muID: 1}, (err, mus) => {
+      if (err) {
+        handleErrors(err)
+        event.returnValue = false
+      } else {
+        count--
+        returnObj.muList = mus
+        if (count === 0) event.returnValue = returnObj
+      }
+    })
+    db.update(db.nexdef, arg.exdef, (err, exdef) => {
+      if (err) {
+        handleErrors(err)
+        event.returnValue = false
+      } else {
+        count--
+        returnObj.exdef = exdef
+        if (count === 0) event.returnValue = returnObj
+      }
+    })
+  }
 
-ipcMain.on('remove-all-mu-by-exdef', (event, arg) => {
-  db.deleteByQuery(db.mu, {exdefType: arg}, (err) => {
-    if (err) {
-      handleErrors(err)
-      event.returnValue = false
-    }
-    event.returnValue = true
+  removeAllMuList(() => {
+    if (arg.muList.length === 0) readMuListAndUpdateExdef()
+    else createNewMuList(() => readMuListAndUpdateExdef())
   })
 })
 

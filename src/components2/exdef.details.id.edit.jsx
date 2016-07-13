@@ -4,102 +4,64 @@ import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 import {ipcRenderer} from 'electron'
 
+import {type as uiActionType} from './actions.ui'
+import {type as muActionType} from './actions.mu'
+import {type as exdefActionType} from './actions.exdef'
 import * as util from './util'
+import constants from './const'
 
 const marginBottomCSS = {
   'margin-bottom': '10px'
 }
 
 export default class IdEdit extends Component {
-  constructor () {
-    super()
-    this.state = {
-      muList: [],
-      id_rules: ''
-    }
-    this.initializeState = this.initializeState.bind(this)
-    this.validateID = this.validateID.bind(this)
-    this.addMu = this.addMu.bind(this)
-    this.updateMuDesc = this.updateMuDesc.bind(this)
-    this.updateIdRules = this.updateIdRules.bind(this)
-    this.validateMuID = this.validateMuID.bind(this)
-    this.handleSave = this.handleSave.bind(this)
+  toggleEdit () {
+    this.props.dispatcher.dispatch({type: uiActionType.toggleEdit, value: constants.editPage.id})
   }
-  componentWillMount () {
-    this.initializeState(this.props)
-  }
-  componentWillReceiveProps(nextProps) {
-    this.initializeState(nextProps)
-  }
-  initializeState (props) {
-    this.setState({
-      muList: props.muList,
-      id_rules: props.exdef.id_rules
-    })
-  }
-  updateMuDesc (muID, updatedDesc) {
-    let updatedMu = {
-      muID: muID,
-      desc: updatedDesc,
-      exdefType: this.props.store.selected.exdef.type
-    }
-    let updatedMuList = util.replaceAnItem(this.state.muList, 'muID', muID, updatedMu)
-    this.setState({muList: updatedMuList})
+  changeMu (muID, desc) {
+    this.props.dispatcher.dispatch({type: muActionType.changeMu, value: {muID: muID, desc: desc}})
   }
   updateIdRules (updatedIdRules) {
-    this.setState({id_rules: updatedIdRules})
-  }
-  validateID (muID) {
-    let success = this.validateMuID(muID)
-    let currentClassName = document.getElementById('newMuID').className
-    let index = currentClassName.indexOf(' errorInput')
-    if (success) {
-      if (index !== -1) {
-        document.getElementById('newMuID').className = currentClassName.substring(0, index)
-      }
-      document.getElementById('muAddBtn').disabled = false
-    } else {
-      if (index === -1) {
-        document.getElementById('newMuID').className = currentClassName + ' errorInput'
-      }
-      document.getElementById('muAddBtn').disabled = true
-    }
-  }
-  validateMuID (muID) {
-    let currentSuccess = util.contains(this.state.muList, 'muID', muID)
-    if (currentSuccess) return false
-    else return ipcRenderer.sendSync('validate-muID', muID)
+    let changedValue = {key: 'id_rules', value: updatedIdRules}
+    this.props.dispatcher.dispatch({type: exdefActionType.updateValue, value: changedValue})
   }
   addMu () {
-    let newMu = {
-      muID: $('#newMuID').val(),
-      desc: $('#newMuDesc').val(),
-      exdefType: this.props.store.selected.exdef.type
-    }
-    let updatedMuList = util.addItemsToList(this.state.muList, newMu)
-    this.setState({muList: updatedMuList})
+    this.props.dispatcher.dispatch({type: muActionType.addMu, value: {muID: $('#newMuID').val(), desc: $('#newMuDesc').val()}})
     $('#newMuID').val('')
     $('#newMuDesc').val('')
   }
-  removeMu (idx) {
-    let updatedMuList = this.state.muList.slice()
-    updatedMuList.splice(idx, 1)
-    this.setState({muList: updatedMuList})
+  removeMu (muID) {
+    this.props.dispatcher.dispatch({type: muActionType.removeMu, value: muID})
   }
-  handleSave () {
-    this.props.saveChanges(this.state.muList.slice(), this.state.id_rules)
+  save () {
+    this.props.dispatcher.dispatch({type: exdefActionType.updateExdefWithMu, value: constants.editPage.id})
+  }
+  validateMuID (event) {
+    const currentClassName = document.getElementById('newMuID').className
+    const index = currentClassName.indexOf(' errorInput')
+    const muID = event.target.value
+
+    let success = !util.contains(this.props.store.updated.muList, 'muID', muID)
+    if (success) success = ipcRenderer.sendSync(constants.ipcEventType.validateMuID, muID)
+    if (success) {
+      if (index !== -1) document.getElementById('newMuID').className = currentClassName.substring(0, index)
+      document.getElementById('muAddBtn').disabled = false
+    } else {
+      if (index === -1) document.getElementById('newMuID').className = currentClassName + ' errorInput'
+      document.getElementById('muAddBtn').disabled = true
+    }
   }
   render () {
     let muListView = []
-    this.state.muList.forEach((mu, idx) => muListView.push(
+    this.props.store.updated.muList.forEach((mu, idx) => muListView.push(
       <div className='panel panel-default' style={marginBottomCSS}>
         <div className='panel-heading'>
           <h4 className='panel-title'>{mu.muID}
-            <a href='#'><span className='glyphicon glyphicon-remove pull-right' onClick={() => this.removeMu(idx)}></span></a>
+            <a href='#'><span className='glyphicon glyphicon-remove pull-right' onClick={() => this.removeMu(mu.muID)}></span></a>
           </h4>
         </div>
         <div className='panel-body'>
-          <textarea className='form-control' rows='5' value={mu.desc} onChange={(event) => this.updateMuDesc(mu.muID, event.target.value)} />
+          <textarea className='form-control' rows='5' value={mu.desc} name={mu.muID} onChange={(e) => this.changeMu(e.target.name, e.target.value)} />
         </div>
       </div>
     ))
@@ -107,17 +69,17 @@ export default class IdEdit extends Component {
       <div className='col-md-12'>
         <div className='row'>
           <div className='col-md-6'>
-            <button type='button' className='btn btn-primary btn-block' onClick={this.handleSave}>Save</button>
+            <button type='button' className='btn btn-primary btn-block' onClick={this.save.bind(this)}>Save</button>
           </div>
           <div className='col-md-6'>
-            <button type='button' className='btn btn-danger btn-block' onClick={() => this.props.toggleEdit()}>Cancel</button>
+            <button type='button' className='btn btn-danger btn-block' onClick={this.toggleEdit.bind(this)}>Cancel</button>
           </div>
         </div>
         <div className='row'>
           <div className='col-md-12'>
             <h3>Description</h3>
             <div className='well well-sm' id='idRulesHTML'>
-              <textarea className='form-control' rows='5' value={this.state.id_rules} onChange={(event) => this.updateIdRules(event.target.value)} />
+              <textarea className='form-control' rows='5' value={this.props.store.updated.exdef.id_rules} onChange={(e) => this.updateIdRules(e.target.value)} />
             </div>
           </div>
         </div>
@@ -128,9 +90,9 @@ export default class IdEdit extends Component {
               <div className='panel-heading'>
                 <div className='input-group input-group-sm'>
                   <span className='input-group-btn'>
-                    <button id='muAddBtn' type='button' className='btn btn-primary' onClick={this.addMu}>Add</button>
+                    <button id='muAddBtn' type='button' className='btn btn-primary' onClick={this.addMu.bind(this)}>Add</button>
                   </span>
-                  <input type='text' className='form-control' placeholder='new muID' defaultValue='' onChange={(event) => this.validateID(event.target.value)} id='newMuID'/>
+                  <input type='text' className='form-control' placeholder='new muID' defaultValue='' onChange={this.validateMuID.bind(this)} id='newMuID'/>
                 </div>
               </div>
               <div className='panel-body'>
@@ -143,10 +105,4 @@ export default class IdEdit extends Component {
       </div>
     )
   }
-}
-IdEdit.propTypes = {
-  exdef: PropTypes.object.isRequired,
-  muList: PropTypes.array.isRequired,
-  saveChanges: PropTypes.func.isRequired,
-  toggleEdit: PropTypes.func.isRequired
 }

@@ -1,4 +1,5 @@
 import {ipcRenderer} from 'electron'
+import showdown from 'showdown'
 
 import * as util from './util'
 import constants from './const'
@@ -6,14 +7,16 @@ import constants from './const'
 export function init (dispatcher) {
   dispatcher.register([
     {type: type.updateExdef, func: updateExdef},
-    {type: type.updateValue, func: updateValue}
+    {type: type.updateValue, func: updateValue},
+    {type: type.updateExdefWithMu, func: updateExdefWithMu}
   ])
 }
 
 export const type = {
   updateExdef: 'update-exdef',
   updateValue: 'update-value',
-  setUpdatedExdef: 'set-updatedExdef'
+  setUpdatedExdef: 'set-updatedExdef',
+  updateExdefWithMu: 'update-exdef-with-mu'
 }
 
 /**
@@ -45,4 +48,22 @@ function updateExdef (store, editPage) {
  */
 function updateValue (store, keyValueObj) {
   store.update([{keyPath: ['updated', 'exdef', keyValueObj.key], value: keyValueObj.value}])
+}
+
+function updateExdefWithMu (store, editPage) {
+  let willBeUpdatedExdef = store.copyValue(['updated', 'exdef'])
+  let converter = new showdown.Converter()
+  willBeUpdatedExdef.id_rules_html = converter.makeHtml(willBeUpdatedExdef.id_rules)
+  let willBeUpdatedMuList = store.copyValue(['updated', 'muList'])
+  let updatedResult = ipcRenderer.sendSync(constants.ipcEventType.updateExdefWithMuList, {exdef: willBeUpdatedExdef, muList: willBeUpdatedMuList})
+  if (updatedResult) {
+    let updatedExdefList = util.replaceAnItem(store.getValue(['exdefList']), '_id', updatedResult.exdef._id, updatedResult.exdef)
+    updatedExdefList.sort(util.sortKindAndType)
+    store.update([
+      {keyPath: ['exdefList'], value: updatedExdefList},
+      {keyPath: ['selected', 'exdef'], value: updatedResult.exdef},
+      {keyPath: ['selected', 'muList'], value: updatedResult.muList},
+      {keyPath: ['editMode', editPage], value: !store.getValue(['editMode', editPage])}
+    ])
+  }
 }

@@ -17,8 +17,7 @@ let store = {
   },
   updated: {
     exdef: {},
-    muList: [],
-    drList: []
+    muList: []
   }
 }
 

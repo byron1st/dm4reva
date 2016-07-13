@@ -12,7 +12,7 @@ export default class DefEdit extends Component {
   toggleEdit () {
     this.props.dispatcher.dispatch({type: uiActionType.toggleEdit, value: constants.editPage.def})
   }
-  updateExdef () {
+  save () {
     this.props.dispatcher.dispatch({type: exdefActionType.updateExdef, value: constants.editPage.def})
   }
   render () {
@@ -22,7 +22,7 @@ export default class DefEdit extends Component {
           <form className='form-horizontal'>
             <div className='form-group'>
               <div className='col-md-6'>
-                <button type='button' className='btn btn-primary btn-block' onClick={this.updateExdef.bind(this)}>Save</button>
+                <button type='button' className='btn btn-primary btn-block' onClick={this.save.bind(this)}>Save</button>
               </div>
               <div className='col-md-6'>
                 <button type='button' className='btn btn-danger btn-block' onClick={this.toggleEdit.bind(this)}>Cancel</button>
