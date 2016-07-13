@@ -41,7 +41,7 @@ export default class IdEdit extends Component {
     let updatedMu = {
       muID: muID,
       desc: updatedDesc,
-      exdefType: this.props.exdef.type
+      exdefType: this.props.store.selected.exdef.type
     }
     let updatedMuList = util.replaceAnItem(this.state.muList, 'muID', muID, updatedMu)
     this.setState({muList: updatedMuList})
@@ -74,7 +74,7 @@ export default class IdEdit extends Component {
     let newMu = {
       muID: $('#newMuID').val(),
       desc: $('#newMuDesc').val(),
-      exdefType: this.props.exdef.type
+      exdefType: this.props.store.selected.exdef.type
     }
     let updatedMuList = util.addItemsToList(this.state.muList, newMu)
     this.setState({muList: updatedMuList})

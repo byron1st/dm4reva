@@ -17,12 +17,12 @@ export default class Def extends Component {
   render () {
     let defContent
     if (this.props.store.editMode.def) defContent = <DefEdit dispatcher={this.props.dispatcher} store={this.props.store} />
-    else defContent = <DefView exdef={this.props.store.selectedExdef} />
+    else defContent = <DefView exdef={this.props.store.selected.exdef} />
     return (
       <div className='col-md-12'>
         <div className='row'>
           <div className='col-md-12'>
-            <h3>{this.props.store.selectedExdef.type}
+            <h3>{this.props.store.selected.exdef.type}
               {(!this.props.store.editMode.def) ? <a href='#'><span className='glyphicon glyphicon-wrench pull-right' onClick={this.toggleEdit.bind(this)}></span></a> : null }
             </h3>
           </div>

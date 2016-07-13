@@ -46,11 +46,13 @@ function selectExdef(store, _id) {
   let selectedExdef = util.getAnItemFromList(store.getValue(['exdefList']), '_id', _id)
   let drAndMuList = ipcRenderer.sendSync(constants.ipcEventType.readDrListAndMuList, {exdefType: selectedExdef.type, infList: selectedExdef.inf})
   store.update([
-    {keyPath: ['selectedExdef'], value: selectedExdef},
-    {keyPath: ['updatedExdef'], value: selectedExdef},
-    {keyPath: ['detailsTab'], value: constants.detailsTabName.def},
-    {keyPath: ['muList'], value: drAndMuList.muList},
-    {keyPath: ['drList'], value: drAndMuList.drList}
+    {keyPath: ['selected', 'exdef'], value: selectedExdef},
+    {keyPath: ['updated', 'exdef'], value: util.copyObj(selectedExdef)},
+    {keyPath: ['selected', 'muList'], value: drAndMuList.muList},
+    {keyPath: ['updated', 'muList'], value: util.copyObj(drAndMuList.muList)},
+    {keyPath: ['selected', 'drList'], value: drAndMuList.drList},
+    {keyPath: ['updated', 'drList'], value: util.copyObj(drAndMuList.drList)},
+    {keyPath: ['detailsTab'], value: constants.detailsTabName.def}
   ])
 }
 

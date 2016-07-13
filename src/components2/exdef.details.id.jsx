@@ -19,30 +19,9 @@ const scrollCSS = {
 export default class Id extends Component {
   constructor () {
     super()
-    this.state = {
-      drList: [],
-      muList: [],
-      id_rules: ''
-    }
-    this.initializeState = this.initializeState.bind(this)
     this.toggleEdit = this.toggleEdit.bind(this)
     this.buildIdContent = this.buildIdContent.bind(this)
     this.saveChanges = this.saveChanges.bind(this)
-  }
-  componentWillMount () {
-    this.initializeState(this.props)
-  }
-  componentWillReceiveProps (nextProps) {
-    this.initializeState(nextProps)
-  }
-  initializeState (props) {
-    let readDrList = ipcRenderer.sendSync('read-drs', props.exdef.inf)
-    let readMuList = ipcRenderer.sendSync('read-mus', props.exdef.type)
-    this.setState({
-        drList: readDrList,
-        muList: readMuList,
-        id_rules: props.exdef.id_rules
-      })
   }
   toggleEdit () {
     this.props.dispatcher.dispatch({type: uiActionType.toggleEdit, value: constants.editPage.id})
@@ -50,20 +29,21 @@ export default class Id extends Component {
   saveChanges (newMuList, newIdRules) {
     let success
     if (newMuList.length !== 0) success = ipcRenderer.sendSync('save-mu-list', newMuList)
-    else success = ipcRenderer.sendSync('remove-all-mu-by-exdef', this.props.exdef.type)
+    else success = ipcRenderer.sendSync('remove-all-mu-by-exdef', this.props.store.selected.exdef.type)
     if (success) {
-      this.props.updateExdefIdRules(this.props.exdef._id, newIdRules)
+      this.props.updateExdefIdRules(this.props.store.selected.exdef._id, newIdRules)
       this.setState({muList: newMuList, editMode: false})
     }
   }
   buildIdContent () {
     if (this.props.store.editMode.id) return <IdEdit
-      exdef={this.props.exdef}
-      id_rules={this.state.id_rules}
-      muList={this.state.muList}
+      store={this.props.store}
+      exdef={this.props.store.selected.exdef}
+      id_rules={this.props.store.selected.exdef.id_rules}
+      muList={this.props.store.selected.muList}
       saveChanges={this.saveChanges}
       toggleEdit={this.toggleEdit} />
-    else return <IdView exdef={this.props.exdef} muList={this.state.muList} />
+    else return <IdView store={this.props.store} />
   }
   render () {
     let idContent = this.buildIdContent()
@@ -71,13 +51,13 @@ export default class Id extends Component {
       <div className='col-md-12'>
         <div className='row'>
           <div className='col-md-12'>
-            <h3>{this.props.exdef.type}
+            <h3>{this.props.store.selected.exdef.type}
               {(!this.props.store.editMode.id) ? <a href='#'><span className='glyphicon glyphicon-wrench pull-right' onClick={this.toggleEdit}></span></a> : null }
             </h3>
           </div>
         </div>
         <div className='row'>
-          <DrView drList={this.state.drList} />
+          <DrView drList={this.props.store.selected.drList} />
         </div>
         <div className='row'>
           {idContent}
@@ -87,7 +67,6 @@ export default class Id extends Component {
   }
 }
 Id.propTypes = {
-  exdef: PropTypes.object.isRequired,
   updateExdefIdRules: PropTypes.func.isRequired
 }
 

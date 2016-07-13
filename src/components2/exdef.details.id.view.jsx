@@ -12,17 +12,13 @@ const marginBottomCSS = {
 }
 
 export default class IdView extends Component {
-  constructor () {
-    super()
-    this.parseHTML = this.parseHTML.bind(this)
-  }
   parseHTML (locID, value) {
     let parsed = $.parseHTML(value)
     $(locID).html(parsed)
   }
   render () {
     let muListView = []
-    this.props.muList.forEach((mu, idx) => muListView.push(
+    this.props.store.selected.muList.forEach((mu, idx) => muListView.push(
       <div className='panel panel-default' style={marginBottomCSS}>
         <div className='panel-heading'>
           <h4 className='panel-title'>{mu.muID}</h4>
@@ -51,13 +47,9 @@ export default class IdView extends Component {
     )
   }
   componentDidMount () {
-    this.parseHTML('#idRulesHTML', this.props.exdef.id_rules_html)
+    this.parseHTML('#idRulesHTML', this.props.store.selected.exdef.id_rules_html)
   }
   componentDidUpdate (prevProps, prevState) {
-    this.parseHTML('#idRulesHTML', this.props.exdef.id_rules_html)
+    this.parseHTML('#idRulesHTML', this.props.store.selected.exdef.id_rules_html)
   }
-}
-IdView.propTypes = {
-  exdef: PropTypes.object.isRequired,
-  muList: PropTypes.array.isRequired
 }

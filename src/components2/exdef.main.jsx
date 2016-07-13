@@ -55,7 +55,7 @@ class Main extends Component {
     console.log(this.state.store)
 
     let detailsView
-    if (this.state.store.selectedExdef._id) {
+    if (this.state.store.selected.exdef._id) {
       detailsView = <Details
         store={this.state.store}
         dispatcher={this.dispatcher}

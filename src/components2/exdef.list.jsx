@@ -54,7 +54,7 @@ class ListItem extends Component {
     this.props.dispatcher.dispatch({type: listActionType.removeExdef, value: _id})
   }
   render () {
-    const isSelected= this.props.exdef._id === this.props.store.selectedExdef._id
+    const isSelected= this.props.exdef._id === this.props.store.selected.exdef._id
     const aClassName = isSelected ? 'list-group-item active' : 'list-group-item'
     const btnStyle = this.props.store.editMode.list ? {display:'block'} : {display:'none'}
     return (

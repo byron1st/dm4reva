@@ -28,9 +28,9 @@ export default class DefEdit extends Component {
                 <button type='button' className='btn btn-danger btn-block' onClick={this.toggleEdit.bind(this)}>Cancel</button>
               </div>
             </div>
-            <DefEditTypeAndKind name='Type' value={this.props.store.updatedExdef.type} dispatcher={this.props.dispatcher} />
-            <DefEditTypeAndKind name='Kind' value={this.props.store.updatedExdef.kind} dispatcher={this.props.dispatcher} />
-            <DefEditInf inf={this.props.store.updatedExdef.inf} dispatcher={this.props.dispatcher} />
+            <DefEditTypeAndKind name='Type' value={this.props.store.updated.exdef.type} dispatcher={this.props.dispatcher} />
+            <DefEditTypeAndKind name='Kind' value={this.props.store.updated.exdef.kind} dispatcher={this.props.dispatcher} />
+            <DefEditInf inf={this.props.store.updated.exdef.inf} dispatcher={this.props.dispatcher} />
           </form>
         </div>
       </div>

@@ -22,16 +22,16 @@ export const type = {
  * @param  {type} editPage the editPage where this action was called.
  */
 function updateExdef (store, editPage) {
-  let kindValidation = constants.exdefKindsList.indexOf(store.getValue(['updatedExdef', 'kind'])) !== -1
+  let kindValidation = constants.exdefKindsList.indexOf(store.getValue(['updated', 'exdef', 'kind'])) !== -1
   if (kindValidation) {
-    let willBeUpdatedExdef = store.copyValue(['updatedExdef'])
+    let willBeUpdatedExdef = store.copyValue(['updated', 'exdef'])
     let updatedExdef = ipcRenderer.sendSync(constants.ipcEventType.updateExdef, willBeUpdatedExdef)
     if (updatedExdef) {
       let updatedExdefList = util.replaceAnItem(store.getValue(['exdefList']), '_id', updatedExdef._id, updatedExdef)
       updatedExdefList.sort(util.sortKindAndType)
       store.update([
         {keyPath: ['exdefList'], value: updatedExdefList},
-        {keyPath: ['selectedExdef'], value: updatedExdef},
+        {keyPath: ['selected', 'exdef'], value: updatedExdef},
         {keyPath: ['editMode', editPage], value: !store.getValue(['editMode', editPage])}
       ])
     } else ipcRenderer.send(constants.ipcEventType.handleErrors, 'Saving the changes to DB is failed.')
@@ -44,5 +44,5 @@ function updateExdef (store, editPage) {
  * @param  {type} keyValueObj {key: , value: }
  */
 function updateValue (store, keyValueObj) {
-  store.update([{keyPath: ['updatedExdef', keyValueObj.key], value: keyValueObj.value}])
+  store.update([{keyPath: ['updated', 'exdef', keyValueObj.key], value: keyValueObj.value}])
 }
