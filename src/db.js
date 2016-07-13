@@ -1,7 +1,9 @@
 'use strict'
+
 import path from 'path'
 import Datastore from 'nedb'
 import {dialog} from 'electron'
+
 import Scheme from './db.scheme.js'
 
 function loadADB (db) {

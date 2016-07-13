@@ -1,3 +1,5 @@
+'use strict'
+
 export function contains(list, key, value) {
   return list.map((e) => e[key]).indexOf(value) !== -1
 }

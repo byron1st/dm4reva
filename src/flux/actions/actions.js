@@ -1,3 +1,5 @@
+'use strict'
+
 import {init as uiActions} from './actions.ui'
 import {init as listActions} from './actions.list'
 import {init as exdefActions} from './actions.exdef'

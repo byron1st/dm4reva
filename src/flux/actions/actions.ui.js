@@ -1,3 +1,5 @@
+'use strict'
+
 import {ipcRenderer} from 'electron'
 
 import constants from './const'

@@ -1,3 +1,5 @@
+'use strict'
+
 export default class Dispatcher {
   constructor (store) {
     this.store = store

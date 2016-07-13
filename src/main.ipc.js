@@ -1,3 +1,5 @@
+'use strict'
+
 import {ipcMain} from 'electron'
 
 import constants from './const'

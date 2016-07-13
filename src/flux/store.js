@@ -1,3 +1,5 @@
+'use strict'
+
 import {remote} from 'electron'
 
 import * as util from './util'

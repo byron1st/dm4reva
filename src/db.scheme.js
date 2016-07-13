@@ -1,3 +1,5 @@
+'use strict'
+
 export default {
   exdef: {
     type: {isMandatory: true, type: 'string'},
