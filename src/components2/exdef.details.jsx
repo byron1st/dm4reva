@@ -8,49 +8,44 @@ import Id from './exdef.details.id'
 import Er from './exdef.details.er'
 
 import {type as uiActionType} from './actions.ui'
+
 import constants from './const'
 
 const tabNamesList = [constants.detailsTabName.def, constants.detailsTabName.id, constants.detailsTabName.er]
 
 export default class Details extends Component {
-  constructor () {
-    super()
-    this.selectTab = this.selectTab.bind(this)
-    this.buildTabs = this.buildTabs.bind(this)
-    this.buildContent = this.buildContent.bind(this)
-  }
   selectTab (selectedTab) {
     this.props.dispatcher.dispatch({type: uiActionType.selectTab, value: selectedTab})
   }
-  buildTabs () {
+  render () {
     let tabViews = []
     tabNamesList.forEach((tabName) => {
       if (tabName === this.props.store.detailsTab) {
         tabViews.push(<li key={tabName} className='active'><a href='#' onClick={() => this.selectTab(tabName)}>{tabName}</a></li>)
       } else tabViews.push(<li key={tabName}><a href='#' onClick={() => this.selectTab(tabName)}>{tabName}</a></li>)
     })
-    return tabViews
-  }
-  buildContent () {
+
+    let tabContent
     switch(this.props.store.detailsTab) {
       case constants.detailsTabName.def:
-        return <Def store={this.props.store} dispatcher={this.props.dispatcher} />
+        tabContent = <Def store={this.props.store} dispatcher={this.props.dispatcher} />
+        break
       case constants.detailsTabName.id:
-        return <Id exdef={this.props.store.exdef} store={this.props.store} dispatcher={this.props.dispatcher} updateExdefIdRules={this.props.updateExdefIdRules}/>
+        tabContent = <Id exdef={this.props.store.selectedExdef} store={this.props.store} dispatcher={this.props.dispatcher} updateExdefIdRules={this.props.updateExdefIdRules}/>
+        break
       case constants.detailsTabName.er:
-        return <Er exdefType={this.props.store.exdef.type}/>
+        tabContent = <Er exdefType={this.props.store.selectedExdef.type}/>
+        break
     }
-  }
-  render () {
     return (
       <div id='exdefDetails' className='col-md-8'>
         <div className='row'>
           <ul className='nav nav-pills nav-justified'>
-            {this.buildTabs()}
+            {tabViews}
           </ul>
         </div>
         <div className='row'>
-          {this.buildContent()}
+          {tabContent}
         </div>
       </div>
     )
