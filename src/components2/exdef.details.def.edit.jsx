@@ -13,10 +13,7 @@ export default class DefEdit extends Component {
     this.props.dispatcher.dispatch({type: uiActionType.toggleEdit, value: constants.editPage.def})
   }
   updateExdef () {
-    let kindValidation = constants.exdefKindsList.indexOf(this.props.store.updatedExdef.kind) !== -1
-    if (kindValidation) {
-      this.props.dispatcher.dispatch({type: exdefActionType.updateExdef, value: constants.editPage.def})
-    } else ipcRenderer.send('handle-errors', 'The value of the Kind should be one of EComponent, EConnector, and EPort.')
+    this.props.dispatcher.dispatch({type: exdefActionType.updateExdef, value: constants.editPage.def})
   }
   render () {
     return (

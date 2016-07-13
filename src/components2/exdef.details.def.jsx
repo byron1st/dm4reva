@@ -11,18 +11,13 @@ import {type as uiActionType} from './actions.ui'
 import constants from './const'
 
 export default class Def extends Component {
-  constructor () {
-    super()
-    this.buildDefContent = this.buildDefContent.bind(this)
-  }
   toggleEdit () {
     this.props.dispatcher.dispatch({type: uiActionType.toggleEdit, value: constants.editPage.def})
   }
-  buildDefContent () {
-    if (this.props.store.editMode.def) return <DefEdit dispatcher={this.props.dispatcher} store={this.props.store} />
-    else return <DefView exdef={this.props.store.selectedExdef} />
-  }
   render () {
+    let defContent
+    if (this.props.store.editMode.def) defContent = <DefEdit dispatcher={this.props.dispatcher} store={this.props.store} />
+    else defContent = <DefView exdef={this.props.store.selectedExdef} />
     return (
       <div className='col-md-12'>
         <div className='row'>
@@ -34,7 +29,7 @@ export default class Def extends Component {
         </div>
         <div className='row'>
           <div className='col-md-12'>
-            {this.buildDefContent()}
+            {defContent}
           </div>
         </div>
       </div>
