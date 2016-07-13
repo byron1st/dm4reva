@@ -2,7 +2,6 @@
 
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
-import {ipcRenderer} from 'electron'
 
 export default class Er extends Component {
   render () {

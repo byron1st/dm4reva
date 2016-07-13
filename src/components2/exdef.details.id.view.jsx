@@ -1,6 +1,6 @@
 'use strict'
 
-import React, {Component, PropTypes} from 'react'
+import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 
 const breakWordCSS = {

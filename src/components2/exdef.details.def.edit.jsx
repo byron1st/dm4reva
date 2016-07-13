@@ -2,7 +2,6 @@
 
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
-import {ipcRenderer} from 'electron'
 
 import {type as uiActionType} from './actions.ui'
 import {type as exdefActionType} from './actions.exdef'
@@ -39,8 +38,8 @@ export default class DefEdit extends Component {
 }
 
 class DefEditTypeAndKind extends Component {
-  handleChange(event) {
-    let changedValue = {key: this.props.name.toLowerCase(), value: event.target.value}
+  handleChange(value) {
+    let changedValue = {key: this.props.name.toLowerCase(), value: value}
     this.props.dispatcher.dispatch({type: exdefActionType.updateValue, value: changedValue})
   }
   render () {
@@ -48,7 +47,7 @@ class DefEditTypeAndKind extends Component {
       <div className='form-group'>
         <label for={this.props.name} className='col-md-2 control-label'>{this.props.name}</label>
         <div className='col-md-10'>
-          <input type='text' className='form-control' id={this.props.name} value={this.props.value} onChange={this.handleChange.bind(this)} />
+          <input type='text' className='form-control' id={this.props.name} value={this.props.value} onChange={(e) => this.handleChange(e.target.value)} />
         </div>
       </div>
     )

@@ -36,10 +36,9 @@ export default class IdEdit extends Component {
   save () {
     this.props.dispatcher.dispatch({type: exdefActionType.updateExdefWithMu, value: constants.editPage.id})
   }
-  validateMuID (event) {
+  validateMuID (muID) {
     const currentClassName = document.getElementById('newMuID').className
     const index = currentClassName.indexOf(' errorInput')
-    const muID = event.target.value
 
     let success = !util.contains(this.props.store.updated.muList, 'muID', muID)
     if (success) success = ipcRenderer.sendSync(constants.ipcEventType.validateMuID, muID)
@@ -92,7 +91,7 @@ export default class IdEdit extends Component {
                   <span className='input-group-btn'>
                     <button id='muAddBtn' type='button' className='btn btn-primary' onClick={this.addMu.bind(this)}>Add</button>
                   </span>
-                  <input type='text' className='form-control' placeholder='new muID' defaultValue='' onChange={this.validateMuID.bind(this)} id='newMuID'/>
+                  <input type='text' className='form-control' placeholder='new muID' defaultValue='' onChange={(e) => this.validateMuID(e.target.value)} id='newMuID'/>
                 </div>
               </div>
               <div className='panel-body'>

@@ -1,14 +1,12 @@
 'use strict'
 
-import React, {Component, PropTypes} from 'react'
+import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
-import {ipcRenderer} from 'electron'
 
 import IdView from './exdef.details.id.view'
 import IdEdit from './exdef.details.id.edit'
 
 import {type as uiActionType} from './actions.ui'
-import * as util from './util'
 import constants from './const'
 
 const scrollCSS = {

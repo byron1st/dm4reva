@@ -8,7 +8,6 @@ import Id from './exdef.details.id'
 import Er from './exdef.details.er'
 
 import {type as uiActionType} from './actions.ui'
-
 import constants from './const'
 
 const tabNamesList = [constants.detailsTabName.def, constants.detailsTabName.id, constants.detailsTabName.er]

@@ -2,7 +2,6 @@
 
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
-import {ipcRenderer} from 'electron'
 
 import DefView from './exdef.details.def.view'
 import DefEdit from './exdef.details.def.edit'
