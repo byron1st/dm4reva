@@ -2,8 +2,6 @@
 
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
-import {remote, ipcRenderer} from 'electron'
-import showdown from 'showdown'
 
 import List from './exdef.list'
 import Details from './exdef.details'
