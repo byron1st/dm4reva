@@ -1,3 +1,5 @@
+import {ipcRenderer} from 'electron'
+
 import constants from './const'
 import * as util from './util'
 
@@ -41,10 +43,14 @@ function toggleEdit(store, editPage) {
  * @param  {type} _id   _id of the selected exdef
  */
 function selectExdef(store, _id) {
+  let selectedExdef = util.getAnItemFromList(store.getValue(['exdefList']), '_id', _id)
+  let drAndMuList = ipcRenderer.sendSync(constants.ipcEventType.readDrListAndMuList, {exdefType: selectedExdef.type, infList: selectedExdef.inf})
   store.update([
-    {keyPath: ['selectedExdef'], value: util.getAnItemFromList(store.getValue(['exdefList']), '_id', _id)},
-    {keyPath: ['updatedExdef'], value: util.getAnItemFromList(store.getValue(['exdefList']), '_id', _id)},
-    {keyPath: ['detailsTab'], value: constants.detailsTabName.def}
+    {keyPath: ['selectedExdef'], value: selectedExdef},
+    {keyPath: ['updatedExdef'], value: selectedExdef},
+    {keyPath: ['detailsTab'], value: constants.detailsTabName.def},
+    {keyPath: ['muList'], value: drAndMuList.muList},
+    {keyPath: ['drList'], value: drAndMuList.drList}
   ])
 }
 

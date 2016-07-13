@@ -9,5 +9,12 @@ export default {
     id: 'Identification Rules',
     er: 'Execution Records'
   },
-  exdefKindsList: ['EComponent', 'EConnector', 'EPort']
+  exdefKindsList: ['EComponent', 'EConnector', 'EPort'],
+  ipcEventType: {
+    readDrListAndMuList: 'read-drs-mus',
+    removeExdef: 'remove-anExdef',
+    addExdef: 'add-exdef',
+    updateExdef: 'update-exdef',
+    handleErrors: 'handle-errors'
+  }
 }

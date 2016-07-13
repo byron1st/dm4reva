@@ -21,7 +21,7 @@ export const type = {
  */
 function removeExdef(store, _id) {
   let updatedExdefList = util.removeAnItemFromList(store.getValue(['exdefList']), '_id', _id)
-  let success = ipcRenderer.sendSync('remove-anExdef', _id)
+  let success = ipcRenderer.sendSync(constants.ipcEventType.removeExdef, _id)
   if (success) store.update([{keyPath: ['exdefList'], value: updatedExdefList}])
 }
 
@@ -31,7 +31,7 @@ function removeExdef(store, _id) {
  * @param  {object} newExdefObj object of new exdef
  */
 function addExdef(store, newExdefObj) {
-  let newExdef = ipcRenderer.sendSync('add-new-exdef', newExdefObj)
+  let newExdef = ipcRenderer.sendSync(constants.ipcEventType.addExdef, newExdefObj)
   if (newExdef) {
     let updatedExdefList = util.addItemsToList(store.getValue(['exdefList']), newExdef)
     updatedExdefList.sort(util.sortKindAndType)

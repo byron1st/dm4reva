@@ -11,7 +11,9 @@ let store = {
   detailsTab: '',
   selectedExdef: {},
   updatedExdef: {},
-  exdefList: remote.getCurrentWindow().exdefList
+  exdefList: remote.getCurrentWindow().exdefList,
+  muList: [],
+  drList: []
 }
 
 

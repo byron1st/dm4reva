@@ -7,6 +7,8 @@ import fs from 'fs'
 import * as db from './db'
 import config from './app.config'
 
+import constants from './const'
+
 let prefFilePath = ''
 let preferences = {}
 let exdefWindow = null
@@ -112,11 +114,11 @@ ipcMain.on('set-db', (event, arg) => {
   loadDataAndCreateWindow(preferences.savePath)
 })
 
-ipcMain.on('handle-errors', (event, arg) => {
+ipcMain.on(constants.ipcEventType.handleErrors, (event, arg) => {
   handleErrors(new Error(arg))
 })
 
-ipcMain.on('update-exdef', (event, arg) => {
+ipcMain.on(constants.ipcEventType.updateExdef, (event, arg) => {
   if (arg._id) {
     db.update(db.nexdef, arg, (err, doc) => {
       if (err) {
@@ -130,7 +132,7 @@ ipcMain.on('update-exdef', (event, arg) => {
   }
 })
 
-ipcMain.on('remove-anExdef', (event, arg) => {
+ipcMain.on(constants.ipcEventType.removeExdef, (event, arg) => {
   db.deleteOne(db.nexdef, arg, (err) => {
     if (err) {
       handleErrors(err)
@@ -141,7 +143,7 @@ ipcMain.on('remove-anExdef', (event, arg) => {
   })
 })
 
-ipcMain.on('add-new-exdef', (event, arg) => {
+ipcMain.on(constants.ipcEventType.addExdef, (event, arg) => {
   let argToArray = []
   if (!Array.isArray(arg)) argToArray.push(arg)
   else argToArray = arg
@@ -153,6 +155,35 @@ ipcMain.on('add-new-exdef', (event, arg) => {
       event.returnValue = doc
     }
 
+  })
+})
+
+/**
+ * @arg {exdefType: '', infList: []}
+ */
+ipcMain.on(constants.ipcEventType.readDrListAndMuList, (event, arg) => {
+  let count = 2
+  let returnObj = {drList:[], muList:[]}
+  db.read(db.mu, {exdefType: arg.exdefType}, {muID: 1}, (err, mus) => {
+    if (err) {
+      handleErrors(err)
+      event.returnValue = false
+    } else {
+      count--
+      returnObj.muList = mus
+      if (count === 0) event.returnValue = returnObj
+    }
+  })
+
+  db.readDRsOfInfs(arg.infList, (err, drs) => {
+    if (err) {
+      handleErrors(err)
+      event.returnValue = false
+    } else {
+      count--
+      returnObj.drList = drs
+      if (count === 0) event.returnValue = returnObj
+    }
   })
 })
 

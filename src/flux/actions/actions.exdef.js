@@ -25,7 +25,7 @@ function updateExdef (store, editPage) {
   let kindValidation = constants.exdefKindsList.indexOf(store.getValue(['updatedExdef', 'kind'])) !== -1
   if (kindValidation) {
     let willBeUpdatedExdef = store.copyValue(['updatedExdef'])
-    let updatedExdef = ipcRenderer.sendSync('update-exdef', willBeUpdatedExdef)
+    let updatedExdef = ipcRenderer.sendSync(constants.ipcEventType.updateExdef, willBeUpdatedExdef)
     if (updatedExdef) {
       let updatedExdefList = util.replaceAnItem(store.getValue(['exdefList']), '_id', updatedExdef._id, updatedExdef)
       updatedExdefList.sort(util.sortKindAndType)
@@ -34,8 +34,8 @@ function updateExdef (store, editPage) {
         {keyPath: ['selectedExdef'], value: updatedExdef},
         {keyPath: ['editMode', editPage], value: !store.getValue(['editMode', editPage])}
       ])
-    } else ipcRenderer.send('handle-errors', 'Saving the changes to DB is failed.')
-  } else ipcRenderer.send('handle-errors', 'The value of the Kind should be one of EComponent, EConnector, and EPort.')
+    } else ipcRenderer.send(constants.ipcEventType.handleErrors, 'Saving the changes to DB is failed.')
+  } else ipcRenderer.send(constants.ipcEventType.handleErrors, 'The value of the Kind should be one of EComponent, EConnector, and EPort.')
 }
 
 /**
