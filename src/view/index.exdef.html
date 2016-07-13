@@ -26,5 +26,10 @@
       </div>
     </div>
     <script src="./exdef.main.js"></script>
+    <script type="text/javascript">
+      let ipcRenderer = require('electron').ipcRenderer
+      ipcRenderer.on('show-loading', (event) => window.$('#progressBar').show())
+      ipcRenderer.on('hide-loading', (event) => window.$('#progressBar').hide())
+    </script>
   </body>
 </html>

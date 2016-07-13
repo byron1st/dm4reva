@@ -13,7 +13,8 @@ let store = {
   selected: {
     exdef: {},
     muList: [],
-    drList: []
+    drList: [],
+    erList: []
   },
   updated: {
     exdef: {},

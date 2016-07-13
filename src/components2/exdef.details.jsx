@@ -31,10 +31,10 @@ export default class Details extends Component {
         tabContent = <Def store={this.props.store} dispatcher={this.props.dispatcher} />
         break
       case constants.detailsTabName.id:
-        tabContent = <Id store={this.props.store} dispatcher={this.props.dispatcher} updateExdefIdRules={this.props.updateExdefIdRules}/>
+        tabContent = <Id store={this.props.store} dispatcher={this.props.dispatcher} />
         break
       case constants.detailsTabName.er:
-        tabContent = <Er exdefType={this.props.store.selected.exdef.type}/>
+        tabContent = <Er store={this.props.store} />
         break
     }
     return (

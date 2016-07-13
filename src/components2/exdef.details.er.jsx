@@ -7,8 +7,7 @@ import {ipcRenderer} from 'electron'
 export default class Er extends Component {
   render () {
     let erView = []
-    let erList = ipcRenderer.sendSync('read-ers-exdef', this.props.exdefType)
-    erList.forEach((record) => {
+    this.props.store.selected.erList.forEach((record) => {
       let metaKeys = Object.keys(record.meta)
       let valuesKeys = Object.keys(record.values)
       metaKeys.sort()
@@ -40,7 +39,4 @@ export default class Er extends Component {
       </div>
     )
   }
-}
-Er.propTypes = {
-  exdefType: PropTypes.string.isRequired
 }

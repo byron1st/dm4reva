@@ -11,7 +11,7 @@ export default {
   },
   exdefKindsList: ['EComponent', 'EConnector', 'EPort'],
   ipcEventType: {
-    readDrListAndMuList: 'read-drs-mus',
+    readDrListMuListErList: 'read-drs-mus-ers',
     removeExdef: 'remove-anExdef',
     addExdef: 'add-exdef',
     updateExdef: 'update-exdef',

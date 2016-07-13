@@ -22,46 +22,13 @@ class Main extends Component {
     initializeActions(this.dispatcher)
     // this.state = this.store.getStore()
     this.state = {
-      exdefList: [],
-      store: {}
-    }
-    this.updateExdefIdRules = this.updateExdefIdRules.bind(this)
-    this.updateExdefList = this.updateExdefList.bind(this)
-  }
-  componentWillMount () {
-    this.setState({exdefList: this.props.exdefList, store: this.store.getStore()})
-  }
-  updateExdefIdRules (_id, newIdRules) {
-    let previous = util.getAnItemFromList(this.state.exdefList, '_id', _id)
-    let converter = new showdown.Converter()
-    let updatedExdef = {
-      type: previous.type,
-      kind: previous.kind,
-      inf: previous.inf,
-      _id: _id,
-      id_rules: newIdRules
-    }
-    updatedExdef.id_rules_html = converter.makeHtml(updatedExdef.id_rules)
-    let success = ipcRenderer.sendSync('update-exdef', updatedExdef)
-    this.updateExdefList(success, util.replaceAnItem(this.state.exdefList, '_id', updatedExdef._id, success))
-  }
-  updateExdefList (success, newExdefList) {
-    if (success) {
-      newExdefList.sort(util.sortKindAndType)
-      this.setState({exdefList: newExdefList})
+      store: this.store.getStore()
     }
   }
   render () {
-    console.log(this.state.store)
-
     let detailsView
-    if (this.state.store.selected.exdef._id) {
-      detailsView = <Details
-        store={this.state.store}
-        dispatcher={this.dispatcher}
-        updateExdefIdRules={this.updateExdefIdRules}/>
-    }
-    else detailsView = <h1>Select an execution view element type from the list</h1>
+    if (this.state.store.selected.exdef._id) detailsView = <Details store={this.state.store} dispatcher={this.dispatcher} />
+    else detailsView = <NotSelected />
     return (
       <div>
         <List store={this.state.store} dispatcher={this.dispatcher} />
@@ -70,11 +37,15 @@ class Main extends Component {
     )
   }
 }
-Main.propTypes = {
-  exdefList: PropTypes.array
+
+class NotSelected extends Component {
+  render () {
+    return (
+      <div id='exdefDetails' className='col-md-8'>
+        <h1>Select the execution view element type or Add a new one.</h1>
+      </div>
+    )
+  }
 }
 
-let currentWindow = remote.getCurrentWindow()
-ReactDOM.render(<Main exdefList={currentWindow.exdefList} />, document.getElementById('exdefMain'))
-ipcRenderer.on('show-loading', (event) => window.$('#progressBar').show())
-ipcRenderer.on('hide-loading', (event) => window.$('#progressBar').hide())
+ReactDOM.render(<Main />, document.getElementById('exdefMain'))

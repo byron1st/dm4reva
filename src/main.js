@@ -161,17 +161,26 @@ ipcMain.on(constants.ipcEventType.addExdef, (event, arg) => {
 /**
  * @arg {exdefType: '', infList: []}
  */
-ipcMain.on(constants.ipcEventType.readDrListAndMuList, (event, arg) => {
+ipcMain.on(constants.ipcEventType.readDrListMuListErList, (event, arg) => {
   let count = 2
-  let returnObj = {drList:[], muList:[]}
+  let returnObj = {drList:[], muList:[], erList:[]}
   db.read(db.mu, {exdefType: arg.exdefType}, {muID: 1}, (err, mus) => {
     if (err) {
       handleErrors(err)
       event.returnValue = false
     } else {
-      count--
-      returnObj.muList = mus
-      if (count === 0) event.returnValue = returnObj
+      let muIdList = mus.map((e) => e.muID)
+      db.readRecordsOfMUs(muIdList, (err, ers) => {
+        if (err) {
+          handleErrors(err)
+          event.returnValue = false
+        } else {
+          count--
+          returnObj.muList = mus
+          returnObj.erList = ers
+          if (count === 0) event.returnValue = returnObj
+        }
+      })
     }
   })
 
@@ -185,45 +194,7 @@ ipcMain.on(constants.ipcEventType.readDrListAndMuList, (event, arg) => {
       if (count === 0) event.returnValue = returnObj
     }
   })
-})
 
-ipcMain.on('read-drs', (event, arg) => {
-  db.readDRsOfInfs(arg, (err, docs) => {
-    if (err) {
-      handleErrors(err)
-      event.returnValue = null
-    } else {
-      event.returnValue = docs
-    }
-  })
-})
-
-ipcMain.on('read-ers-exdef', (event, exdefType) => {
-  db.read(db.mu, {exdefType: exdefType}, {muID: 1}, (err, muList) => {
-    if (err) {
-      handleErrors(err)
-      event.returnValue = null
-    } else {
-      let muIdList = muList.map((e) => e.muID)
-      db.readRecordsOfMUs(muIdList, (err, docs) => {
-        if (err) {
-          handleErrors(err)
-          event.returnValue = null
-        } else {
-          event.returnValue = docs
-        }
-      })
-    }
-  })
-})
-
-ipcMain.on('read-mus', (event, arg) => {
-  db.read(db.mu, {exdefType: arg}, {muID: 1}, (err, docs) => {
-    if (err) {
-      handleErrors(err)
-      event.returnValue = null
-    } else event.returnValue = docs
-  })
 })
 
 ipcMain.on(constants.ipcEventType.validateMuID, (event, muID) => {
