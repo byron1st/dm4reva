@@ -11,6 +11,9 @@ import {type as uiActionType} from './actions.ui'
 import constants from './const'
 
 const tabNamesList = [constants.detailsTabName.def, constants.detailsTabName.id, constants.detailsTabName.er]
+const wellBGColor = {
+  'background-color': 'white'
+}
 
 export default class Details extends Component {
   selectTab (selectedTab) {
@@ -37,11 +40,13 @@ export default class Details extends Component {
         break
     }
     return (
-      <div id='exdefDetails' className='col-md-8'>
+      <div id='exdefDetails' className='col-md-12 well' style={wellBGColor}>
         <div className='row'>
-          <ul className='nav nav-pills nav-justified'>
-            {tabViews}
-          </ul>
+          <div className='col-md-12'>
+            <ul className='nav nav-pills nav-justified'>
+              {tabViews}
+            </ul>
+          </div>
         </div>
         <div className='row'>
           {tabContent}

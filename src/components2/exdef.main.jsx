@@ -26,8 +26,16 @@ class Main extends Component {
     else detailsView = <NotSelected />
     return (
       <div>
-        <List store={this.state.store} dispatcher={this.dispatcher} />
-        {detailsView}
+        <div id="exdefList" >
+          <List store={this.state.store} dispatcher={this.dispatcher} />
+        </div>
+        <div id="exdefMain" >
+          <div className='container-fluid'>
+            <div className='row'>
+              {detailsView}
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
@@ -36,11 +44,11 @@ class Main extends Component {
 class NotSelected extends Component {
   render () {
     return (
-      <div id='exdefDetails' className='col-md-8'>
+      <div id='exdefDetails' className='col-md-12'>
         <h3 className='text-center'>Select the execution view element type or<br /> Add a new one.</h3>
       </div>
     )
   }
 }
 
-ReactDOM.render(<Main />, document.getElementById('exdefMain'))
+ReactDOM.render(<Main />, document.getElementById('mainContent'))

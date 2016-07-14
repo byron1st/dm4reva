@@ -22,23 +22,11 @@ export default class List extends Component {
           dispatcher={this.props.dispatcher} />
         ))
     return (
-      <div id='exdefList' className='col-md-4'>
-        <div className='row'>
-          <div className='col-md-12'>
-            <button className='btn btn-xs pull-right' onClick={this.toggleEdit.bind(this)}>edit</button>
-          </div>
-        </div>
-        <div className='row'>
-          <div className='col-md-12'>
-            <button className='btn btn-primary btn-xs btn-block' data-toggle='modal' data-target='#addModal'>+ add type</button>
-          </div>
-        </div>
-        <div className='row'>
-          <div id='exdefList' className='col-md-12'>
-            <div className='list-group'>
-              {exdefListView}
-            </div>
-          </div>
+      <div>
+        <button className='btn btn-xs pull-right' onClick={this.toggleEdit.bind(this)}>edit</button>
+        <button className='btn btn-primary btn-xs btn-block' data-toggle='modal' data-target='#addModal'>+ add type</button>
+        <div className='list-group'>
+          {exdefListView}
         </div>
         <AddModal dispatcher={this.props.dispatcher} />
       </div>
