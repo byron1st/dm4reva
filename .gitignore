@@ -5,3 +5,4 @@ db/er.db
 db/mu.db
 dist
 npm-debug.log
+build

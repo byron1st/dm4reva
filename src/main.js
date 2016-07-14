@@ -5,10 +5,11 @@ import path from 'path'
 import fs from 'fs'
 
 import * as db from './db'
-import config from './app.config'
 import constants from './const'
 
 import './main.ipc'
+
+const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'app.config.json')).toString())
 
 let prefFilePath = ''
 let preferences = {}
