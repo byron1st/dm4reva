@@ -14,9 +14,9 @@ gulp.task('compile:js', () => {
   return gulp.src([
       './src/*.js',
       './src/util/*.js',
-      './src/components2/*.jsx',
-      './src/flux/*',
-      './src/flux/actions/*',
+      './src/components/*.jsx',
+      './src/flux/*.js',
+      './src/flux/actions/*.js',
       './src/view/js/*.js'
     ])
     .pipe(babel({
