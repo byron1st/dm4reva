@@ -270,6 +270,29 @@ const mainmenu = [
         }
       }
     ]
+  },
+  {
+    label: 'Exports',
+    submenu: [
+      {
+        label: 'Exports monitoring units',
+        click(item, focusedWindow) {
+          db.read(db.mu, {}, {muID:1}, (err, mus) => {
+            if (err) return handleErrors(err)
+            dialog.showSaveDialog({
+              title: 'Exports monitoring units (jriext)',
+              filters: [
+                {name: 'json file', extensions: ['json']}
+              ]
+            }, (filename) => {
+              let output = []
+              mus.forEach((mu) => output.push(JSON.parse(mu.desc)))
+              if (filename) fs.writeFileSync(filename, JSON.stringify(output))
+            })
+          })
+        }
+      }
+    ]
   }
 ]
 
