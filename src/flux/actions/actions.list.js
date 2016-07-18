@@ -3,6 +3,7 @@
 import {ipcRenderer} from 'electron'
 
 import * as util from './util'
+import constants from './const'
 
 export function init (dispatcher) {
   dispatcher.register([
@@ -33,10 +34,13 @@ function removeExdef(store, _id) {
  * @param  {object} newExdefObj object of new exdef
  */
 function addExdef(store, newExdefObj) {
-  let newExdef = ipcRenderer.sendSync(constants.ipcEventType.addExdef, newExdefObj)
-  if (newExdef) {
-    let updatedExdefList = util.addItemsToList(store.getValue(['exdefList']), newExdef)
-    updatedExdefList.sort(util.sortKindAndType)
-    store.update([{keyPath: ['exdefList'], value: updatedExdefList}])
-  }
+  let kindValidation = constants.exdefKindsList.indexOf(newExdefObj.kind) !== -1
+  if (kindValidation) {
+    let newExdef = ipcRenderer.sendSync(constants.ipcEventType.addExdef, newExdefObj)
+    if (newExdef) {
+      let updatedExdefList = util.addItemsToList(store.getValue(['exdefList']), newExdef)
+      updatedExdefList.sort(util.sortKindAndType)
+      store.update([{keyPath: ['exdefList'], value: updatedExdefList}])
+    }
+  } else ipcRenderer.send(constants.ipcEventType.handleErrors, 'The value of the Kind should be one of EComponent, EConnector, and EPort.')
 }

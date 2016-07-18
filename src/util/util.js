@@ -1,5 +1,7 @@
 'use strict'
 
+import {dialog} from 'electron'
+
 export function contains(list, key, value) {
   return list.map((e) => e[key]).indexOf(value) !== -1
 }
@@ -36,5 +38,11 @@ export function sortKindAndType (a, b) {
 }
 
 export function copyObj(obj) {
-  return JSON.parse(JSON.stringify(obj))
+  if (obj) return JSON.parse(JSON.stringify(obj))
+  else return obj
+}
+
+export function handleErrors (err, message) {
+  if (message) dialog.showErrorBox('An error occurs', message)
+  else dialog.showErrorBox('An error occurs', err.toString())
 }

@@ -4,21 +4,22 @@ import {ipcMain} from 'electron'
 
 import constants from './const'
 import * as db from './db'
+import * as util from './util'
 
 ipcMain.on(constants.ipcEventType.handleErrors, (event, arg) => {
-  handleErrors(new Error(arg))
+  util.handleErrors(new Error(arg))
 })
 
 ipcMain.on(constants.ipcEventType.updateExdef, (event, arg) => {
   if (arg._id) {
     db.update(db.nexdef, arg, (err, doc) => {
       if (err) {
-        handleErrors(err)
+        util.handleErrors(err)
         event.returnValue = false
       } else event.returnValue = doc
     })
   } else {
-    handleErrors(new Error('No _id exists'))
+    util.handleErrors(new Error('No _id exists'))
     event.returnValue = false
   }
 })
@@ -26,7 +27,7 @@ ipcMain.on(constants.ipcEventType.updateExdef, (event, arg) => {
 ipcMain.on(constants.ipcEventType.removeExdef, (event, arg) => {
   db.deleteOne(db.nexdef, arg, (err) => {
     if (err) {
-      handleErrors(err)
+      util.handleErrors(err)
       event.returnValue = false
     } else {
       event.returnValue = true
@@ -40,7 +41,7 @@ ipcMain.on(constants.ipcEventType.addExdef, (event, arg) => {
   else argToArray = arg
   db.create(db.nexdef, argToArray, (err, doc) => {
     if (err) {
-      handleErrors(err)
+      util.handleErrors(err)
       event.returnValue = null
     } else {
       event.returnValue = doc
@@ -57,13 +58,13 @@ ipcMain.on(constants.ipcEventType.readDrListMuListErList, (event, arg) => {
   let returnObj = {drList:[], muList:[], erList:[]}
   db.read(db.mu, {exdefType: arg.exdefType}, {muID: 1}, (err, mus) => {
     if (err) {
-      handleErrors(err)
+      util.handleErrors(err)
       event.returnValue = false
     } else {
       let muIdList = mus.map((e) => e.muID)
       db.readRecordsOfMUs(muIdList, (err, ers) => {
         if (err) {
-          handleErrors(err)
+          util.handleErrors(err)
           event.returnValue = false
         } else {
           count--
@@ -77,7 +78,7 @@ ipcMain.on(constants.ipcEventType.readDrListMuListErList, (event, arg) => {
 
   db.readDRsOfInfs(arg.infList, (err, drs) => {
     if (err) {
-      handleErrors(err)
+      util.handleErrors(err)
       event.returnValue = false
     } else {
       count--
@@ -102,7 +103,7 @@ ipcMain.on(constants.ipcEventType.updateExdefWithMuList, (event, arg) => {
   function removeAllMuList (cb) {
     db.deleteByQuery(db.mu, {exdefType: arg.exdef.type}, (err) => {
       if (err) {
-        handleErrors(err)
+        util.handleErrors(err)
         event.returnValue = false
       } else if (cb) cb()
     })
@@ -110,7 +111,7 @@ ipcMain.on(constants.ipcEventType.updateExdefWithMuList, (event, arg) => {
   function createNewMuList (cb) {
     db.create(db.mu, arg.muList, (err, docs) => {
       if (err) {
-        handleErrors(err)
+        util.handleErrors(err)
         event.returnValue = false
       } else if (cb) cb()
     })
@@ -120,7 +121,7 @@ ipcMain.on(constants.ipcEventType.updateExdefWithMuList, (event, arg) => {
     let returnObj = {}
     db.read(db.mu, {exdefType: arg.exdef.type}, {muID: 1}, (err, mus) => {
       if (err) {
-        handleErrors(err)
+        util.handleErrors(err)
         event.returnValue = false
       } else {
         count--
@@ -130,7 +131,7 @@ ipcMain.on(constants.ipcEventType.updateExdefWithMuList, (event, arg) => {
     })
     db.update(db.nexdef, arg.exdef, (err, exdef) => {
       if (err) {
-        handleErrors(err)
+        util.handleErrors(err)
         event.returnValue = false
       } else {
         count--

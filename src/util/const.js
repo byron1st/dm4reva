@@ -19,6 +19,8 @@ export default {
     updateExdef: 'update-exdef',
     handleErrors: 'handle-errors',
     validateMuID: 'validate-muID',
-    updateExdefWithMuList: 'update-exdef-with-mu'
+    updateExdefWithMuList: 'update-exdef-with-mu',
+    showLoading: 'show-loading',
+    hideLoading: 'hide-loading'
   }
 }

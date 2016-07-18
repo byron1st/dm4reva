@@ -46,7 +46,9 @@ function toggleEdit(store, editPage) {
  */
 function selectExdef(store, _id) {
   let selectedExdef = util.getAnItemFromList(store.getValue(['exdefList']), '_id', _id)
-  let drMuErList = ipcRenderer.sendSync(constants.ipcEventType.readDrListMuListErList, {exdefType: selectedExdef.type, infList: selectedExdef.inf})
+  let drMuErList = {drList: [], erList: []}
+  if (selectedExdef) drMuErList = ipcRenderer.sendSync(constants.ipcEventType.readDrListMuListErList, {exdefType: selectedExdef.type, infList: selectedExdef.inf})
+  else selectedExdef = {}
   store.update([
     {keyPath: ['selected', 'exdef'], value: selectedExdef},
     {keyPath: ['updated', 'exdef'], value: util.copyObj(selectedExdef)},

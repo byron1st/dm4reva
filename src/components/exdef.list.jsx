@@ -28,7 +28,6 @@ export default class List extends Component {
         <div className='list-group'>
           {exdefListView}
         </div>
-        <AddModal dispatcher={this.props.dispatcher} />
       </div>
     )
   }
@@ -52,52 +51,6 @@ class ListItem extends Component {
           [<span className='glyphicon glyphicon-remove'></span>]
         </button>
       </a>
-    )
-  }
-}
-
-class AddModal extends Component {
-  eraseValues () {
-    $('#addNewType').val('')
-    $('#addNewKind').val('')
-  }
-  handleAdd () {
-    let newExdefObject = {
-      type: $('#addNewType').val(),
-      kind: $('#addNewKind').val(),
-      inf: [],
-      id_rules: '',
-      id_rules_html: ''
-    }
-
-    this.props.dispatcher.dispatch({type: listActionType.addExdef, value: newExdefObject})
-    this.eraseValues()
-  }
-  render () {
-    return (
-      <div className='modal fade' data-backdrop='static' id='addModal' role='dialog' aria-labelledby='addModalLabel'>
-        <div className='modal-dialog' role='document'>
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <h4 className='modal-title' id='addModalLabel'>Add a new type</h4>
-            </div>
-            <div className='modal-body'>
-              <div class='form-group'>
-                <label for='addNewType'>Type</label>
-                <input type='text' className='form-control' id='addNewType' defaultValue='' placeholder='new type...' />
-              </div>
-              <div class='form-group'>
-                <label for='addNewKind'>Kind</label>
-                <input type='text' className='form-control' id='addNewKind' defaultValue='' placeholder='new kind...' />
-              </div>
-            </div>
-            <div className='modal-footer'>
-              <button className='btn btn-danger' data-dismiss='modal' aria-label='Close' onClick={this.eraseValues.bind(this)}>Cancel</button>
-              <button className='btn btn-primary' data-dismiss='modal' aria-label='Close' onClick={this.handleAdd.bind(this)}>Add</button>
-            </div>
-          </div>
-        </div>
-      </div>
     )
   }
 }

@@ -6,6 +6,7 @@ import fs from 'fs'
 
 import * as db from './db'
 import constants from './const'
+import * as util from './util'
 
 import './main.ipc'
 
@@ -16,19 +17,13 @@ let preferences = {}
 let exdefWindow = null
 let initWindow = null
 
-function handleErrors (err, message) {
-  if (message) dialog.showErrorBox('An error occurs', message)
-  else dialog.showErrorBox('An error occurs', err.toString())
-  if (exdefWindow) exdefWindow.webContents.send('hide-loading')
-}
-
 function validateJSONFormat (kind, rawString, cb) {
   let converted = {}
   try {
     converted = JSON.parse(rawString)
     if (cb) cb(converted)
   } catch (e) {
-    return handleErrors(e, e.name + ': ' + e.message)
+    return util.handleErrors(e, e.name + ': ' + e.message)
   }
 }
 
@@ -52,14 +47,14 @@ function loadDataAndCreateWindow (dir) {
     if (config.mode === 'test') {
       loadInitialTestData()
         .then(() => createExdefWindow())
-        .catch((err) => handleErrors(err))
+        .catch((err) => util.handleErrors(err))
     } else createExdefWindow()
   })
 }
 
 function createExdefWindow () {
   db.read(db.nexdef, {}, {kind:1, type:1}, (err, exdefs) => {
-    if (err) return handleErrors(err)
+    if (err) return util.handleErrors(err)
     exdefWindow = new BrowserWindow({
       width: 1280,
       height: 720
@@ -136,16 +131,16 @@ const mainmenu = [
             ]
           }, (filenames) => {
             if (filenames) {
-              if (exdefWindow) exdefWindow.webContents.send('show-loading')
+              if (exdefWindow) exdefWindow.webContents.send(constants.ipcEventType.showLoading)
               fs.readFile(filenames[0], (err, data) => {
-                if (err) handleErrors(err)
+                if (err) {
+                  util.handleErrors(err)
+                  if (exdefWindow) exdefWindow.webContents.send(constants.ipcEventType.hideLoading)
+                }
                 validateJSONFormat('exdef', data.toString(), (jsonConverted) => {
                   db.create(db.nexdef, jsonConverted, (err, docs) => {
-                    if (err) return handleErrors(err)
-                    if (exdefWindow) {
-                      exdefWindow.webContents.send('notify-udpate', docs)
-                      exdefWindow.webContents.send('hide-loading')
-                    }
+                    if (err) return util.handleErrors(err)
+                    if (exdefWindow) exdefWindow.webContents.send(constants.ipcEventType.hideLoading)
                   })
                 })
               })
@@ -161,13 +156,16 @@ const mainmenu = [
             properties: ['openFile']
           }, (filenames) => {
             if (filenames) {
-              if (exdefWindow) exdefWindow.webContents.send('show-loading')
+              if (exdefWindow) exdefWindow.webContents.send(constants.ipcEventType.showLoading)
               fs.readFile(filenames[0], (err, data) => {
-                if (err) handleErrors(err)
+                if (err) {
+                  util.handleErrors(err)
+                  if (exdefWindow) exdefWindow.webContents.send(constants.ipcEventType.hideLoading)
+                }
                 validateJSONFormat('dr', data.toString(), (jsonConverted) => {
                   db.create(db.ndr, jsonConverted, (err, docs) => {
-                    if (err) return handleErrors(err)
-                    if (exdefWindow) exdefWindow.webContents.send('hide-loading')
+                    if (err) return util.handleErrors(err)
+                    if (exdefWindow) exdefWindow.webContents.send(constants.ipcEventType.hideLoading)
                     dialog.showMessageBox({type: 'info',
                                           title: 'Dependency relationships are added',
                                           message: docs.length + ' DRs are added.',
@@ -190,16 +188,16 @@ const mainmenu = [
             ]
           }, (filenames) => {
             if (filenames) {
-              if (exdefWindow) exdefWindow.webContents.send('show-loading')
+              if (exdefWindow) exdefWindow.webContents.send(constants.ipcEventType.showLoading)
               fs.readFile(filenames[0], (err, data) => {
-                if (err) handleErrors(err)
+                if (err) {
+                  util.handleErrors(err)
+                  if (exdefWindow) exdefWindow.webContents.send(constants.ipcEventType.hideLoading)
+                }
                 validateJSONFormat('mu', data.toString(), (jsonConverted) => {
                   db.create(db.mu, jsonConverted, (err, docs) => {
-                    if (err) return handleErrors(err)
-                    if (exdefWindow) {
-                      exdefWindow.webContents.send('notify-mu-add', docs)
-                      exdefWindow.webContents.send('hide-loading')
-                    }
+                    if (err) return util.handleErrors(err)
+                    if (exdefWindow) exdefWindow.webContents.send(constants.ipcEventType.hideLoading)
                   })
                 })
               })
@@ -215,16 +213,16 @@ const mainmenu = [
             properties: ['openFile']
           }, (filenames) => {
             if (filenames) {
-              if (exdefWindow) exdefWindow.webContents.send('show-loading')
+              if (exdefWindow) exdefWindow.webContents.send(constants.ipcEventType.showLoading)
               fs.readFile(filenames[0], (err, data) => {
-                if (err) handleErrors(err)
+                if (err) {
+                  util.handleErrors(err)
+                  if (exdefWindow) exdefWindow.webContents.send(constants.ipcEventType.hideLoading)
+                }
                 validateJSONFormat('er', data.toString(), (jsonConverted) => {
                   db.create(db.ner, jsonConverted, (err, docs) => {
-                    if (err) return handleErrors(err)
-                    if (exdefWindow) {
-                      exdefWindow.webContents.send('notify-records-add', docs)
-                      exdefWindow.webContents.send('hide-loading')
-                    }
+                    if (err) return util.handleErrors(err)
+                    if (exdefWindow) exdefWindow.webContents.send(constants.ipcEventType.hideLoading)
                     dialog.showMessageBox({type: 'info',
                                           title: 'Execution records are added',
                                           message: docs.length + ' ERs are added.',
@@ -241,7 +239,7 @@ const mainmenu = [
         label: 'reset records',
         click(item, focusedWindow) {
           db.deleteAll(db.ner, (err, num) => {
-            if (err) return handleErrors (err)
+            if (err) return util.handleErrors (err)
             exdefWindow.close()
             createExdefWindow()
           })
@@ -251,13 +249,13 @@ const mainmenu = [
         label: 'reset all',
         click(item, focusedWindow) {
           db.deleteAll(db.nexdef, (err, num) => {
-            if (err) return handleErrors (err)
+            if (err) return util.handleErrors (err)
             db.deleteAll(db.ndr, (err, num) => {
-              if (err) return handleErrors (err)
+              if (err) return util.handleErrors (err)
               db.deleteAll(db.ner, (err, num) => {
-                if (err) return handleErrors (err)
+                if (err) return util.handleErrors (err)
                 db.deleteAll(db.mu, (err, num) => {
-                  if (err) return handleErrors (err)
+                  if (err) return util.handleErrors (err)
                   exdefWindow.close()
 
                   if (config.mode === 'test') loadDataAndCreateWindow('db')
@@ -278,7 +276,7 @@ const mainmenu = [
         label: 'Exports monitoring units',
         click(item, focusedWindow) {
           db.read(db.mu, {}, {muID:1}, (err, mus) => {
-            if (err) return handleErrors(err)
+            if (err) return util.handleErrors(err)
             dialog.showSaveDialog({
               title: 'Exports monitoring units (jriext)',
               filters: [
