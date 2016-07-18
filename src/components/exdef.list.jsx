@@ -23,8 +23,8 @@ export default class List extends Component {
         ))
     return (
       <div>
-        <button className='btn btn-xs pull-right' onClick={this.toggleEdit.bind(this)}>edit</button>
-        <button className='btn btn-primary btn-xs btn-block' data-toggle='modal' data-target='#addModal'>+ add type</button>
+        <h5 className='text-center'>Execution view element types <button className='btn btn-xs pull-right' onClick={this.toggleEdit.bind(this)}>edit</button></h5>
+        <button className='btn btn-primary btn-xs btn-block' data-toggle='modal' data-target='#addModal'>+ add a new type</button>
         <div className='list-group'>
           {exdefListView}
         </div>
