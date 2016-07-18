@@ -3,6 +3,10 @@
 import React, {Component, PropTypes} from 'react'
 import ReactDOM from 'react-dom'
 
+const searchBarMargin = {
+  'margin-top': '20px',
+  'margin-bottom': '20px'
+}
 export default class Er extends Component {
   render () {
     let erView = []
@@ -22,15 +26,15 @@ export default class Er extends Component {
       valuesKeys.forEach((key) => valuesView.push(<li>{key}: {record.values[key]}</li>))
 
       erView.push(
-        <div className='panel panel-default'>
+        <div className='panel panel-default' id='er'>
           <div className='panel-heading'>ID: {record.time} (muID: <strong>{record.muID}</strong>) <small className='pull-right'>{record._id}</small></div>
           <div className='panel-body'>
             <h4>Meta Information</h4>
-            <ul>
+            <ul id='metaList'>
               {metaView}
             </ul>
             <h4>Values Information</h4>
-            <ul>
+            <ul id='valuesList'>
               {valuesView}
             </ul>
           </div>
@@ -39,8 +43,19 @@ export default class Er extends Component {
     })
     return (
       <div className='col-md-12'>
-        {erView}
+        <input type='text' className='form-control' id='search' placeholder='Search...' style={searchBarMargin} />
+        <div id='erViewList'>
+          {erView}
+        </div>
       </div>
     )
+  }
+  componentDidMount() {
+    $('#search').keyup(function() {
+        let userInput = $(this).val();
+        $('#erViewList div#er').map(function(index, value) {
+            $(value).toggle($(value).text().toLowerCase().indexOf(userInput) >= 0);
+        });
+    });
   }
 }
