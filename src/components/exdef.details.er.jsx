@@ -18,7 +18,7 @@ export default class Er extends Component {
 
       erView.push(
         <div className='panel panel-default'>
-          <div className='panel-heading'>ID: {record._id}</div>
+          <div className='panel-heading'>ID: {record._id} (muID: <strong>{record.muID}</strong>)</div>
           <div className='panel-body'>
             <h4>Meta Information</h4>
             <ul>
