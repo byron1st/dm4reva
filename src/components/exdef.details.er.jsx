@@ -6,7 +6,12 @@ import ReactDOM from 'react-dom'
 export default class Er extends Component {
   render () {
     let erView = []
-    this.props.store.selected.erList.forEach((record) => {
+    let sortedErList = this.props.store.selected.erList.sort((a, b) => {
+      if (a.time > b.time) return 1
+      else return -1
+    })
+
+    sortedErList.forEach((record) => {
       let metaKeys = Object.keys(record.meta)
       let valuesKeys = Object.keys(record.values)
       metaKeys.sort()
@@ -18,7 +23,7 @@ export default class Er extends Component {
 
       erView.push(
         <div className='panel panel-default'>
-          <div className='panel-heading'>ID: {record._id} (muID: <strong>{record.muID}</strong>)</div>
+          <div className='panel-heading'>ID: {record.time} (muID: <strong>{record.muID}</strong>) <small className='pull-right'>{record._id}</small></div>
           <div className='panel-body'>
             <h4>Meta Information</h4>
             <ul>
