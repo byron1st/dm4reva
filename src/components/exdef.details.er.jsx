@@ -54,7 +54,7 @@ export default class Er extends Component {
     $('#search').keyup(function() {
         let userInput = $(this).val();
         $('#erViewList div#er').map(function(index, value) {
-            $(value).toggle($(value).text().toLowerCase().indexOf(userInput) >= 0);
+            $(value).toggle($(value).text().toLowerCase().indexOf(userInput.toLowerCase()) >= 0);
         });
     });
   }

@@ -13,7 +13,7 @@ const srcList = [
   './src/flux/actions/*.js',
   './src/view/js/*.js'
 ]
-const versionNumber = '1.3.2-rc1'
+const versionNumber = '1.3.2'
 const minifiedPackageJson = {
   "name": "dm4reva",
   "version": versionNumber,
