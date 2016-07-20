@@ -21,6 +21,7 @@ export default {
     validateMuID: 'validate-muID',
     updateExdefWithMuList: 'update-exdef-with-mu',
     showLoading: 'show-loading',
-    hideLoading: 'hide-loading'
+    hideLoading: 'hide-loading',
+    setDB: 'set-db'
   }
 }

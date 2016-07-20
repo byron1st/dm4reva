@@ -1,6 +1,6 @@
 'use strict'
 
-import {app, BrowserWindow, dialog, Menu} from 'electron'
+import {app, BrowserWindow, dialog, Menu, ipcMain} from 'electron'
 import path from 'path'
 import fs from 'fs'
 
@@ -55,16 +55,19 @@ function loadDataAndCreateWindow (dir) {
 function createExdefWindow () {
   db.read(db.nexdef, {}, {kind:1, type:1}, (err, exdefs) => {
     if (err) return util.handleErrors(err)
-    exdefWindow = new BrowserWindow({
-      width: 1280,
-      height: 720
-    })
-    exdefWindow.exdefList = exdefs
-    exdefWindow.loadURL(path.join('file://', __dirname, 'index.exdef.html'))
-    exdefWindow.on('closed', () => exdefWindow = null)
-    if (config.mode === 'test') {
-      exdefWindow.webContents.openDevTools()
+    if (!exdefWindow) {
+      exdefWindow = new BrowserWindow({
+        width: 1280,
+        height: 720
+      })
+      exdefWindow.loadURL(path.join('file://', __dirname, 'index.exdef.html'))
+      exdefWindow.on('closed', () => exdefWindow = null)
+      if (config.mode === 'test') {
+        exdefWindow.webContents.openDevTools()
+      }
     }
+    exdefWindow.exdefList = exdefs
+    if (exdefWindow) exdefWindow.reload()
   })
 }
 
@@ -94,6 +97,13 @@ app.on('window-all-closed', () => {
 
 app.on('will-quit', () => {
   fs.writeFileSync(prefFilePath, JSON.stringify(preferences))
+})
+
+ipcMain.on(constants.ipcEventType.setDB, (event, savePath) => {
+  preferences.savePath = savePath
+  // if (exdefWindow) exdefWindow.close()
+  if (initWindow) initWindow.close()
+  loadDataAndCreateWindow(preferences.savePath)
 })
 
 /** Main menu **/
