@@ -8,6 +8,10 @@ const searchBarMargin = {
   'margin-bottom': '20px'
 }
 export default class Er extends Component {
+  parseHTML (locID, value) {
+    let parsed = $.parseHTML(value)
+    $(locID).html(parsed)
+  }
   render () {
     let erView = []
     let sortedErList = this.props.store.selected.erList.sort((a, b) => {
@@ -43,6 +47,9 @@ export default class Er extends Component {
     })
     return (
       <div className='col-md-12'>
+        <h4>Description of Identification Rules</h4>
+        <div className='well well-sm' id='idRulesHTML_ER'>
+        </div>
         <input type='text' className='form-control' id='search' placeholder='Search...' style={searchBarMargin} />
         <div id='erViewList'>
           {erView}
@@ -51,11 +58,15 @@ export default class Er extends Component {
     )
   }
   componentDidMount() {
+    this.parseHTML('#idRulesHTML_ER', this.props.store.selected.exdef.id_rules_html)
     $('#search').keyup(function() {
         let userInput = $(this).val();
         $('#erViewList div#er').map(function(index, value) {
             $(value).toggle($(value).text().toLowerCase().indexOf(userInput.toLowerCase()) >= 0);
         });
     });
+  }
+  componentDidUpdate (prevProps, prevState) {
+    this.parseHTML('#idRulesHTML_ER', this.props.store.selected.exdef.id_rules_html)
   }
 }
