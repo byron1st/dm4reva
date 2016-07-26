@@ -47,9 +47,10 @@ export default class Er extends Component {
     })
     return (
       <div className='col-md-12'>
-        <h4>Description of Identification Rules</h4>
+        <h4>Description of Identification Rules <small className='pull-right'>(imported from Identification Rules tab)</small></h4>
         <div className='well well-sm' id='idRulesHTML_ER'>
         </div>
+        <h4>Execution Records</h4>
         <input type='text' className='form-control' id='search' placeholder='Search...' style={searchBarMargin} />
         <div id='erViewList'>
           {erView}
